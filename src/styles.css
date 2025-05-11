@@ -109,7 +109,12 @@ button{
   cursor:pointer;
 }
 
-button:hover{
-  gray-scale:70%;
-
+a:hover{
+  text-decoration: none;
+  color: #0004E8;
+  transition: all 0.3s ease-in-out;
+  font-family: "Roboto Condensed", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
 }

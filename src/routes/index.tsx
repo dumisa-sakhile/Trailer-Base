@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import logo from '../logo.svg'
+import logo from "../logo.svg";
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -10,10 +10,12 @@ function App() {
     <div className="mt-[120px] flex flex-col gap-5 px-32 py-4">
       <header className="fixed top-0 left-0 w-full h-[70px] shadow  grid grid-cols-3 bg-inherit px-32 py-4">
         <nav className="flex items-center gap-4">
-          <img src={logo} alt="logo" className="w-12 h-12" />
-          <Link to="/">Movies</Link>
-          <Link to="/">TV</Link>
-          <Link to="/">People</Link>
+          <Link to="/">
+            <img src={logo} alt="logo" className="w-12 h-12" />
+          </Link>
+          <Link to="/movie">Movies</Link>
+          <Link to="/tv">TV</Link>
+          <Link to="/people">People</Link>
         </nav>
         <nav className="flex items-center">
           <input
@@ -30,7 +32,9 @@ function App() {
       <h1 className="text-5xl text-left geist-regular">Trailer Base</h1>
       <p>Your one stop shop for movie and tv show trailers </p>
       <div className=" min-w-full rounded-full h-[70px] flex items-center justify-between px-4 ">
-      <button className="text-black roboto-condensed-regular  bg-white text-sm py-2 px-4">Success</button>
+        <button className="text-black roboto-condensed-regular  bg-white text-sm py-2 px-4">
+          Success
+        </button>
       </div>
 
       {/* <div className="carousel carousel-end rounded-box">
