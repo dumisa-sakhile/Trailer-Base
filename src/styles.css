@@ -6,7 +6,7 @@
   themes:
     light --default,
     dark --prefersdark,
-    business;
+    black ;
 }
 
 @layer utilities{
@@ -99,14 +99,17 @@
 body{
   font-family: "Roboto Condensed", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 400;
+  font-weight: 300;
   font-style: normal;
   font-size: 1rem;
 }
 
-h1, h2, h3, h4, h5, h6{
-  font-family: "Geist", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
+button{
+  border-radius: 30px;
+  cursor:pointer;
+}
+
+button:hover{
+  gray-scale:70%;
+
 }
