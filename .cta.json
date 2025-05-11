@@ -1,6 +1,6 @@
 {
   "framework": "react",
-  "projectName": "moviemax",
+  "projectName": ".",
   "typescript": true,
   "tailwind": false,
   "packageManager": "npm",

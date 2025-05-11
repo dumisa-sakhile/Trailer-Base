@@ -1,24 +1,6 @@
 {
-  "short_name": "Trailer Base",
-  "name": "Trailer Base - Movie & TV Trailer Database",
-  "description": "Trailer Base is a movie and TV trailer database that provides users with the latest trailers and information about their favorite movies and TV shows.",
-  "dir": "ltr",
-  "lang": "en-US",
-  "orientation": "portrait",
-  "scope": "/",
-  "related_applications": [],
-  "prefer_related_applications": false,
-  "categories": [
-    "movies",
-    "entertainment",
-    "video",
-    "media",
-    "database",
-    "trailer"
-  ],
-  "screenshots": [
-    
-  ],
+  "short_name": "TanStack App",
+  "name": "Create TanStack App Sample",
   "icons": [
     {
       "src": "favicon.ico",
@@ -38,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#121321",
+  "theme_color": "#000000",
   "background_color": "#ffffff"
 }
