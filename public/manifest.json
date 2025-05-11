@@ -1,6 +1,9 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "Trailer Base",
+  "name": "Trailer Base",
+  "description": "Trailer Base is a web application that provides a comprehensive database of movie trailers, allowing users to search, view, and discover trailers for their favorite films.",
+  "dir": "ltr",
+  "lang": "en-US",
   "icons": [
     {
       "src": "favicon.ico",
@@ -19,7 +22,7 @@
     }
   ],
   "start_url": ".",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#000000",
   "background_color": "#ffffff"
 }

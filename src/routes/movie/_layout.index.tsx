@@ -5,5 +5,5 @@ export const Route = createFileRoute('/movie/_layout/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/movie/_layout/"!</div>
+  return <div>movie home</div>
 }
