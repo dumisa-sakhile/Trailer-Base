@@ -6,6 +6,7 @@ export const Route = createFileRoute('/people')({
 
 function RouteComponent() {
   return <div>
+    <title>Trailer Base - People</title>
     <p>people page</p>
     
     <Outlet />

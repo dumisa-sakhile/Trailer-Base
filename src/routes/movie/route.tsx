@@ -9,6 +9,7 @@ export const Route = createFileRoute('/movie')({
 function RouteComponent() {
   return (
     <div>
+      <title>Trailer Base - Movies</title>
       <header className="fixed top-0 left-0 w-full h-[70px] shadow  grid grid-cols-3 bg-inherit px-32 py-4">
         <nav className="flex items-center gap-4">
           <Link to="/">
