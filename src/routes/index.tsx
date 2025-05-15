@@ -20,14 +20,16 @@ function App() {
 
   return (
     <div className="mt-[120px] flex flex-col gap-5 px-32 py-4">
-      <Header />
+      <Header /><br /><br />
 
-      <h1 className="text-5xl text-left geist-bold pink">Trailer Base</h1>
-      <p className="geist-light">Trending Movies this:</p>
+      <section className="w-full flex items-center justify-center gap-4">
+        <h1 className="text-5xl text-left geist-bold pink">Trailer Base</h1><br /><br />
+        <p className="geist-light">Trending Movies this:</p>
+      </section>
 
       <section>
         <br />
-        <section className="flex gap-4">
+        <section className="w-full flex items-center justify-center gap-4">
           <Button variant="primary">Day</Button>
           <button>Week</button>
         </section>
@@ -35,7 +37,8 @@ function App() {
         <div className="absolute left-0 overflow-x-scroll  w-full h-[470px]">
           <div className="flex animate-scroll gap-12 scale-95">
             {tvShows.map((show, index) => (
-              <Link to="/"
+              <Link
+                to="/"
                 key={index}
                 className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 hover:rotate-3 transition-transform duration-300 ease-in-out overflow-hidden stack geist-light">
                 <img
