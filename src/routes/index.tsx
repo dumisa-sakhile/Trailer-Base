@@ -18,10 +18,10 @@ function App() {
     }));
 
   return (
-    <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 lg:px-32 py-4 bg-red-300 min-h-10">
+    <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 lg:px-32 py-4  min-h-10">
       <Header />
 
-      <section className="min-w-[300px] bg-amber-900 mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
+      <section className="min-w-[300px]  mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
         <h1 className="text-5xl text-left geist-bold ">Trailer Base</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           Discover the latest trailers for movies and TV shows
