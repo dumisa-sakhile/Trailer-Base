@@ -18,20 +18,22 @@ function App() {
     }));
 
   return (
-    <div className="w-full mt-[120px] flex flex-col gap-5 px-32 py-4">
+    <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 lg:px-32 py-4 bg-red-300 min-h-10">
       <Header />
 
-      <section className="mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
+      <section className="min-w-[300px] bg-amber-900 mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
         <h1 className="text-5xl text-left geist-bold ">Trailer Base</h1>
-        <p className="roboto-condensed-light w-[300px] md:w-full text-center">Discover the latest trailers for movies and TV shows</p>
+        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
+          Discover the latest trailers for movies and TV shows
+        </p>
       </section>
       <br />
-      <section className="w-full flex items-center justify-center gap-4">
+      <section className=" min-w-[300px] min-h-[50px] flex items-center justify-center gap-4">
         <Button variant="primary">Day</Button>
         <Button variant="ghost">week</Button>
       </section>
       <br />
-      <section >
+      <section>
         <div className="absolute left-0 overflow-x-scroll  w-full h-[470px] ">
           <div className="flex animate-scroll gap-12 scale-95">
             {tvShows.map((show, index) => (

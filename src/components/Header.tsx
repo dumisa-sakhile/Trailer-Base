@@ -6,7 +6,7 @@ import Button from './Button';
 
 const Header: React.FC = () => {
   return (
-    <header className="gap-4 items-center justify-center absolute top-0 left-0 w-full h-[70px] flex flex-wrap md:grid md:grid-cols-3 bg-transparent md:px-32 py-4 z-10">
+    <header className="gap-4 items-center justify-center absolute top-0 left-0 w-full h-[120px] md:h-[70px] flex flex-wrap md:grid md:grid-cols-3 bg-transparent md:px-32 py-4 z-10">
       <nav className="flex items-center gap-4 text-md geist-regular">
         <Link to="/">
           <img src={logo} alt="logo" className="w-12 h-12" />
@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   name="search"
   id=""
   placeholder="Search for movies!"
-  className="p-2 bg-transparent rounded-full text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl outline-none active:outline-none  placeholder:text-white h-[48px] w-[300px] pl-8 md:w-full ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md lg:ring-0"
+  className="p-2 bg-transparent rounded-full text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl outline-none active:outline-none  placeholder:text-white h-[48px] w-[300px] pl-8 md:w-full ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
   autoComplete="off"
 />
       </nav>
