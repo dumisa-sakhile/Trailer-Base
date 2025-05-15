@@ -36,13 +36,13 @@ function App() {
       </section>
       <br />
       <section>
-        <div className="absolute left-0 overflow-x-scroll  w-full h-[470px]">
+        <div className="absolute left-0 overflow-x-scroll  w-full h-[470px] ">
           <div className="flex animate-scroll gap-12 scale-95">
             {tvShows.map((show, index) => (
               <Link
                 to="/"
                 key={index}
-                className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 hover:rotate-3 transition-transform duration-300 ease-in-out overflow-hidden stack geist-light">
+                className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 hover:rotate-3 transition-transform duration-300 ease-in-out overflow-hidden stack geist-light ring-1 ring-gray-800">
                 <img
                   src={show.imageUrl}
                   alt={show.title}
