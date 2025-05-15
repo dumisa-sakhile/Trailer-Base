@@ -29,14 +29,13 @@ function App() {
         <br />
         <p className="geist-light">Trending Movies this:</p>
       </section>
-
+      <br />
+      <section className="w-full flex items-center justify-center gap-4">
+        <Button variant="primary">Day</Button>
+        <Button variant="ghost">week</Button>
+      </section>
+      <br />
       <section>
-        <br />
-        <section className="w-full flex items-center justify-center gap-4">
-          <Button variant="primary">Day</Button>
-          <Button variant="ghost">week</Button>
-        </section>
-        <br />
         <div className="absolute left-0 overflow-x-scroll  w-full h-[470px]">
           <div className="flex animate-scroll gap-12 scale-95">
             {tvShows.map((show, index) => (
