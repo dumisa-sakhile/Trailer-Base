@@ -1,86 +1,59 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import logo from "../logo.svg";
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import Header from "@/components/Header";
+import Button from "@/components/Button";
 
-export const Route = createFileRoute('/')({
+
+export const Route = createFileRoute("/")({
   component: App,
-})
+});
 
 function App() {
+
+  const [period, setPeriod] = useState("day");
+
+  
+    const tvShows = Array.from({ length: 25 }, (_, index) => ({
+      title: `Show ${index + 1}`,
+      date: `2023-10-${index + 1}`,
+      imageUrl:
+        "https://media.themoviedb.org/t/p/w440_and_h660_face/oLxWocqheC8XbXbxqJ3x422j9PW.jpg",
+    }));
+
   return (
     <div className="mt-[120px] flex flex-col gap-5 px-32 py-4">
-      <header className="fixed top-0 left-0 w-full h-[70px] shadow  grid grid-cols-3 bg-inherit px-32 py-4">
-        <nav className="flex items-center gap-4">
-          <Link to="/">
-            <img src={logo} alt="logo" className="w-12 h-12" />
-          </Link>
-          <Link to="/movie">Movies</Link>
-          <Link to="/tv">TV</Link>
-          <Link to="/people">People</Link>
-        </nav>
-        <nav className="flex items-center">
-          <input
-            type="search"
-            name="search"
-            id=""
-            placeholder="Search a Movie, TV show..."
-            className="p-2 rounded-full h-[48px] w-full bg-[#333] pl-8 outline-none geist-light text-sm"
-          />
-        </nav>
-        <nav></nav>
-      </header>
+      <Header />
 
-      <h1 className="text-5xl text-left geist-regular">Trailer Base</h1>
-      <p>Your one stop shop for movie and tv show trailers </p>
-      <div className=" min-w-full rounded-full h-[70px] flex items-center justify-between px-4 ">
-        <button className="text-black roboto-condensed-regular  bg-white text-sm py-2 px-4">
-          Success
-        </button>
-      </div>
+      <h1 className="text-5xl text-left geist-bold pink">Trailer Base</h1>
+      <p className="geist-light">Trending Movies this:</p>
 
-      {/* <div className="carousel carousel-end rounded-box">
-        <div className="carousel-item">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp"
-            alt="Drink"
-          />
+      <section>
+        <br />
+        <section className="flex gap-4">
+          <Button variant="primary">Day</Button>
+          <button>Week</button>
+        </section>
+        <br />
+        <div className="absolute left-0 overflow-x-scroll  w-full h-[470px]">
+          <div className="flex animate-scroll gap-12 scale-95">
+            {tvShows.map((show, index) => (
+              <Link to="/"
+                key={index}
+                className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 hover:rotate-3 transition-transform duration-300 ease-in-out overflow-hidden stack geist-light">
+                <img
+                  src={show.imageUrl}
+                  alt={show.title}
+                  className="w-full h-full object-cover rounded-lg overflow-hidden"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black   transition-opacity flex flex-col justify-end p-4 rounded-lg">
+                  <h3 className="text-white text-lg">{show.title}</h3>
+                  <p className="text-white text-sm">{show.date}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="carousel-item">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.webp"
-            alt="Drink"
-          />
-        </div>
-        <div className="carousel-item">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.webp"
-            alt="Drink"
-          />
-        </div>
-        <div className="carousel-item">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1494253109108-2e30c049369b.webp"
-            alt="Drink"
-          />
-        </div>
-        <div className="carousel-item">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.webp"
-            alt="Drink"
-          />
-        </div>
-        <div className="carousel-item">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1559181567-c3190ca9959b.webp"
-            alt="Drink"
-          />
-        </div>
-        <div className="carousel-item">
-          <img
-            src="https://img.daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.webp"
-            alt="Drink"
-          />
-        </div>
-      </div> */}
+      </section>
     </div>
   );
 }
