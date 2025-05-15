@@ -20,14 +20,10 @@ function App() {
   return (
     <div className="mt-[120px] flex flex-col gap-5 px-32 py-4">
       <Header />
-      <br />
-      <br />
 
-      <section className="w-full flex items-center justify-center gap-4">
-        <h1 className="text-5xl text-left geist-bold pink">Trailer Base</h1>
-        <br />
-        <br />
-        <p className="geist-light">Trending Movies this:</p>
+      <section className="w-full flex flex-col items-center justify-center gap-4">
+        <h1 className="text-5xl text-left geist-bold ">Trailer Base</h1>
+        <p className="roboto-condensed-light">Discover the latest trailers for movies and TV shows</p>
       </section>
       <br />
       <section className="w-full flex items-center justify-center gap-4">
@@ -42,7 +38,7 @@ function App() {
               <Link
                 to="/"
                 key={index}
-                className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 hover:rotate-3 transition-transform duration-300 ease-in-out overflow-hidden stack geist-light ring-1 ring-gray-800">
+                className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden stack geist-light hover:ring-1 hover:ring-black hover:rotate-3">
                 <img
                   src={show.imageUrl}
                   alt={show.title}
