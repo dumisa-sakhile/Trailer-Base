@@ -9,7 +9,6 @@ export const Route = createFileRoute("/")({
 
 function App() {
 
-
   
     const tvShows = Array.from({ length: 25 }, (_, index) => ({
       title: `Show ${index + 1}`,
@@ -20,10 +19,14 @@ function App() {
 
   return (
     <div className="mt-[120px] flex flex-col gap-5 px-32 py-4">
-      <Header /><br /><br />
+      <Header />
+      <br />
+      <br />
 
       <section className="w-full flex items-center justify-center gap-4">
-        <h1 className="text-5xl text-left geist-bold pink">Trailer Base</h1><br /><br />
+        <h1 className="text-5xl text-left geist-bold pink">Trailer Base</h1>
+        <br />
+        <br />
         <p className="geist-light">Trending Movies this:</p>
       </section>
 
@@ -31,7 +34,7 @@ function App() {
         <br />
         <section className="w-full flex items-center justify-center gap-4">
           <Button variant="primary">Day</Button>
-          <button>Week</button>
+          <Button variant="ghost">week</Button>
         </section>
         <br />
         <div className="absolute left-0 overflow-x-scroll  w-full h-[470px]">
