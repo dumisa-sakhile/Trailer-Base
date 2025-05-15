@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   name="search"
   id=""
   placeholder="Search for movies!"
-  className="p-2 bg-transparent rounded-4xl text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl focus:outline-none active:outline-none active:rounded-none focus-within:outline-none placeholder:text-white h-[48px] w-[300px] pl-8 md:w-full"
+  className="p-2 bg-transparent rounded-full text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl outline-none active:outline-none  placeholder:text-white h-[48px] w-[300px] pl-8 md:w-full ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md lg:ring-0"
   autoComplete="off"
 />
       </nav>
