@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import Header from "@/components/Header";
 import Button from "@/components/Button";
@@ -10,7 +9,6 @@ export const Route = createFileRoute("/")({
 
 function App() {
 
-  const [period, setPeriod] = useState("day");
 
   
     const tvShows = Array.from({ length: 25 }, (_, index) => ({

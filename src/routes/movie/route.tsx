@@ -1,7 +1,4 @@
 import { createFileRoute, Outlet, Link } from '@tanstack/react-router';
-import PortraitCard from '@/components/PortraitCard';
-import Header from '@/components/Header';
-import Logo from "/src/logo.svg"
 
 
 
