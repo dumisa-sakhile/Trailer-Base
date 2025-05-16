@@ -145,12 +145,12 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FB3AA2; /* scrollbar thumb color */
+  background: #fff; /* scrollbar thumb color */
   border-radius: 10px; /* scrollbar thumb rounded corners */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7e0d49; /* scrollbar thumb hover color */
+  background: #ddd; /* scrollbar thumb hover color */
 }
 
 .pink{
