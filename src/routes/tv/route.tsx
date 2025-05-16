@@ -7,7 +7,6 @@ export const Route = createFileRoute('/tv')({
 function RouteComponent() {
   return <div>
     <title>Trailer Base - TV</title>
-    <p>tv page</p>
     
     <Outlet />
   </div>
