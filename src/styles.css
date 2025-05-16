@@ -111,8 +111,6 @@ button:focus{
 
 a:hover{
   transition: all 0.3s ease-in-out;
-  text-transform: uppercase;
-  font-size: .9rem;
 }
 
 input[type="search"]::-webkit-search-cancel-button {
