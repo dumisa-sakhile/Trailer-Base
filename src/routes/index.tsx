@@ -103,7 +103,7 @@ function App() {
       </section>
       <br />
       <br />
-      <section className="pt-10 bg-[#141414] ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md  min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
+      <section className="pt-10 bg-white text-black ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md  min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
         <h1 className="text-5xl text-center geist-bold ">Movie Categories</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           Pick a category below and discover the latest movies and their

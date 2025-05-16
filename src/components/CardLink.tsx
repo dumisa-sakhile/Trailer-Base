@@ -20,7 +20,7 @@ const CardLink: React.FC<CardLinkProps> = ({
     <Link
       to={to}
       params={params}
-      className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-black hover:rotate-3">
+      className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light ">
       <img
         src={imageUrl}
         alt={title}
