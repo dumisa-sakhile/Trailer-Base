@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import LinkTo from "@/components/LinkTo";
 import { getTrendingMovies } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import CardLink from "@/components/CardLink";
 
 interface pageProps {
   page: number;
@@ -48,7 +49,8 @@ function App() {
       <section className="min-w-[300px]  mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
         <h1 className="text-5xl text-left geist-bold ">Trailer Base</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
-          Discover the latest trailers for movies and TV shows
+          These are the trending movies of the{" "}
+          <span className="font-bold uppercase">{period}</span>.
         </p>
       </section>
       <br />
@@ -82,7 +84,7 @@ function App() {
                   to="/tv"
                   params={{ period: "day", page: 1 }}
                   key={id}
-                  className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden stack geist-light hover:ring-1 hover:ring-black hover:rotate-3">
+                  className="stack w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
                   <img
                     src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
                     alt={original_title}
@@ -98,20 +100,49 @@ function App() {
           </div>
         </div>
       </section>
+      <br />
+      <br />
+      <section className="pt-10 bg-white text-black min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
+        <h1 className="text-5xl text-left geist-bold ">Movie Categories</h1>
+        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
+          Pick a category below and discover the latest movies and their
+          trailers!
+        </p>
 
-      <p>
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Placeat, quo!
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Tenetur nulla
-        nisi, aliquid officiis, velit id beatae illo, consequatur cumque quos
-        magnam quasi. Aperiam vitae ducimus inventore laboriosam maxime eaque
-        unde non quae quisquam explicabo aut, alias dignissimos quod voluptas
-        magnam placeat numquam dolor ullam quasi, repudiandae enim nemo vel
-        corrupti! Quis quidem dignissimos esse culpa. Vitae unde rem dicta
-        voluptatem veniam, est deserunt. Quo voluptatum explicabo consequuntur
-        minus ullam, laborum doloremque sint facilis nihil beatae quas itaque
-        neque fugit eos quae blanditiis! Eaque quas voluptatem sequi nesciunt
-        facere consectetur debitis.
-      </p>
+        <div className="w-full min-h-[470px]">
+          <div className="flex items-center justify-center flex-wrap animate-scroll gap-12 scale-95">
+            <CardLink
+              to="/tv"
+              params={{ period: "day", page: 1 }}
+              imageUrl="https://image.tmdb.org/t/p/w500//9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
+              title="Top Rated Movies"
+              description="Discover the top rated movies of all time."
+            />
+            <CardLink
+              to="/tv"
+              params={{ period: "day", page: 1 }}
+              imageUrl="https://image.tmdb.org/t/p/w500//yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg"
+              title="Popular Movies"
+              description="Discover the most popular movies of all time."
+            />
+            <CardLink
+              to="/tv"
+              params={{ period: "day", page: 1 }}
+              imageUrl="https://image.tmdb.org/t/p/w500//wWba3TaojhK7NdycRhoQpsG0FaH.jpg"
+              title="Upcoming Movies"
+              description="Discover the upcoming movies on the big screen."
+            />
+
+            <CardLink
+              to="/tv"
+              params={{ period: "day", page: 1 }}
+              imageUrl="https://image.tmdb.org/t/p/w500//oLxWocqheC8XbXbxqJ3x422j9PW.jpg"
+              title="Now Playing Movies"
+              description="Discover the movies that are currently playing in theaters."
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
