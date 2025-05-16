@@ -49,7 +49,8 @@ function App() {
       <section className="min-w-[300px]  mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
         <h1 className="text-5xl text-left geist-bold ">Trailer Base</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
-          These are the trending movies of the{" "}
+          Welcome to Trailer Base, where you can find the latest trailers .These
+          are the trending movies of the{" "}
           <span className="font-bold uppercase">{period}</span>.
         </p>
       </section>
@@ -102,8 +103,8 @@ function App() {
       </section>
       <br />
       <br />
-      <section className="pt-10 bg-white text-black min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
-        <h1 className="text-5xl text-left geist-bold ">Movie Categories</h1>
+      <section className="pt-10 bg-[#141414] ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md  min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
+        <h1 className="text-5xl text-center geist-bold ">Movie Categories</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           Pick a category below and discover the latest movies and their
           trailers!
