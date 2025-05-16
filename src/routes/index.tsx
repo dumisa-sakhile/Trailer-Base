@@ -41,7 +41,7 @@ function App() {
   }
 
   return (
-    <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 lg:px-32 py-4  min-h-10">
+    <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 py-4  min-h-10">
       <Header />
       <title>Trailer Base - Trending Movies</title>
 
@@ -52,6 +52,7 @@ function App() {
         </p>
       </section>
       <br />
+      {/* period */}
       <section className=" min-w-[300px] min-h-[50px] flex items-center justify-center gap-4">
         <LinkTo
           url="/"
@@ -68,7 +69,7 @@ function App() {
       </section>
       <br />
       <section>
-        <div className="absolute left-0 overflow-x-scroll  w-full h-[470px] ">
+        <div className="overflow-x-scroll  w-full h-[470px]">
           <div className="flex animate-scroll gap-12 scale-95">
             {data?.results.map(
               ({
@@ -97,6 +98,20 @@ function App() {
           </div>
         </div>
       </section>
+
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Placeat, quo!
+        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Tenetur nulla
+        nisi, aliquid officiis, velit id beatae illo, consequatur cumque quos
+        magnam quasi. Aperiam vitae ducimus inventore laboriosam maxime eaque
+        unde non quae quisquam explicabo aut, alias dignissimos quod voluptas
+        magnam placeat numquam dolor ullam quasi, repudiandae enim nemo vel
+        corrupti! Quis quidem dignissimos esse culpa. Vitae unde rem dicta
+        voluptatem veniam, est deserunt. Quo voluptatum explicabo consequuntur
+        minus ullam, laborum doloremque sint facilis nihil beatae quas itaque
+        neque fugit eos quae blanditiis! Eaque quas voluptatem sequi nesciunt
+        facere consectetur debitis.
+      </p>
     </div>
   );
 }
