@@ -43,7 +43,7 @@ function App() {
   return (
     <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 lg:px-32 py-4  min-h-10">
       <Header />
-<title>Trailer Base - Trending Movies: {period}</title>
+      <title>Trailer Base - Trending Movies</title>
 
       <section className="min-w-[300px]  mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
         <h1 className="text-5xl text-left geist-bold ">Trailer Base</h1>
