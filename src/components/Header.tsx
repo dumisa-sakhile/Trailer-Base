@@ -34,9 +34,21 @@ const Header: React.FC = () => {
           name="search"
           id=""
           placeholder="Search for movies!"
-          className="p-2 bg-transparent rounded-full text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl outline-none active:outline-none  placeholder:text-white h-[48px] w-[300px] pl-8 md:w-full ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
+          className="p-2 bg-transparent rounded-full text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl outline-none active:outline-none  placeholder:text-white h-[48px] w-[300px] pl-14 md:w-full ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
           autoComplete="off"
         />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute w-5 h-5 text-white  ml-4"
+          viewBox="0 0 24 24"
+          fill="#fff"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round">
+          <circle cx="10" cy="10" r="7" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
       </nav>
       <nav className="hidden md:flex items-center justify-end gap-4">
         <Link to="/auth">
