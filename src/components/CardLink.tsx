@@ -27,7 +27,7 @@ const CardLink: React.FC<CardLinkProps> = ({
         className="w-full h-full object-cover rounded-lg overflow-hidden"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
-        <h3 className="text-white text-lg">{title}</h3>
+        <h3 className="text-white text-lg font-bold">{title}</h3>
         <p className="text-white text-sm">{description}</p>
       </div>
     </Link>

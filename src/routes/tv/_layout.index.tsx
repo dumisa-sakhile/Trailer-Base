@@ -3,6 +3,9 @@ import Button from '@/components/Button';
 import Header from '@/components/Header';
 
 export const Route = createFileRoute('/tv/_layout/')({
+  validateSearch: (search: Record<string, string>) => ({
+    page: search.page ? parseInt(search.page) : 1,
+  }),
   component: Tv,
 })
 

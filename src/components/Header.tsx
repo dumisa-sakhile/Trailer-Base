@@ -14,7 +14,7 @@ const Header: React.FC = () => {
         <Link to="/" search={{ period: "day", page: 1 }}>
           Movies
         </Link>
-        <Link to="/tv">Shows</Link>
+        <Link to="/tv" search={{  page: 1 }}>Shows</Link>
         <Link to="/people">People</Link>
       </nav>
       <nav className="flex items-center">
@@ -28,7 +28,10 @@ const Header: React.FC = () => {
         />
       </nav>
       <nav className="hidden md:flex items-center justify-end gap-4">
-        <Button variant="primary">Sign Up</Button>
+        <Link to="/auth" >
+          <Button variant="primary">Login</Button>
+        </Link>
+    
       </nav>
     </header>
   );

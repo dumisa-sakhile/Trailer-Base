@@ -1,9 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/movie/$movieId')({
-  component: RouteComponent,
-})
+export const Route = createFileRoute("/movie/$movieId")({
+  validateSearch: (search: Record<string, string>) => ({
+    title: search.title ?? 'Movie Details',
+  }),
+  component: MovieDetails,
+});
 
-function RouteComponent() {
-  return <div>movie id</div>
+function MovieDetails() {
+  return <div>{Route.useSearch().title}</div>;
 }

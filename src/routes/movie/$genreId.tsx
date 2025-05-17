@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/movie/_layout/now-playing')({
+export const Route = createFileRoute('/movie/$genreId')({
+  
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>now-playing"!</div>
+  return <div>Hello "/movie/$genreId"!</div>
 }

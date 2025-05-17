@@ -82,8 +82,9 @@ function App() {
                 poster_path,
               }: MovieProps) => (
                 <Link
-                  to="/tv"
-                  params={{ period: "day", page: 1 }}
+                search={{ title: original_title }}
+                  to="/movie/$movieId"
+                  params={{ movieId: id.toString() }}
                   key={id}
                   className="stack w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
                   <img
@@ -103,7 +104,7 @@ function App() {
       </section>
       <br />
       <br />
-      <section className="pt-10 bg-white text-black ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md  min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
+      <section className="pt-10 pb-10 bg-white text-black ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md  min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
         <h1 className="text-5xl text-center geist-bold ">Movie Categories</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           Pick a category below and discover the latest movies and their
@@ -113,36 +114,45 @@ function App() {
         <div className="w-full min-h-[470px]">
           <div className="flex items-center justify-center flex-wrap animate-scroll gap-12 scale-95">
             <CardLink
-              to="/tv"
-              params={{ period: "day", page: 1 }}
+              to="/movie/top_rated"
+              params={{ page: 1 }}
               imageUrl="https://image.tmdb.org/t/p/w500//9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
               title="Top Rated Movies"
               description="Discover the top rated movies of all time."
             />
             <CardLink
-              to="/tv"
-              params={{ period: "day", page: 1 }}
+              to="/movie/popular"
+              params={{ page: 1 }}
               imageUrl="https://image.tmdb.org/t/p/w500//yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg"
               title="Popular Movies"
               description="Discover the most popular movies of all time."
             />
             <CardLink
-              to="/tv"
-              params={{ period: "day", page: 1 }}
+              to="/movie/upcoming"
+              params={{ page: 1 }}
               imageUrl="https://image.tmdb.org/t/p/w500//wWba3TaojhK7NdycRhoQpsG0FaH.jpg"
               title="Upcoming Movies"
               description="Discover the upcoming movies on the big screen."
             />
 
             <CardLink
-              to="/tv"
-              params={{ period: "day", page: 1 }}
+              to="/movie/now_playing"
+              params={{ page: 1 }}
               imageUrl="https://image.tmdb.org/t/p/w500//oLxWocqheC8XbXbxqJ3x422j9PW.jpg"
               title="Now Playing Movies"
               description="Discover the movies that are currently playing in theaters."
             />
           </div>
         </div>
+
+        <h2 className="text-3xl text-center geist-bold ">Genre Filter</h2>
+        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
+          Pick a genre below and discover the latest movies and their
+          trailers!
+        </p>
+
+
+
       </section>
     </div>
   );
