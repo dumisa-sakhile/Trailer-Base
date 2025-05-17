@@ -5,5 +5,7 @@ export const Route = createFileRoute('/auth/')({
 })
 
 function RouteComponent() {
-  return <div>login</div>
+  return <div>
+    <title>Trailer Base - Login</title>
+    login</div>
 }

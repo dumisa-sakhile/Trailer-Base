@@ -6,5 +6,9 @@ export const Route = createFileRoute('/movie/$genreId')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/movie/$genreId"!</div>
+  return <div>Hello 
+    <title>Trailer Base - Movies</title>
+    GENRE movies
+    
+  </div>
 }

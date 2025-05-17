@@ -8,5 +8,7 @@ export const Route = createFileRoute("/movie/_layout/top_rated")({
 });
 
 function TopRated() {
-  return <div>top rated</div>
+  return <div>
+    <title>Trailer Base - Top Rated</title>
+    top rated</div>
 }

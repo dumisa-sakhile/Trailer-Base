@@ -22,6 +22,7 @@ import { Route as PeoplePersonIdImport } from './routes/people/$personId'
 import { Route as MovieMovieIdImport } from './routes/movie/$movieId'
 import { Route as MovieGenreIdImport } from './routes/movie/$genreId'
 import { Route as AuthSignupImport } from './routes/auth/signup'
+import { Route as AuthResetpasswordImport } from './routes/auth/reset_password'
 import { Route as TvLayoutIndexImport } from './routes/tv/_layout.index'
 import { Route as PeopleLayoutIndexImport } from './routes/people/_layout.index'
 import { Route as TvLayoutTopRatedImport } from './routes/tv/_layout.top-rated'
@@ -98,6 +99,12 @@ const MovieGenreIdRoute = MovieGenreIdImport.update({
 const AuthSignupRoute = AuthSignupImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
+const AuthResetpasswordRoute = AuthResetpasswordImport.update({
+  id: '/reset_password',
+  path: '/reset_password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
@@ -199,6 +206,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tv'
       preLoaderRoute: typeof TvRouteImport
       parentRoute: typeof rootRoute
+    }
+    '/auth/reset_password': {
+      id: '/auth/reset_password'
+      path: '/reset_password'
+      fullPath: '/auth/reset_password'
+      preLoaderRoute: typeof AuthResetpasswordImport
+      parentRoute: typeof AuthRouteImport
     }
     '/auth/signup': {
       id: '/auth/signup'
@@ -318,11 +332,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthRouteRouteChildren {
+  AuthResetpasswordRoute: typeof AuthResetpasswordRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthResetpasswordRoute: AuthResetpasswordRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthIndexRoute: AuthIndexRoute,
 }
@@ -394,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/movie': typeof MovieRouteRouteWithChildren
   '/people': typeof PeopleRouteRouteWithChildren
   '/tv': typeof TvRouteRouteWithChildren
+  '/auth/reset_password': typeof AuthResetpasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/movie/$genreId': typeof MovieGenreIdRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
@@ -415,6 +432,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/movie': typeof MovieRouteRouteWithChildren
+  '/auth/reset_password': typeof AuthResetpasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/movie/$genreId': typeof MovieGenreIdRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
@@ -440,6 +458,7 @@ export interface FileRoutesById {
   '/movie': typeof MovieRouteRouteWithChildren
   '/people': typeof PeopleRouteRouteWithChildren
   '/tv': typeof TvRouteRouteWithChildren
+  '/auth/reset_password': typeof AuthResetpasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/movie/$genreId': typeof MovieGenreIdRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
@@ -466,6 +485,7 @@ export interface FileRouteTypes {
     | '/movie'
     | '/people'
     | '/tv'
+    | '/auth/reset_password'
     | '/auth/signup'
     | '/movie/$genreId'
     | '/movie/$movieId'
@@ -486,6 +506,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/movie'
+    | '/auth/reset_password'
     | '/auth/signup'
     | '/movie/$genreId'
     | '/movie/$movieId'
@@ -509,6 +530,7 @@ export interface FileRouteTypes {
     | '/movie'
     | '/people'
     | '/tv'
+    | '/auth/reset_password'
     | '/auth/signup'
     | '/movie/$genreId'
     | '/movie/$movieId'
@@ -567,6 +589,7 @@ export const routeTree = rootRoute
     "/auth": {
       "filePath": "auth/route.tsx",
       "children": [
+        "/auth/reset_password",
         "/auth/signup",
         "/auth/"
       ]
@@ -599,6 +622,10 @@ export const routeTree = rootRoute
         "/tv/_layout/top-rated",
         "/tv/_layout/"
       ]
+    },
+    "/auth/reset_password": {
+      "filePath": "auth/reset_password.tsx",
+      "parent": "/auth"
     },
     "/auth/signup": {
       "filePath": "auth/signup.tsx",

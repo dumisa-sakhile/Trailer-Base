@@ -8,5 +8,7 @@ export const Route = createFileRoute("/movie/$movieId")({
 });
 
 function MovieDetails() {
-  return <div>{Route.useSearch().title}</div>;
+  return <div>
+    <title>Trailer Base - </title>
+    {Route.useSearch().title}</div>;
 }

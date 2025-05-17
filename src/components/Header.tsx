@@ -8,13 +8,24 @@ const Header: React.FC = () => {
   return (
     <header className="gap-4 items-center justify-center absolute top-0 left-0 w-full h-[120px] md:h-[70px] flex flex-wrap md:grid md:grid-cols-3 bg-transparent md:px-32 py-4 z-10">
       <nav className="flex items-center gap-4 text-md geist-regular">
-        <Link to="/" search={{ period: "day", page: 1 }}>
+        <Link
+          to="/"
+          search={{ period: "day", page: 1 }}
+          activeProps={{ className: "roboto-condensed-bold" }}>
           <img src={logo} alt="logo" className="w-12 h-12" />
         </Link>
-        <Link to="/" search={{ period: "day", page: 1 }}>
+        <Link
+          to="/"
+          search={{ period: "day", page: 1 }}
+          activeProps={{ className: "roboto-condensed-bold" }}>
           Movies
         </Link>
-        <Link to="/tv" search={{  page: 1 }}>Shows</Link>
+        <Link
+          to="/tv"
+          search={{ page: 1 }}
+          activeProps={{ className: "roboto-condensed-bold" }}>
+          Shows
+        </Link>
         <Link to="/people">People</Link>
       </nav>
       <nav className="flex items-center">
@@ -28,10 +39,9 @@ const Header: React.FC = () => {
         />
       </nav>
       <nav className="hidden md:flex items-center justify-end gap-4">
-        <Link to="/auth" >
+        <Link to="/auth">
           <Button variant="primary">Login</Button>
         </Link>
-    
       </nav>
     </header>
   );

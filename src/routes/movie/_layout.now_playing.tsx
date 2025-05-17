@@ -8,5 +8,7 @@ export const Route = createFileRoute("/movie/_layout/now_playing")({
 });
 
 function NowPlaying() {
-  return <div>now playing</div>
+  return <div>
+    <title>Trailer Base - Now Playing</title>
+    now playing</div>
 }

@@ -8,5 +8,7 @@ export const Route = createFileRoute("/movie/_layout/popular")({
 });
 
 function Popular() {
-  return <div>popular</div>
+  return <div>
+    <title>Trailer Base - Popular Movies</title>
+    popular</div>
 }

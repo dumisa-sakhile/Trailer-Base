@@ -8,5 +8,7 @@ export const Route = createFileRoute("/movie/_layout/upcoming")({
 });
 
 function Upcoming() {
-  return <div>upcoming</div>
+  return <div>
+    <title>Trailer Base - Upcoming Movies</title>
+    upcoming</div>
 }
