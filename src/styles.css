@@ -118,7 +118,7 @@ input[type="search"]::-webkit-search-cancel-button {
   height: 1em;
   width: 1em;
   border-radius: 50em;
-  background: url("/close.svg") no-repeat 50% 50%;
+  background: url("https://www.svgrepo.com/show/112623/close.svg") no-repeat 50% 50%;
   background-size: contain;
   opacity: 0;
   pointer-events: none;
