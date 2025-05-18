@@ -1,6 +1,6 @@
 {
   "framework": "react",
-  "projectName": ".",
+  "projectName": "trailer-base.vercel",
   "typescript": true,
   "tailwind": false,
   "packageManager": "npm",
