@@ -56,7 +56,7 @@ function TypeComponent() {
   
   return (
     <>
-<HeadContent />
+      <HeadContent />
       <div className="fixed top-0 left-0 w-full h-full pt-[10%] md:pt-[5%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto">
         <h1 className="-mt-10 text-2xl text-left geist-bold capitalize">
           {typeName} Movies
@@ -80,7 +80,11 @@ function TypeComponent() {
                 key={id}
                 className=" w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
                 <img
-                  src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
+                  src={
+                    poster_path
+                      ? `https://image.tmdb.org/t/p/w500/${poster_path}`
+                      : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
+                  }
                   alt={title}
                   className="w-full h-full object-cover rounded-lg overflow-hidden"
                 />

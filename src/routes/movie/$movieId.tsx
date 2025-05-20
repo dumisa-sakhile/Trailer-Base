@@ -4,6 +4,7 @@ import BackHomeBtn from "@/components/BackHomeBtn";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieDetails } from "@/api/movie";
 
+
 export const Route = createFileRoute("/movie/$movieId")({
   loader: async ({ params }) => {
     return { movieId: params.movieId };
@@ -50,24 +51,27 @@ function MovieDetails() {
 
   return (
     <>
-      <img
+      {data.backdrop_path && (<img
         alt={data.title || "Movie Poster"}
         loading="lazy"
         width="1920"
         height="1080"
         decoding="async"
-        data-nimg="1"
         className="w-full h-full object-cover fixed hidden lg:block -z-0"
-        src={`https://image.tmdb.org/t/p/original/${data.poster_path || "/fallback-image.jpg"}`} // Fallback image
-      />
+        src={`https://image.tmdb.org/t/p/original/${data.backdrop_path}` } 
+      />)}
 
       {/* Movie details */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
         <img
-          src={`https://image.tmdb.org/t/p/w500/${data.poster_path || "/fallback-image.jpg"}`}
+          src={
+            data.poster_path
+              ? `https://image.tmdb.org/t/p/w500/${data.poster_path}`
+              : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
+          }
           alt={data.title || "Movie Poster"}
-          className="w-[250px] object-cover"
+          className="w-[250px] object-cover rounded"
         />
 
         {/* Tagline */}
@@ -228,14 +232,20 @@ function MovieDetails() {
             </button>{" "}
             |{" "}
             {data.spoken_languages.map(
-              ({ english_name, iso_639_1 }: { english_name : string; iso_639_1 : string }) => (
+              ({
+                english_name,
+                iso_639_1,
+              }: {
+                english_name: string;
+                iso_639_1: string;
+              }) => (
                 <TypeLink
                   key={iso_639_1}
                   type="with_original_language"
                   typeName={english_name}
                   typeId={iso_639_1}
                   page={1}
-                 // Add title context
+                  // Add title context
                 />
               )
             )}
@@ -273,7 +283,6 @@ function MovieDetails() {
                 typeName={name}
                 typeId={id.toString()}
                 page={1}
-               
               />
             ))}
           </section>
@@ -304,16 +313,17 @@ function MovieDetails() {
               </span>
             </button>{" "}
             |{" "}
-            {data.production_companies.map(({ name, id }: { name: string; id: number }) => (
-              <TypeLink
-                key={id}
-                type="with_companies"
-                typeName={name}
-                typeId={id.toString()}
-                page={1}
-            
-              />
-            ))}
+            {data.production_companies.map(
+              ({ name, id }: { name: string; id: number }) => (
+                <TypeLink
+                  key={id}
+                  type="with_companies"
+                  typeName={name}
+                  typeId={id.toString()}
+                  page={1}
+                />
+              )
+            )}
           </section>
         )}
 
@@ -341,16 +351,17 @@ function MovieDetails() {
               </span>
             </button>{" "}
             |{" "}
-            {data.production_countries.map(({ name, iso_3166_1 }: { name: string; iso_3166_1: string }) => (
-              <TypeLink
-                key={iso_3166_1}
-                type="with_origin_country"
-                typeName={name}
-                typeId={iso_3166_1}
-                page={1}
-               
-              />
-            ))}
+            {data.production_countries.map(
+              ({ name, iso_3166_1 }: { name: string; iso_3166_1: string }) => (
+                <TypeLink
+                  key={iso_3166_1}
+                  type="with_origin_country"
+                  typeName={name}
+                  typeId={iso_3166_1}
+                  page={1}
+                />
+              )
+            )}
           </section>
         )}
 
