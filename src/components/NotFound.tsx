@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import LinkTo from "./LinkTo";
 
 const NotFound = () => {
