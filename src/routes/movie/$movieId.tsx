@@ -51,28 +51,32 @@ function MovieDetails() {
 
   return (
     <>
-      {data.backdrop_path && (<img
-        alt={data.title || "Movie Poster"}
-        loading="lazy"
-        width="1920"
-        height="1080"
-        decoding="async"
-        className="w-full h-full object-cover fixed hidden lg:block -z-0"
-        src={`https://image.tmdb.org/t/p/original/${data.backdrop_path}` } 
-      />)}
+      {data.backdrop_path && (
+        <img
+          alt={data.title || "Movie Poster"}
+          loading="lazy"
+          width="1920"
+          height="1080"
+          decoding="async"
+          className="w-full h-full object-cover fixed hidden lg:block -z-0"
+          src={`https://image.tmdb.org/t/p/original/${data.backdrop_path}`}
+        />
+      )}
 
       {/* Movie details */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
-        <img
-          src={
-            data.poster_path
-              ? `https://image.tmdb.org/t/p/w500/${data.poster_path}`
-              : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
-          }
-          alt={data.title || "Movie Poster"}
-          className="w-[250px] object-cover rounded"
-        />
+        <div className="relative md:static">
+          <img
+            src={
+              data.poster_path
+                ? `https://image.tmdb.org/t/p/w500/${data.poster_path}`
+                : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
+            }
+            alt={data.title || "Movie Poster"}
+            className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
+          />
+        </div>
 
         {/* Tagline */}
         {data.tagline && (
@@ -82,14 +86,14 @@ function MovieDetails() {
         )}
 
         {/* Website, bookmark, videos */}
-        <section className="flex gap-2">
+        <section className="flex gap-2 flex-wrap">
           {/* Website */}
           {data.homepage && (
             <a
               href={data.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
               <svg
                 className="w-6 h-6 text-white"
                 aria-hidden="true"
@@ -160,7 +164,7 @@ function MovieDetails() {
         </section>
 
         {/* Release, rating, duration */}
-        <article className="flex items-center gap-4 geist-regular text-lg">
+        <article className="flex items-center  flex-wrap gap-4 geist-regular text-lg">
           {data.release_date && (
             <p className="flex items-center gap-2">
               Released:{" "}
@@ -208,7 +212,7 @@ function MovieDetails() {
 
         {/* Languages section */}
         {data.spoken_languages?.length > 0 && (
-          <section className="flex items-center gap-2">
+          <section className="flex items-center gap-2 flex-wrap">
             <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
               <svg
                 className="w-6 h-6 text-white"
@@ -254,7 +258,7 @@ function MovieDetails() {
 
         {/* Genre section */}
         {data.genres?.length > 0 && (
-          <section className="flex items-center gap-2">
+          <section className="flex items-center gap-2 flex-wrap">
             <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
               <svg
                 className="w-6 h-6 text-white"
@@ -290,7 +294,7 @@ function MovieDetails() {
 
         {/* Production companies section */}
         {data.production_companies?.length > 0 && (
-          <section className="flex items-center gap-2">
+          <section className="flex items-center gap-2 flex-wrap">
             <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
               <svg
                 className="w-6 h-6 text-white"
@@ -329,7 +333,7 @@ function MovieDetails() {
 
         {/* Production countries section */}
         {data.production_countries?.length > 0 && (
-          <section className="flex items-center gap-2">
+          <section className="flex items-center gap-2 flex-wrap">
             <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
               <svg
                 className="w-6 h-6 text-white"
