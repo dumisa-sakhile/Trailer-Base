@@ -22,40 +22,55 @@ export const getTrendingMovies = async (period: string, page: number) => {
   return response.data;
 };
 
-export const getPopularMovies = async (pageNumber: number) => {
-  const response = await tmdbApi.get(`movie/popular?`, {
+export const getMovieVideos = async (movieId: string | undefined) => {
+  const response = await tmdbApi.get(`movie/${movieId}/videos`, {
     params: {
-      page: `${pageNumber}`,
+      language: "en-US",
+      page: 1,
     },
   });
   return response.data;
 };
 
-export const getTopRatedMovies = async (pageNumber: number) => {
-  const response = await tmdbApi.get(`movie/top_rated?`, {
+export const getMovieDetails = async (movieId: string | undefined) => {
+  const response = await tmdbApi.get(`movie/${movieId}`, {
     params: {
-      page: `${pageNumber}`,
+      language: "en-US",
+    },
+  });
+  return response.data;
+};
+
+export const getMoviesType = async (
+  page: number,
+  type:
+    | "with_original_language"
+    | "with_companies"
+    | "with_origin_country"
+    | "with_genres",
+  typeId: string | undefined
+) => {
+  const response = await tmdbApi.get(`discover/movie?`, {
+    params: {
+      include_adult: false,
+      include_video: false,
+      language: "en-US",
+      page: `${page}`,
+      sort_by: "popularity.desc",
+      [type]: `${typeId}`,
     },
   });
 
   return response.data;
 };
 
-export const getUpcomingMovies = async (pageNumber: number) => {
-  const response = await tmdbApi.get(`movie/upcoming?`, {
+export const getList = async (page: number, list: "top_rated" | "upcoming" | "now_playing" | "popular") => {
+  const response = await tmdbApi.get(`movie/${list}?`, {
     params: {
-      page: `${pageNumber}`,
+      page: `${page}`,
     },
   });
-  return response.data;
-};
 
-export const getNowPlayingMovies = async (pageNumber: number) => {
-  const response = await tmdbApi.get(`movie/now_playing?`, {
-    params: {
-      page: `${pageNumber}`,
-    },
-  });
   return response.data;
 };
 
@@ -89,43 +104,3 @@ export const getMovieCredits = async (movieId: string | undefined) => {
   return response.data;
 };
 
-export const getMovieVideos = async (movieId: string | undefined) => {
-  const response = await tmdbApi.get(`movie/${movieId}/videos`, {
-    params: {
-      language: "en-US",
-      page: 1,
-    },
-  });
-  return response.data;
-};
-
-export const getMovieDetails = async (movieId: string | undefined) => {
-  const response = await tmdbApi.get(`movie/${movieId}`, {
-    params: {
-      language: "en-US",
-    },
-  });
-  return response.data;
-};
-
-export const getMoviesType = async (
-  page: number,
-  type:"with_original_language"
-    | "with_companies"
-    | "with_origin_country"
-    | "with_genres",
-  typeId: string | undefined
-) => {
-  const response = await tmdbApi.get(`discover/movie?`, {
-    params: {
-      include_adult: false,
-      include_video: false,
-      language: "en-US",
-      page: `${page}`,
-      sort_by: "popularity.desc",
-      [type]: `${typeId}`,
-    },
-  });
-
-  return response.data;
-};

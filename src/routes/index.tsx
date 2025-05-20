@@ -119,39 +119,37 @@ function App() {
       <br />
       <br />
       <section className="pt-10 pb-10 bg-white text-black ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md  min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
-        <h1 className="text-5xl text-center geist-bold ">Movie Categories</h1>
+        <h1 className="text-5xl text-center geist-bold ">Movie Lists</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
-          Pick a category below and discover the latest movies and their
-          trailers!
-        </p>
+          Pick a list below and explore the world of movies.        </p>
 
         <div className="w-full min-h-[470px]">
           <div className="flex items-center justify-center flex-wrap animate-scroll gap-12 scale-95">
             <CardLink
-              to="/movie/top_rated"
-              params={{ page: 1 }}
+              to="/movie/list/top_rated"
+              params={{list  : "top_rated"}}
               imageUrl="https://image.tmdb.org/t/p/w500//9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
               title="Top Rated Movies"
               description="Discover the top rated movies of all time."
             />
             <CardLink
-              to="/movie/popular"
-              params={{ page: 1 }}
+              to="/movie/list/popular"
+              params={{list  : "popular"}}
               imageUrl="https://image.tmdb.org/t/p/w500//yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg"
               title="Popular Movies"
               description="Discover the most popular movies of all time."
             />
             <CardLink
-              to="/movie/upcoming"
-              params={{ page: 1 }}
+              to="/movie/list/upcoming"
+              params={{list  : "upcoming"}}
               imageUrl="https://image.tmdb.org/t/p/w500//wWba3TaojhK7NdycRhoQpsG0FaH.jpg"
               title="Upcoming Movies"
               description="Discover the upcoming movies on the big screen."
             />
 
             <CardLink
-              to="/movie/now_playing"
-              params={{ page: 1 }}
+              to="/movie/list/now_playing"
+              params={{list  : "now_playing"}}
               imageUrl="https://image.tmdb.org/t/p/w500//oLxWocqheC8XbXbxqJ3x422j9PW.jpg"
               title="Now Playing Movies"
               description="Discover the movies that are currently playing in theaters."
