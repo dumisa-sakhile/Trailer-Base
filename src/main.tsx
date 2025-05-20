@@ -8,6 +8,9 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SearchProvider } from './context/searchContext.tsx';
 import EscKeyHandler from './components/EscKeyHandler.tsx';
+import NotFound from './components/NotFound.tsx';
+import Loading from './components/Loading.tsx';
+
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
@@ -25,6 +28,8 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+  defaultNotFoundComponent: () => <NotFound />,
+  defaultPendingComponent: () => <Loading/>,
 })
 
 // Register the router instance for type safety
