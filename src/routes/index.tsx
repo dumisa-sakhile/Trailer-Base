@@ -4,6 +4,7 @@ import LinkTo from "@/components/LinkTo";
 import { getTrendingMovies } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import CardLink from "@/components/CardLink";
+import Loading from "@/components/Loading";
 
 
 interface pageProps {
@@ -74,7 +75,7 @@ function App() {
       <section>
         <div className="overflow-x-scroll  w-full h-[470px]">
           <div className="flex animate-scroll gap-12 scale-95">
-            {isLoading && <p className="text-gray-400">Loading...</p>}
+            {isLoading && <Loading/>}
             {isError && <p className="text-red-500">Error: {error.message}</p>}
 
             {data?.results.map(
