@@ -17,16 +17,7 @@ export const Route = createFileRoute("/")({
     page: search.page ? parseInt(search.page) : 1,
   }),
 
-  component: App,
-  pendingComponent: () => (
-    <div className="w-full h-screen flex items-center justify-center">
-      <h1>Loading...</h1></div>
-  ),
-  errorComponent: () => (
-    <div className="w-full h-screen flex items-center justify-center">
-      <h1>Something went wrong</h1>
-    </div>
-  ),
+  component: App
 });
 
 function App() {

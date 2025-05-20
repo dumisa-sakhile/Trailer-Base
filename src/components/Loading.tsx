@@ -2,7 +2,7 @@
 const Loading = () => {
   return (
     <div className="w-full h-full flex flex-col gap-5 py-4  min-h-10 items-center justify-center">
-        <h1 className="text-5xl geist-bold ">Loading...</h1>
+        <h1 className="text-lg geist-bold ">Loading...</h1>
         
       </div>
 )}

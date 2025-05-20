@@ -3,6 +3,7 @@ import TypeLink from "@/components/TypeLink";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieDetails } from "@/api/movie";
+import Loading from "@/components/Loading";
 
 
 export const Route = createFileRoute("/movie/$movieId")({
@@ -46,7 +47,7 @@ function MovieDetails() {
 
   // Early return for loading state
   if (isLoading || !data) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (

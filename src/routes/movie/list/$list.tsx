@@ -2,6 +2,7 @@ import { createFileRoute,HeadContent, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
 import { getList } from '@/api/movie';
 import BackHomeBtn from '@/components/BackHomeBtn';
+import Loading from '@/components/Loading';
 
 interface MovieProps {
   id: number;
@@ -51,7 +52,7 @@ function List() {
             Movies
           </h1>
           <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
-            {isLoading && <div>Loading...</div>}
+            {isLoading && <Loading />}
             {isError && <div>Error: {error.message}</div>}
 
             {data?.results.map(

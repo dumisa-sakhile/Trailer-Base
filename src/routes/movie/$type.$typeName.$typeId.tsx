@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getMoviesType } from '@/api/movie';
 import { Link, HeadContent } from "@tanstack/react-router";
 import BackHomeBtn from '@/components/BackHomeBtn';
+import Loading from '@/components/Loading';
 
 
 
@@ -62,7 +63,7 @@ function TypeComponent() {
           {typeName} Movies
         </h1>
         <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
-          {isLoading && <div>Loading...</div>}
+          {isLoading && <Loading />}
           {isError && <div>Error: {error.message}</div>}
 
           {data?.results.map(
