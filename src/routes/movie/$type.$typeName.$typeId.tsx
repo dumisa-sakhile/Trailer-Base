@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
 import { getMoviesType } from '@/api/movie';
-import { Link } from '@tanstack/react-router';
+import { Link, HeadContent } from "@tanstack/react-router";
 import BackHomeBtn from '@/components/BackHomeBtn';
+
 
 
 interface MovieProps {
@@ -18,12 +19,23 @@ export const Route = createFileRoute("/movie/$type/$typeName/$typeId")({
     page: search.page ? parseInt(search.page) : 1,
   }),
   loader: async ({ params }) => {
-    return { type: params.type, typeName: params.typeName, typeId: params.typeId };
+    return {
+      type: params.type,
+      typeName: params.typeName,
+      typeId: params.typeId,
+    };
   },
-  component: RouteComponent,
+  head: ({ params }) => ({
+    meta: [
+      {
+        title: `Trailer Base - ${params.typeName} movies`,
+      },
+    ],
+  }),
+  component: TypeComponent,
 });
 
-function RouteComponent() {
+function TypeComponent() {
   const { type, typeName, typeId } = Route.useLoaderData();
   const { page } = Route.useSearch();
   const { data, isLoading, isError, error } = useQuery({
@@ -40,14 +52,15 @@ function RouteComponent() {
       ),
   });
 
-  console.log(data);
+
+  
   return (
     <>
-      <div className="fixed top-0 left-0 w-full h-full bg-[rgba(30,30,30,0.3)] backdrop-blur-lg border border-[rgba(255,255,255,0.1)] shadow-[0_8px_32px_rgba(0,0,0,0.2)] pt-[10%] md:pt-[5%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto">
+<HeadContent />
+      <div className="fixed top-0 left-0 w-full h-full pt-[10%] md:pt-[5%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto">
         <h1 className="-mt-10 text-2xl text-left geist-bold capitalize">
           {typeName} Movies
         </h1>
-
         <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
           {isLoading && <div>Loading...</div>}
           {isError && <div>Error: {error.message}</div>}
@@ -61,7 +74,7 @@ function RouteComponent() {
               vote_average,
             }: MovieProps) => (
               <Link
-                search={{ title: title }}
+                // search={{ title: title }}
                 to="/movie/$movieId"
                 params={{ movieId: id.toString() }}
                 key={id}
@@ -82,10 +95,8 @@ function RouteComponent() {
         </section>
 
         {/* back & home button */}
-      <BackHomeBtn/>
+        <BackHomeBtn />
       </div>
-
-
 
       {/* Pagination */}
       {!isLoading && !isError && (

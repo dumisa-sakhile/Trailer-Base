@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import TypeLink from "@/components/TypeLink";
 import BackHomeBtn from "@/components/BackHomeBtn";
+
+
 export const Route = createFileRoute("/movie/$movieId")({
-  validateSearch: (search: Record<string, string>) => ({
-    title: search.title ?? "Movie Details",
-  }),
   loader: async ({ params }) => {
     return { movieId: params.movieId };
   },
@@ -16,6 +15,7 @@ function MovieDetails() {
 
   return (
     <>
+    <title>Trailer Base - Movie Details</title>
       <img
         alt=""
         loading="lazy"
@@ -224,7 +224,7 @@ function MovieDetails() {
             </span>
           </button>{" "}
           |{" "}
-          <TypeLink type="with_genres" typeName="action" typeId="28" page={1} />
+          <TypeLink type="with_genres" typeName="Action" typeId="28" page={1} />
           <TypeLink
             type="with_genres"
             typeName="adventure"

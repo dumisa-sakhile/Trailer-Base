@@ -1,8 +1,19 @@
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
 const BackHomeBtn = () => {
+  const navigate = useNavigate();
+  const { history } = useRouter();
+
   return (
     <section className="absolute top-10 right-10 min-w-10  z-10 hidden md:flex gap-4">
-      <button className="text-white text-sm roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+      <button
+        className="text-white text-sm roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+        onClick={() =>
+          navigate({
+            to: "/",
+            search: { page: 1, period: "day" },
+          })
+        }>
         <svg
           className="w-6 h-6 text-white"
           aria-hidden="true"
@@ -22,7 +33,7 @@ const BackHomeBtn = () => {
         <span className="text-sm roboto-condensed-light uppercase">Home</span>
       </button>
 
-      <button className="text-white text-sm roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+      <button className="text-white text-sm roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95" onClick={() => history.back()}>
         <svg
           className="w-6 h-6 text-white"
           aria-hidden="true"
