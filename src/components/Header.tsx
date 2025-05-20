@@ -10,6 +10,7 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="gap-4 items-center justify-center absolute top-0 left-0 w-full h-[120px] md:h-[70px] flex flex-wrap md:grid md:grid-cols-3 bg-transparent md:px-32 py-4 z-10">
+        {/* logo & nav */}
         <nav className="flex items-center gap-4 text-md geist-regular">
           <Link
             to="/"
@@ -31,28 +32,59 @@ const Header: React.FC = () => {
           </Link>
           <Link to="/people">People</Link>
         </nav>
-        <nav className="flex items-center">
+
+        {/* search */}
+        <nav className="flex items-center *:transition *:duration-300 *:ease-in-out *:transform *:hover:scale-105">
           <input
             type="search"
             name="search"
             id=""
             placeholder="Search for movies!"
-            className="p-2 bg-transparent rounded-full text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl outline-none active:outline-none  placeholder:text-white h-[48px] w-[300px] pl-14 md:w-full ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
+            className="p-2 bg-transparent rounded-full text-white text-sm placeholder:text-sm placeholder:font-semibold backdrop-blur-2xl outline-none active:outline-none  placeholder:text-white h-[48px] w-[300px] pl-14 md:w-full ring-1 ring-white/20  focus:ring-white/50  shadow-md"
             autoComplete="off"
             onClick={() => setStatus(true)}
           />
+
           <svg
+            className="w-6 h-6 absolute w-5 h-5 text-white ml-4"
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#FFFFFF"
-            className="absolute w-5 h-5 text-white  ml-4">
-            <path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="1.5"
+              d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+            />
           </svg>
-          
         </nav>
+
+        {/* login & genre */}
         <nav className="hidden md:flex items-center justify-end gap-4">
+          <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-105 ring-1 ring-white/20 focus:ring-white/50">
+            <svg
+              className="w-6 h-6 text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24">
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeWidth="1.5"
+                d="M18.796 4H5.204a1 1 0 0 0-.753 1.659l5.302 6.058a1 1 0 0 1 .247.659v4.874a.5.5 0 0 0 .2.4l3 2.25a.5.5 0 0 0 .8-.4v-7.124a1 1 0 0 1 .247-.659l5.302-6.059c.566-.646.106-1.658-.753-1.658Z"
+              />
+            </svg>
+
+            <span className="text-md roboto-condensed-light capitalize">
+              Genre
+            </span>
+          </button>
           <Link to="/auth">
             <Button variant="primary">Login</Button>
           </Link>

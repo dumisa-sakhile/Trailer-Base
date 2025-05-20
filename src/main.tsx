@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SearchProvider } from './context/searchContext.tsx';
+import EscKeyHandler from './components/EscKeyHandler.tsx';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
@@ -41,6 +42,8 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <SearchProvider>
+
+          <EscKeyHandler />
           <RouterProvider router={router} />
         </SearchProvider>
         <ReactQueryDevtools initialIsOpen={false} />

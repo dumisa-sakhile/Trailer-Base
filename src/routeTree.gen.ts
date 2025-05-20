@@ -20,7 +20,6 @@ import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as TvTvIdImport } from './routes/tv/$tvId'
 import { Route as PeoplePersonIdImport } from './routes/people/$personId'
 import { Route as MovieMovieIdImport } from './routes/movie/$movieId'
-import { Route as MovieGenreIdImport } from './routes/movie/$genreId'
 import { Route as AuthSignupImport } from './routes/auth/signup'
 import { Route as AuthResetpasswordImport } from './routes/auth/reset_password'
 import { Route as TvLayoutIndexImport } from './routes/tv/_layout.index'
@@ -33,6 +32,7 @@ import { Route as MovieLayoutUpcomingImport } from './routes/movie/_layout.upcom
 import { Route as MovieLayoutTopratedImport } from './routes/movie/_layout.top_rated'
 import { Route as MovieLayoutPopularImport } from './routes/movie/_layout.popular'
 import { Route as MovieLayoutNowplayingImport } from './routes/movie/_layout.now_playing'
+import { Route as MovieTypeTypeNameTypeIdImport } from './routes/movie/$type.$typeName.$typeId'
 
 // Create/Update Routes
 
@@ -87,12 +87,6 @@ const PeoplePersonIdRoute = PeoplePersonIdImport.update({
 const MovieMovieIdRoute = MovieMovieIdImport.update({
   id: '/$movieId',
   path: '/$movieId',
-  getParentRoute: () => MovieRouteRoute,
-} as any)
-
-const MovieGenreIdRoute = MovieGenreIdImport.update({
-  id: '/$genreId',
-  path: '/$genreId',
   getParentRoute: () => MovieRouteRoute,
 } as any)
 
@@ -168,6 +162,12 @@ const MovieLayoutNowplayingRoute = MovieLayoutNowplayingImport.update({
   getParentRoute: () => MovieRouteRoute,
 } as any)
 
+const MovieTypeTypeNameTypeIdRoute = MovieTypeTypeNameTypeIdImport.update({
+  id: '/$type/$typeName/$typeId',
+  path: '/$type/$typeName/$typeId',
+  getParentRoute: () => MovieRouteRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -220,13 +220,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/signup'
       preLoaderRoute: typeof AuthSignupImport
       parentRoute: typeof AuthRouteImport
-    }
-    '/movie/$genreId': {
-      id: '/movie/$genreId'
-      path: '/$genreId'
-      fullPath: '/movie/$genreId'
-      preLoaderRoute: typeof MovieGenreIdImport
-      parentRoute: typeof MovieRouteImport
     }
     '/movie/$movieId': {
       id: '/movie/$movieId'
@@ -326,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TvLayoutIndexImport
       parentRoute: typeof TvRouteImport
     }
+    '/movie/$type/$typeName/$typeId': {
+      id: '/movie/$type/$typeName/$typeId'
+      path: '/$type/$typeName/$typeId'
+      fullPath: '/movie/$type/$typeName/$typeId'
+      preLoaderRoute: typeof MovieTypeTypeNameTypeIdImport
+      parentRoute: typeof MovieRouteImport
+    }
   }
 }
 
@@ -348,21 +348,21 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface MovieRouteRouteChildren {
-  MovieGenreIdRoute: typeof MovieGenreIdRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
   MovieLayoutNowplayingRoute: typeof MovieLayoutNowplayingRoute
   MovieLayoutPopularRoute: typeof MovieLayoutPopularRoute
   MovieLayoutTopratedRoute: typeof MovieLayoutTopratedRoute
   MovieLayoutUpcomingRoute: typeof MovieLayoutUpcomingRoute
+  MovieTypeTypeNameTypeIdRoute: typeof MovieTypeTypeNameTypeIdRoute
 }
 
 const MovieRouteRouteChildren: MovieRouteRouteChildren = {
-  MovieGenreIdRoute: MovieGenreIdRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
   MovieLayoutNowplayingRoute: MovieLayoutNowplayingRoute,
   MovieLayoutPopularRoute: MovieLayoutPopularRoute,
   MovieLayoutTopratedRoute: MovieLayoutTopratedRoute,
   MovieLayoutUpcomingRoute: MovieLayoutUpcomingRoute,
+  MovieTypeTypeNameTypeIdRoute: MovieTypeTypeNameTypeIdRoute,
 }
 
 const MovieRouteRouteWithChildren = MovieRouteRoute._addFileChildren(
@@ -412,7 +412,6 @@ export interface FileRoutesByFullPath {
   '/tv': typeof TvRouteRouteWithChildren
   '/auth/reset_password': typeof AuthResetpasswordRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/movie/$genreId': typeof MovieGenreIdRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
@@ -427,6 +426,7 @@ export interface FileRoutesByFullPath {
   '/tv/top-rated': typeof TvLayoutTopRatedRoute
   '/people/': typeof PeopleLayoutIndexRoute
   '/tv/': typeof TvLayoutIndexRoute
+  '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -434,7 +434,6 @@ export interface FileRoutesByTo {
   '/movie': typeof MovieRouteRouteWithChildren
   '/auth/reset_password': typeof AuthResetpasswordRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/movie/$genreId': typeof MovieGenreIdRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
@@ -449,6 +448,7 @@ export interface FileRoutesByTo {
   '/tv/top-rated': typeof TvLayoutTopRatedRoute
   '/people': typeof PeopleLayoutIndexRoute
   '/tv': typeof TvLayoutIndexRoute
+  '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
 }
 
 export interface FileRoutesById {
@@ -460,7 +460,6 @@ export interface FileRoutesById {
   '/tv': typeof TvRouteRouteWithChildren
   '/auth/reset_password': typeof AuthResetpasswordRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/movie/$genreId': typeof MovieGenreIdRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
@@ -475,6 +474,7 @@ export interface FileRoutesById {
   '/tv/_layout/top-rated': typeof TvLayoutTopRatedRoute
   '/people/_layout/': typeof PeopleLayoutIndexRoute
   '/tv/_layout/': typeof TvLayoutIndexRoute
+  '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
 }
 
 export interface FileRouteTypes {
@@ -487,7 +487,6 @@ export interface FileRouteTypes {
     | '/tv'
     | '/auth/reset_password'
     | '/auth/signup'
-    | '/movie/$genreId'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
@@ -502,13 +501,13 @@ export interface FileRouteTypes {
     | '/tv/top-rated'
     | '/people/'
     | '/tv/'
+    | '/movie/$type/$typeName/$typeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/movie'
     | '/auth/reset_password'
     | '/auth/signup'
-    | '/movie/$genreId'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
@@ -523,6 +522,7 @@ export interface FileRouteTypes {
     | '/tv/top-rated'
     | '/people'
     | '/tv'
+    | '/movie/$type/$typeName/$typeId'
   id:
     | '__root__'
     | '/'
@@ -532,7 +532,6 @@ export interface FileRouteTypes {
     | '/tv'
     | '/auth/reset_password'
     | '/auth/signup'
-    | '/movie/$genreId'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
@@ -547,6 +546,7 @@ export interface FileRouteTypes {
     | '/tv/_layout/top-rated'
     | '/people/_layout/'
     | '/tv/_layout/'
+    | '/movie/$type/$typeName/$typeId'
   fileRoutesById: FileRoutesById
 }
 
@@ -597,12 +597,12 @@ export const routeTree = rootRoute
     "/movie": {
       "filePath": "movie/route.tsx",
       "children": [
-        "/movie/$genreId",
         "/movie/$movieId",
         "/movie/_layout/now_playing",
         "/movie/_layout/popular",
         "/movie/_layout/top_rated",
-        "/movie/_layout/upcoming"
+        "/movie/_layout/upcoming",
+        "/movie/$type/$typeName/$typeId"
       ]
     },
     "/people": {
@@ -630,10 +630,6 @@ export const routeTree = rootRoute
     "/auth/signup": {
       "filePath": "auth/signup.tsx",
       "parent": "/auth"
-    },
-    "/movie/$genreId": {
-      "filePath": "movie/$genreId.tsx",
-      "parent": "/movie"
     },
     "/movie/$movieId": {
       "filePath": "movie/$movieId.tsx",
@@ -690,6 +686,10 @@ export const routeTree = rootRoute
     "/tv/_layout/": {
       "filePath": "tv/_layout.index.tsx",
       "parent": "/tv"
+    },
+    "/movie/$type/$typeName/$typeId": {
+      "filePath": "movie/$type.$typeName.$typeId.tsx",
+      "parent": "/movie"
     }
   }
 }

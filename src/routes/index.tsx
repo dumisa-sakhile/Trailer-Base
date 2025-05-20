@@ -5,6 +5,7 @@ import { getTrendingMovies } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import CardLink from "@/components/CardLink";
 
+
 interface pageProps {
   page: number;
   period: string;
@@ -17,12 +18,21 @@ export const Route = createFileRoute("/")({
   }),
 
   component: App,
+  pendingComponent: () => (
+    <div className="w-full h-screen flex items-center justify-center">
+      <h1>Loading...</h1></div>
+  ),
+  errorComponent: () => (
+    <div className="w-full h-screen flex items-center justify-center">
+      <h1>Something went wrong</h1>
+    </div>
+  ),
 });
 
 function App() {
   const { period, page } = Route.useSearch();
 
-  const { data, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["trending", period, page],
     queryFn: () => getTrendingMovies(period, page),
     placeholderData: keepPreviousData,
@@ -32,14 +42,13 @@ function App() {
 
   interface MovieProps {
     id: number;
-    original_title: string;
+    title: string;
     release_date: string;
     poster_path: string;
+    vote_average: number;
+    total_pages: number;
   }
 
-  if (isError) {
-    console.error(error);
-  }
 
   return (
     <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 py-4  min-h-10">
@@ -74,27 +83,32 @@ function App() {
       <section>
         <div className="overflow-x-scroll  w-full h-[470px]">
           <div className="flex animate-scroll gap-12 scale-95">
+            {isLoading && <p className="text-gray-400">Loading...</p>}
+            {isError && <p className="text-red-500">Error: {error.message}</p>}
+
             {data?.results.map(
               ({
                 id,
-                original_title,
+                title,
                 release_date,
                 poster_path,
+                vote_average,
               }: MovieProps) => (
                 <Link
-                search={{ title: original_title }}
+                  search={{ title: title }}
                   to="/movie/$movieId"
                   params={{ movieId: id.toString() }}
                   key={id}
                   className="stack w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
                   <img
                     src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
-                    alt={original_title}
+                    alt={title}
                     className="w-full h-full object-cover rounded-lg overflow-hidden"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black   transition-opacity flex flex-col justify-end p-4 rounded-lg">
-                    <h3 className="text-white text-lg">{original_title}</h3>
+                    <p className="text-yellow-500 text-sm">{vote_average}</p>
                     <p className="text-white text-sm">{release_date}</p>
+                    <h3 className="text-white text-lg">{title}</h3>
                   </div>
                 </Link>
               )
@@ -144,15 +158,6 @@ function App() {
             />
           </div>
         </div>
-
-        <h2 className="text-3xl text-center geist-bold ">Genre Filter</h2>
-        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
-          Pick a genre below and discover the latest movies and their
-          trailers!
-        </p>
-
-
-
       </section>
     </div>
   );
