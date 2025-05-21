@@ -67,7 +67,7 @@ const Modal: React.FC<ModalProps> = ({ isShowing, hide, videos }) => {
           url={sortedUrls} // pass array for playlist
           controls
           width="100%"
-className="md:h-full"
+          height={"100%"}
         />
       </div>
     </div>,
