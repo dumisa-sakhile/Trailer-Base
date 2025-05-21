@@ -23,6 +23,7 @@
     "motion": "^12.11.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-player": "^2.16.0",
     "tailwindcss": "^4.1.6"
   },
   "devDependencies": {

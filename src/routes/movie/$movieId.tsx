@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import TypeLink from "@/components/TypeLink";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import { useQuery } from "@tanstack/react-query";
-import { getMovieDetails } from "@/api/movie";
+import { getMovieDetails, getMovieVideos } from "@/api/movie";
 import Loading from "@/components/Loading";
+import Modal from "@/components/Modal";
+import { useState } from "react";
 
 
 export const Route = createFileRoute("/movie/$movieId")({
@@ -13,21 +15,7 @@ export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetails,
 });
 
-// interface MovieDetailsProps {
-//   id: string;
-//   title: string;
-//   tagline?: string;
-//   release_date?: string;
-//   poster_path?: string;
-//   vote_average?: number;
-//   homepage?: string;
-//   runtime?: number;
-//   spoken_languages?: { english_name: string; iso_639_1: string }[];
-//   overview?: string;
-//   production_countries?: { name: string; iso_3166_1: string }[];
-//   genres?: { id: number; name: string }[];
-//   production_companies?: { name: string; id: number }[];
-// }
+
 
 function MovieDetails() {
   const { movieId } = Route.useLoaderData();
@@ -37,6 +25,14 @@ function MovieDetails() {
     queryFn: () => getMovieDetails(movieId),
   });
 
+  const { data: videos } = useQuery({
+    queryKey: ["movie-videos", movieId],
+    queryFn: () => getMovieVideos(movieId),
+  })
+
+  
+  
+
   // Format runtime (e.g., 125 minutes -> "2h 5m")
   const formatRuntime = (minutes?: number) => {
     if (!minutes) return "N/A";
@@ -45,6 +41,8 @@ function MovieDetails() {
     return `${hours ? `${hours}h ` : ""}${mins ? `${mins}m` : ""}`.trim();
   };
 
+  const [modalOpen, setModalOpen] = useState(false);
+
   // Early return for loading state
   if (isLoading || !data) {
     return <Loading />;
@@ -52,6 +50,13 @@ function MovieDetails() {
 
   return (
     <>
+      <div>
+        <Modal
+          isShowing={modalOpen}
+          hide={() => setModalOpen(false)}
+          videos={videos?.results || []}
+        />
+      </div>
       {data.backdrop_path && (
         <img
           alt={data.title || "Movie Poster"}
@@ -141,7 +146,9 @@ function MovieDetails() {
           </button>
 
           {/* Videos collection */}
-          <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+          <button
+            className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+            onClick={() => setModalOpen(true)}>
             <svg
               className="w-6 h-6 text-white" // Fixed typo: tex-white -> text-white
               aria-hidden="true"

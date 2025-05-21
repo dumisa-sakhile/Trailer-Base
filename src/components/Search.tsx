@@ -24,8 +24,10 @@ const Search = () => {
     enabled: !!search,
   });
   return (
-    <section className="fixed w-full h-screen top-0 left-0 inset-0 flex items-center justify-center bg-[rgba(39,39,39,0.5)] backdrop-blur-sm z-20 overflow-hidden">
-      <div className="bg-[rgba(39,39,39,0.5)] backdrop-blur-sm md:rounded-lg w-full h-full md:w-[516px] md:h-[638px] overflow-auto  text-gray-400">
+    <section className="fixed w-full h-screen top-0 left-0 inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)] backdrop-blur-sm z-20 overflow-hidden" onClick={() => setStatus(false)}>
+      <div
+        className="bg-[rgba(39,39,39,0.5)] backdrop-blur-sm md:rounded-lg w-full h-full md:w-[516px] md:h-[638px] overflow-auto  text-gray-400"
+        onClick={(e) => e.stopPropagation()}>
         <nav className="w-full flex items-center">
           <input
             type="search"
@@ -45,7 +47,9 @@ const Search = () => {
             <div className="flex items-center justify-between p-4  mt-4 rounded-t-md">
               <h2 className="text-sm  text-gray-400">Search Results</h2>
               <section className="flex gap-4">
-                <button className="text-gray-400 hover:font-bold p-2 bg-transparent rounded-t-md text-gray-400 shadow-lg ring-1 px-4 ring-gray-400/50 hover:ring-gray-400/50 transition duration-300 ease-in-out transform" onClick={() => setStatus(false)}>
+                <button
+                  className="hover:font-bold p-2 bg-transparent rounded-t-md text-gray-400 shadow-lg ring-1 px-4 ring-gray-400/50 hover:ring-gray-400/50 transition duration-300 ease-in-out transform"
+                  onClick={() => setStatus(false)}>
                   close
                 </button>
               </section>
@@ -61,7 +65,9 @@ const Search = () => {
                 <p className="text-gray-400">No results found</p>
               )}
               {search.length === 0 && (
-                <p className="text-gray-400">Please search for your preferred movie...</p>
+                <p className="text-gray-400">
+                  Please search for your preferred movie...
+                </p>
               )}
               {data?.results?.map((movie: SearchCardProps) => (
                 <SearchCard

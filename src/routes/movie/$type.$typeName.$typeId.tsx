@@ -98,6 +98,7 @@ function TypeComponent() {
             )
           )}
         </section>
+      
 
         {/* back & home button */}
         <BackHomeBtn />
