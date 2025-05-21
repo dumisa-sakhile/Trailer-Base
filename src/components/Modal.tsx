@@ -62,12 +62,12 @@ const Modal: React.FC<ModalProps> = ({ isShowing, hide, videos }) => {
       >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-[rgba(39,39,39,0.5)] backdrop-blur-sm md:rounded-lg w-full min-h-1 md:w-[516px] md:h-[638px] overflow-auto text-gray-400">
+        className="bg-[rgba(39,39,39,0.5)] backdrop-blur-sm md:rounded-lg w-full md:w-[516px] md:h-[638px] overflow-auto text-gray-400">
         <ReactPlayer
           url={sortedUrls} // pass array for playlist
           controls
           width="100%"
-          height="100%"
+
         />
       </div>
     </div>,
