@@ -98,7 +98,6 @@ function TypeComponent() {
             )
           )}
         </section>
-      
 
         {/* back & home button */}
         <BackHomeBtn />
@@ -133,7 +132,8 @@ function TypeComponent() {
               previous
             </Link>
             <span className="text-white capitalize">
-              {page} of {data?.total_pages ?? "?"} pages
+              {page?.toLocaleString()} of{" "}
+              {data?.total_pages?.toLocaleString() ?? "?"} pages
             </span>
             <Link
               to="."
