@@ -46,12 +46,12 @@ function MovieDetails() {
     queryFn: () => getMovieVideos(movieId),
   })
 
-  const { data: credits } = useQuery({
+  const { data: credits, isLoading: creditsLoading } = useQuery({
     queryKey: ["movie-credits", movieId],
     queryFn: () => getMovieCredits(movieId),
   })
 
-  const { data: recommendations } = useQuery({
+  const { data: recommendations, isLoading: recommendationsLoading } = useQuery({
     queryKey: ["movie-recommendations", movieId],
     queryFn: () => getMovieRecommendations(movieId),
   })
@@ -405,7 +405,9 @@ function MovieDetails() {
         <h1 className="text-5xl text-left geist-bold ">The Cast</h1>
         <div>
           <section className="overflow-x-scroll flex flex-start justify-start gap-4 min-h-[190px] w-full *:w-48">
-            {credits.cast.map((cast: CastCardProps) => (
+
+            {creditsLoading && <Loading />}
+            {credits?.cast?.map((cast: CastCardProps) => (
               <div>
                 <CastCard
                   key={cast.id}
@@ -424,7 +426,9 @@ function MovieDetails() {
         <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
           
 
-          {recommendations?.results.map(
+          {recommendations?.results.length === 0 && <p>No recommendations available</p>}
+          {recommendationsLoading && <Loading />}
+          {recommendations?.results?.map(
             ({
               id,
               title,
