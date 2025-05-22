@@ -1,11 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import TypeLink from "@/components/TypeLink";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import { useQuery } from "@tanstack/react-query";
-import { getMovieDetails, getMovieVideos } from "@/api/movie";
+import { getMovieDetails, getMovieVideos, getMovieCredits, getMovieRecommendations } from "@/api/movie";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import { useState } from "react";
+import CastCard from "@/components/CastCard";
 
 
 export const Route = createFileRoute("/movie/$movieId")({
@@ -15,6 +16,21 @@ export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetails,
 });
 
+
+interface CastCardProps {
+  id: number;
+  name: string;
+  profile_path?: string;
+  character: string;
+}
+
+interface MovieProps {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string;
+  vote_average: number;
+}
 
 
 function MovieDetails() {
@@ -28,6 +44,16 @@ function MovieDetails() {
   const { data: videos } = useQuery({
     queryKey: ["movie-videos", movieId],
     queryFn: () => getMovieVideos(movieId),
+  })
+
+  const { data: credits } = useQuery({
+    queryKey: ["movie-credits", movieId],
+    queryFn: () => getMovieCredits(movieId),
+  })
+
+  const { data: recommendations } = useQuery({
+    queryKey: ["movie-recommendations", movieId],
+    queryFn: () => getMovieRecommendations(movieId),
   })
 
   
@@ -50,13 +76,11 @@ function MovieDetails() {
 
   return (
     <>
-      <div>
-        <Modal
-          isShowing={modalOpen}
-          hide={() => setModalOpen(false)}
-          videos={videos?.results || []}
-        />
-      </div>
+      <Modal
+        isShowing={modalOpen}
+        hide={() => setModalOpen(false)}
+        videos={videos?.results || []}
+      />
       {data.backdrop_path && (
         <img
           alt={data.title || "Movie Poster"}
@@ -213,7 +237,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data.overview && (
-          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6 rounded-lg ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
+          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6  ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data.overview}
           </p>
         )}
@@ -377,6 +401,61 @@ function MovieDetails() {
           </section>
         )}
 
+        {/* cast section */}
+        <h1 className="text-5xl text-left geist-bold ">The Cast</h1>
+        <div>
+          <section className="overflow-x-scroll flex flex-start justify-start gap-4 min-h-[190px] w-full *:w-48">
+            {credits.cast.map((cast: CastCardProps) => (
+              <div>
+                <CastCard
+                  key={cast.id}
+                  name={cast.name}
+                  id={cast.id}
+                  profile_path={cast.profile_path}
+                  character={cast.character}
+                />
+              </div>
+            ))}
+          </section>
+        </div>
+
+        {/* recommendations section */}
+        <h1 className="text-5xl text-left geist-bold ">The Recommendations</h1>
+        <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
+          
+
+          {recommendations?.results.map(
+            ({
+              id,
+              title,
+              release_date,
+              poster_path,
+              vote_average,
+            }: MovieProps) => (
+              <Link
+                // search={{ title: title }}
+                to="/movie/$movieId"
+                params={{ movieId: id.toString() }}
+                key={id}
+                className=" w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
+                <img
+                  src={
+                    poster_path
+                      ? `https://image.tmdb.org/t/p/w500/${poster_path}`
+                      : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
+                  }
+                  alt={title}
+                  className="w-full h-full object-cover rounded-lg overflow-hidden"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black   transition-opacity flex flex-col justify-end p-4 rounded-lg">
+                  <p className="text-yellow-500 text-sm">{vote_average}</p>
+                  <p className="text-white text-sm">{release_date}</p>
+                  <h3 className="text-white text-lg">{title}</h3>
+                </div>
+              </Link>
+            )
+          )}
+        </section>
         <br />
         <br />
         <br />
