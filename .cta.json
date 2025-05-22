@@ -2,7 +2,7 @@
   "framework": "react",
   "projectName": "trailer-base",
   "typescript": true,
-  "tailwind": false,
+  "tailwind": true,
   "packageManager": "npm",
   "toolchain": "none",
   "mode": "file-router",
