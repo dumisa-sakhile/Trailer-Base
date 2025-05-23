@@ -8,6 +8,7 @@ import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Loading from "@/components/Loading";
+import male from "/male.jpg?url"; // fallback profile image
 
 // Interface for bookmark data (aligned with MovieDetails.tsx)
 interface Bookmark {
@@ -186,7 +187,7 @@ function Profile() {
         <section className="flex flex-col md:flex-row items-center justify-around gap-8 md:gap-12">
           <aside className="flex items-center gap-6 flex-col">
             <img
-              src={user.photoURL || "https://via.placeholder.com/128?text=User"}
+              src={user.photoURL || male}
               alt="Profile"
               className="w-32 h-32 rounded-full object-cover"
             />
