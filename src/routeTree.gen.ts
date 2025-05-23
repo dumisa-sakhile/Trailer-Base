@@ -19,6 +19,7 @@ import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as TvTvIdImport } from './routes/tv/$tvId'
 import { Route as PeoplePersonIdImport } from './routes/people/$personId'
 import { Route as MovieMovieIdImport } from './routes/movie/$movieId'
+import { Route as AuthVerifyImport } from './routes/auth/verify'
 import { Route as AuthSignupImport } from './routes/auth/sign_up'
 import { Route as AuthProfileImport } from './routes/auth/profile'
 import { Route as TvLayoutIndexImport } from './routes/tv/_layout.index'
@@ -78,6 +79,12 @@ const MovieMovieIdRoute = MovieMovieIdImport.update({
   id: '/movie/$movieId',
   path: '/movie/$movieId',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthVerifyRoute = AuthVerifyImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 const AuthSignupRoute = AuthSignupImport.update({
@@ -186,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupImport
       parentRoute: typeof AuthRouteImport
     }
+    '/auth/verify': {
+      id: '/auth/verify'
+      path: '/verify'
+      fullPath: '/auth/verify'
+      preLoaderRoute: typeof AuthVerifyImport
+      parentRoute: typeof AuthRouteImport
+    }
     '/movie/$movieId': {
       id: '/movie/$movieId'
       path: '/movie/$movieId'
@@ -278,12 +292,14 @@ declare module '@tanstack/react-router' {
 interface AuthRouteRouteChildren {
   AuthProfileRoute: typeof AuthProfileRoute
   AuthSignupRoute: typeof AuthSignupRoute
+  AuthVerifyRoute: typeof AuthVerifyRoute
   AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthProfileRoute: AuthProfileRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
   AuthIndexRoute: AuthIndexRoute,
 }
 
@@ -333,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/tv': typeof TvRouteRouteWithChildren
   '/auth/profile': typeof AuthProfileRoute
   '/auth/sign_up': typeof AuthSignupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
@@ -351,6 +368,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/profile': typeof AuthProfileRoute
   '/auth/sign_up': typeof AuthSignupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
@@ -373,6 +391,7 @@ export interface FileRoutesById {
   '/tv': typeof TvRouteRouteWithChildren
   '/auth/profile': typeof AuthProfileRoute
   '/auth/sign_up': typeof AuthSignupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
@@ -396,6 +415,7 @@ export interface FileRouteTypes {
     | '/tv'
     | '/auth/profile'
     | '/auth/sign_up'
+    | '/auth/verify'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
@@ -413,6 +433,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/profile'
     | '/auth/sign_up'
+    | '/auth/verify'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
@@ -433,6 +454,7 @@ export interface FileRouteTypes {
     | '/tv'
     | '/auth/profile'
     | '/auth/sign_up'
+    | '/auth/verify'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
@@ -495,6 +517,7 @@ export const routeTree = rootRoute
       "children": [
         "/auth/profile",
         "/auth/sign_up",
+        "/auth/verify",
         "/auth/"
       ]
     },
@@ -522,6 +545,10 @@ export const routeTree = rootRoute
     },
     "/auth/sign_up": {
       "filePath": "auth/sign_up.tsx",
+      "parent": "/auth"
+    },
+    "/auth/verify": {
+      "filePath": "auth/verify.tsx",
       "parent": "/auth"
     },
     "/movie/$movieId": {

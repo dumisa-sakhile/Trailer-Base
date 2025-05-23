@@ -1,21 +1,52 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import TypeLink from "@/components/TypeLink";
 import BackHomeBtn from "@/components/BackHomeBtn";
-import { useQuery } from "@tanstack/react-query";
-import { getMovieDetails, getMovieVideos, getMovieCredits, getMovieRecommendations } from "@/api/movie";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getMovieDetails,
+  getMovieVideos,
+  getMovieCredits,
+  getMovieRecommendations,
+} from "@/api/movie";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { auth, db } from "@/config/firebase";
+import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { toast } from "sonner";
 import CastCard from "@/components/CastCard";
 
+// Interfaces for type safety
+interface MovieDetails {
+  id: number;
+  title: string;
+  poster_path?: string;
+  backdrop_path?: string;
+  vote_average: number;
+  release_date: string;
+  runtime?: number;
+  tagline?: string;
+  overview?: string;
+  homepage?: string;
+  spoken_languages: { english_name: string; iso_639_1: string }[];
+  genres: { id: number; name: string }[];
+  production_companies: { id: number; name: string }[];
+  production_countries: { name: string; iso_3166_1: string }[];
+}
 
-export const Route = createFileRoute("/movie/$movieId")({
-  loader: async ({ params }) => {
-    return { movieId: params.movieId };
-  },
-  component: MovieDetails,
-});
-
+interface Video {
+  iso_639_1: string;
+  iso_3166_1: string;
+  name: string;
+  key: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+  id: string;
+}
 
 interface CastCardProps {
   id: number;
@@ -32,32 +63,111 @@ interface MovieProps {
   vote_average: number;
 }
 
+export const Route = createFileRoute("/movie/$movieId")({
+  loader: async ({ params }) => {
+    return { movieId: params.movieId };
+  },
+  component: MovieDetails,
+});
+
+const FALLBACK_POSTER =
+  "https://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/main/public/poster.png";
 
 function MovieDetails() {
   const { movieId } = Route.useLoaderData();
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState<import("firebase/auth").User | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Movie details query
+  const { data, isLoading, error } = useQuery<MovieDetails>({
     queryKey: ["movie", movieId],
     queryFn: () => getMovieDetails(movieId),
   });
 
-  const { data: videos } = useQuery({
+  // Videos query
+  const {
+    data: videos,
+    isLoading: videosLoading,
+    error: videosError,
+  } = useQuery<{
+    results: Video[];
+  }>({
     queryKey: ["movie-videos", movieId],
     queryFn: () => getMovieVideos(movieId),
-  })
+  });
 
-  const { data: credits, isLoading: creditsLoading } = useQuery({
+  // Credits query
+  const { data: credits, isLoading: creditsLoading } = useQuery<{
+    cast: CastCardProps[];
+  }>({
     queryKey: ["movie-credits", movieId],
     queryFn: () => getMovieCredits(movieId),
-  })
+  });
 
-  const { data: recommendations, isLoading: recommendationsLoading } = useQuery({
-    queryKey: ["movie-recommendations", movieId],
-    queryFn: () => getMovieRecommendations(movieId),
-  })
+  // Recommendations query
+  const { data: recommendations, isLoading: recommendationsLoading } =
+    useQuery<{
+      results: MovieProps[];
+    }>({
+      queryKey: ["movie-recommendations", movieId],
+      queryFn: () => getMovieRecommendations(movieId),
+    });
 
-  
-  
+  // Bookmark query
+  const { data: isBookmarked } = useQuery({
+    queryKey: ["bookmarks", movieId, user?.uid ?? null],
+    queryFn: async () => {
+      if (!user) return false;
+      const bookmarkRef = doc(db, "users", user.uid, "bookmarks", movieId);
+      const docSnap = await getDoc(bookmarkRef);
+      return docSnap.exists();
+    },
+    enabled: !!user,
+  });
+
+  // Bookmark mutation
+  const bookmarkMutation = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+      if (!data) throw new Error("Movie data not available");
+      const bookmarkRef = doc(db, "users", user.uid, "bookmarks", movieId);
+
+      if (isBookmarked) {
+        await deleteDoc(bookmarkRef);
+      } else {
+        await setDoc(bookmarkRef, {
+          id: data.id,
+          title: data.title,
+          poster_path: data.poster_path,
+          vote_average: data.vote_average,
+          release_date: data.release_date,
+          addedAt: new Date().toISOString(),
+        });
+      }
+    },
+    onSuccess: () => {
+      toast.success(isBookmarked ? "Bookmark removed!" : "Bookmark added!");
+      queryClient.invalidateQueries({ queryKey: ["bookmarks", movieId, user?.uid] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const handleBookmark = () => {
+    if (!user) {
+      toast.error("Please login to bookmark movies");
+      return;
+    }
+    bookmarkMutation.mutate();
+  };
 
   // Format runtime (e.g., 125 minutes -> "2h 5m")
   const formatRuntime = (minutes?: number) => {
@@ -67,19 +177,29 @@ function MovieDetails() {
     return `${hours ? `${hours}h ` : ""}${mins ? `${mins}m` : ""}`.trim();
   };
 
-  const [modalOpen, setModalOpen] = useState(false);
-
-  // Early return for loading state
-  if (isLoading || !data) {
+  // Early return for loading or error state
+  if (isLoading) {
     return <Loading />;
   }
+
+  if (error) {
+    return <div>Error loading movie details: {error.message}</div>;
+  }
+
+  if (!data) {
+    return <div>No movie data available</div>;
+  }
+
+  // Handle videos for Modal
+  const modalVideos =
+    videosLoading || videosError ? [] : (videos?.results ?? []);
 
   return (
     <>
       <Modal
         isShowing={modalOpen}
         hide={() => setModalOpen(false)}
-        videos={videos?.results || []}
+        videos={modalVideos}
       />
       {data.backdrop_path && (
         <img
@@ -101,7 +221,7 @@ function MovieDetails() {
             src={
               data.poster_path
                 ? `https://image.tmdb.org/t/p/w500/${data.poster_path}`
-                : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
+                : FALLBACK_POSTER
             }
             alt={data.title || "Movie Poster"}
             className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
@@ -123,7 +243,8 @@ function MovieDetails() {
               href={data.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              aria-label="Visit movie website">
               <svg
                 className="w-6 h-6 text-white"
                 aria-hidden="true"
@@ -147,34 +268,49 @@ function MovieDetails() {
           )}
 
           {/* Bookmark */}
-          <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
-            <svg
-              className="w-6 h-6 text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
-              viewBox="0 0 24 24">
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1"
-                d="m17 21-5-4-5 4V3.889a.92.92 0 0 1 .244-.629.808.808 0 0 1 .59-.26h8.333a.81.81 0 0 1 .589.26.92.92 0 0 1 .244.63V21Z"
-              />
-            </svg>
-            <span className="text-md roboto-condensed-light capitalize">
-              bookmark
-            </span>
+          <button
+            onClick={handleBookmark}
+            disabled={bookmarkMutation.isPending}
+            aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+            className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+            {bookmarkMutation.isPending ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              <>
+                <svg
+                  className="w-6 h-6 text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24">
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={isBookmarked ? "1.6" : "1"}
+                    d={
+                      isBookmarked
+                        ? "M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                        : "m17 21-5-4-5 4V3.889a.92.92 0 0 1 .244-.629.808.808 0 0 1 .59-.26h8.333a.81.81 0 0 1 .589.26.92.92 0 0 1 .244.63V21Z"
+                    }
+                  />
+                </svg>
+                <span className="text-md roboto-condensed-light capitalize">
+                  {isBookmarked ? "Remove Bookmark" : "Bookmark"}
+                </span>
+              </>
+            )}
           </button>
 
           {/* Videos collection */}
           <button
             className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
-            onClick={() => setModalOpen(true)}>
+            onClick={() => setModalOpen(true)}
+            aria-label="Open videos collection">
             <svg
-              className="w-6 h-6 text-white" // Fixed typo: tex-white -> text-white
+              className="w-6 h-6 text-white"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -196,7 +332,7 @@ function MovieDetails() {
         </section>
 
         {/* Release, rating, duration */}
-        <article className="flex items-center  flex-wrap gap-4 geist-regular text-lg">
+        <article className="flex items-center flex-wrap gap-4 geist-regular text-lg">
           {data.release_date && (
             <p className="flex items-center gap-2">
               Released:{" "}
@@ -237,7 +373,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data.overview && (
-          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6  ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
+          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6 ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data.overview}
           </p>
         )}
@@ -245,7 +381,9 @@ function MovieDetails() {
         {/* Languages section */}
         {data.spoken_languages?.length > 0 && (
           <section className="flex items-center gap-2 flex-wrap">
-            <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+            <button
+              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              aria-label="Languages">
               <svg
                 className="w-6 h-6 text-white"
                 aria-hidden="true"
@@ -267,31 +405,24 @@ function MovieDetails() {
               </span>
             </button>{" "}
             |{" "}
-            {data.spoken_languages.map(
-              ({
-                english_name,
-                iso_639_1,
-              }: {
-                english_name: string;
-                iso_639_1: string;
-              }) => (
-                <TypeLink
-                  key={iso_639_1}
-                  type="with_original_language"
-                  typeName={english_name}
-                  typeId={iso_639_1}
-                  page={1}
-                  // Add title context
-                />
-              )
-            )}
+            {data.spoken_languages.map(({ english_name, iso_639_1 }) => (
+              <TypeLink
+                key={iso_639_1}
+                type="with_original_language"
+                typeName={english_name}
+                typeId={iso_639_1}
+                page={1}
+              />
+            ))}
           </section>
         )}
 
         {/* Genre section */}
         {data.genres?.length > 0 && (
           <section className="flex items-center gap-2 flex-wrap">
-            <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+            <button
+              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              aria-label="Genres">
               <svg
                 className="w-6 h-6 text-white"
                 aria-hidden="true"
@@ -312,7 +443,7 @@ function MovieDetails() {
               </span>
             </button>{" "}
             |{" "}
-            {data.genres.map(({ name, id }: { name: string; id: number }) => (
+            {data.genres.map(({ name, id }) => (
               <TypeLink
                 key={id}
                 type="with_genres"
@@ -327,7 +458,9 @@ function MovieDetails() {
         {/* Production companies section */}
         {data.production_companies?.length > 0 && (
           <section className="flex items-center gap-2 flex-wrap">
-            <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+            <button
+              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              aria-label="Production Companies">
               <svg
                 className="w-6 h-6 text-white"
                 aria-hidden="true"
@@ -349,24 +482,24 @@ function MovieDetails() {
               </span>
             </button>{" "}
             |{" "}
-            {data.production_companies.map(
-              ({ name, id }: { name: string; id: number }) => (
-                <TypeLink
-                  key={id}
-                  type="with_companies"
-                  typeName={name}
-                  typeId={id.toString()}
-                  page={1}
-                />
-              )
-            )}
+            {data.production_companies.map(({ name, id }) => (
+              <TypeLink
+                key={id}
+                type="with_companies"
+                typeName={name}
+                typeId={id.toString()}
+                page={1}
+              />
+            ))}
           </section>
         )}
 
         {/* Production countries section */}
         {data.production_countries?.length > 0 && (
           <section className="flex items-center gap-2 flex-wrap">
-            <button className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+            <button
+              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              aria-label="Production Countries">
               <svg
                 className="w-6 h-6 text-white"
                 aria-hidden="true"
@@ -387,30 +520,26 @@ function MovieDetails() {
               </span>
             </button>{" "}
             |{" "}
-            {data.production_countries.map(
-              ({ name, iso_3166_1 }: { name: string; iso_3166_1: string }) => (
-                <TypeLink
-                  key={iso_3166_1}
-                  type="with_origin_country"
-                  typeName={name}
-                  typeId={iso_3166_1}
-                  page={1}
-                />
-              )
-            )}
+            {data.production_countries.map(({ name, iso_3166_1 }) => (
+              <TypeLink
+                key={iso_3166_1}
+                type="with_origin_country"
+                typeName={name}
+                typeId={iso_3166_1}
+                page={1}
+              />
+            ))}
           </section>
         )}
 
-        {/* cast section */}
-        <h1 className="text-5xl text-left geist-bold ">The Cast</h1>
+        {/* Cast section */}
+        <h1 className="text-5xl text-left geist-bold">The Cast</h1>
         <div>
           <section className="overflow-x-scroll flex flex-start justify-start gap-4 min-h-[190px] w-full *:w-48">
-
             {creditsLoading && <Loading />}
-            {credits?.cast?.map((cast: CastCardProps) => (
-              <div>
+            {credits?.cast?.map((cast) => (
+              <div key={cast.id}>
                 <CastCard
-                  key={cast.id}
                   name={cast.name}
                   id={cast.id}
                   profile_path={cast.profile_path}
@@ -421,37 +550,30 @@ function MovieDetails() {
           </section>
         </div>
 
-        {/* recommendations section */}
-        <h1 className="text-5xl text-left geist-bold ">The Recommendations</h1>
+        {/* Recommendations section */}
+        <h1 className="text-5xl text-left geist-bold">The Recommendations</h1>
         <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
-          
-
-          {recommendations?.results.length === 0 && <p>No recommendations available</p>}
+          {recommendations?.results.length === 0 && (
+            <p>No recommendations available</p>
+          )}
           {recommendationsLoading && <Loading />}
           {recommendations?.results?.map(
-            ({
-              id,
-              title,
-              release_date,
-              poster_path,
-              vote_average,
-            }: MovieProps) => (
+            ({ id, title, release_date, poster_path, vote_average }) => (
               <Link
-                // search={{ title: title }}
                 to="/movie/$movieId"
                 params={{ movieId: id.toString() }}
                 key={id}
-                className=" w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
+                className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-black hover:rotate-3">
                 <img
                   src={
                     poster_path
                       ? `https://image.tmdb.org/t/p/w500/${poster_path}`
-                      : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
+                      : FALLBACK_POSTER
                   }
                   alt={title}
                   className="w-full h-full object-cover rounded-lg overflow-hidden"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black   transition-opacity flex flex-col justify-end p-4 rounded-lg">
+                <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
                   <p className="text-yellow-500 text-sm">{vote_average}</p>
                   <p className="text-white text-sm">{release_date}</p>
                   <h3 className="text-white text-lg">{title}</h3>

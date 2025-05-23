@@ -1,24 +1,32 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { auth, db } from "../../config/firebase";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  sendSignInLinkToEmail,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth/sign_up")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isValidName, setIsValidName] = useState(false);
-  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isValidName, setIsValidName] = useState<boolean>(false);
+  const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const validateName = (name : string) => {
-    // Basic name validation: must be at least 2 characters
+  const validateName = (name: string): boolean => {
     return name.trim().length >= 2;
   };
 
-  const validateEmail = (email : string) => {
-    // Basic email validation: must contain @ and . after @
+  const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
@@ -27,30 +35,64 @@ function RouteComponent() {
     const newName = e.target.value;
     setName(newName);
     setIsValidName(validateName(newName));
+    setError(null);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
     setIsValidEmail(validateEmail(newEmail));
+    setError(null);
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Placeholder for sign-up logic
-    console.log("Signing up with:", { name, email });
-    // Replace with actual backend API call to register user
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      const actionCodeSettings = {
+        url: `${window.location.origin}/auth/verify`,
+        handleCodeInApp: true,
+      };
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem("emailForSignIn", email);
+      window.localStorage.setItem("nameForSignIn", name);
       setIsLoading(false);
-      alert("Sign-up successful! Check your email for confirmation.");
-    }, 2000);
+      toast.success("Sign-up link sent! Check your email for confirmation.");
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
+      setIsLoading(false);
+    }
   };
 
-  const handleGoogleSignIn = () => {
-    // Placeholder for Google OAuth logic
-    console.log("Initiating Google OAuth...");
-    // Replace with actual OAuth flow
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Store user data in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        name: name || user.displayName || "Anonymous",
+        email: user.email,
+        createdAt: new Date().toISOString(),
+      });
+
+      toast.success("Successfully signed up with Google!");
+      navigate({
+        to: "/",
+        search: { page: 1, period: "day" },
+      }); // Redirect to home
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -62,10 +104,14 @@ function RouteComponent() {
             Create an account on Trailer Base
           </h2>
 
+          {/* Error Message */}
+          {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
+
           {/* Google Sign-In Button */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5]">
+            disabled={isLoading}
+            className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5] disabled:opacity-50">
             <img
               src="https://www.google.com/favicon.ico"
               alt="Google Icon"

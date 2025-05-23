@@ -1,18 +1,78 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { auth, db } from "../../config/firebase";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth/")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isValidEmail, setIsValidEmail] = useState(false);
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const validateEmail = (email: string) => {
-    // Basic email validation: must contain @ and . after @
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function RouteComponent() {
+  const [email, setEmail] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // Handle magic link sign-in on component mount
+  useEffect(() => {
+    const verifyMagicLinkSignIn = async () => {
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        setIsLoading(true);
+        const emailForSignIn = window.localStorage.getItem("emailForSignIn");
+
+        if (!emailForSignIn) {
+          setError("No email found for sign-in. Please enter your email.");
+          toast.error("No email found for sign-in. Please enter your email.");
+          setIsLoading(false);
+          return;
+        }
+
+        try {
+          await signInWithEmailLink(auth, emailForSignIn, window.location.href);
+          window.localStorage.removeItem("emailForSignIn");
+
+          // Create or update user document in Firestore
+          const user = auth.currentUser;
+          if (user) {
+            await setDoc(
+              doc(db, "users", user.uid),
+              {
+                email: user.email,
+                lastLogin: new Date().toISOString(),
+              },
+              { merge: true }
+            );
+          }
+
+          toast.success("Successfully signed in!");
+          navigate({
+            to: "/",
+            search: { page: 1, period: "day" },
+          });
+        } catch (err: any) {
+          setError(err.message);
+          toast.error(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    verifyMagicLinkSignIn();
+  }, [navigate]);
+
+  const validateEmail = (email: string): boolean => {
     return emailRegex.test(email);
   };
 
@@ -20,24 +80,65 @@ function RouteComponent() {
     const newEmail = e.target.value;
     setEmail(newEmail);
     setIsValidEmail(validateEmail(newEmail));
+    setError(null);
   };
 
-  const handleMagicLink = (e: React.FormEvent) => {
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Placeholder for magic link logic
-    console.log("Sending magic link to:", email);
-    // Replace with actual backend API call to send magic link
-    setTimeout(() => {
+    setError(null);
+
+    try {
+      const actionCodeSettings = {
+        url: `${window.location.origin}/auth/verify`, // Redirect URL for magic link verification
+        handleCodeInApp: true,
+      };
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem("emailForSignIn", email);
+      setEmail(""); // Clear email input after sending link
+      setIsValidEmail(false);
+      toast.success("Magic link sent! Check your email.");
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
+    } finally {
       setIsLoading(false);
-      alert("Magic link sent! Check your email.");
-    }, 2000);
+    }
   };
 
-  const handleGoogleSignIn = () => {
-    // Placeholder for Google OAuth logic
-    console.log("Initiating Google OAuth...");
-    // Replace with actual OAuth flow
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      // Create or update user document in Firestore
+      const user = result.user;
+      if (user) {
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            email: user.email,
+            displayName: user.displayName || "Anonymous",
+            lastLogin: new Date().toISOString(),
+          },
+          { merge: true }
+        );
+      }
+
+      toast.success("Successfully signed in with Google!");
+      navigate({
+        to: "/",
+        search: { page: 1, period: "day" },
+      });
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -49,10 +150,19 @@ function RouteComponent() {
             Welcome back to Trailer Base
           </h2>
 
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 text-red-500 text-sm" aria-live="assertive">
+              {error}
+            </div>
+          )}
+
           {/* Google Sign-In Button */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5]">
+            disabled={isLoading}
+            className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5] disabled:opacity-50"
+            aria-label="Sign in with Google">
             <img
               src="https://www.google.com/favicon.ico"
               alt="Google Icon"
@@ -82,6 +192,7 @@ function RouteComponent() {
                 onChange={handleEmailChange}
                 className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
                 required
+                aria-invalid={!isValidEmail}
               />
             </div>
 

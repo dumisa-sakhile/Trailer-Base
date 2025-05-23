@@ -10,6 +10,7 @@ import { SearchProvider } from './context/searchContext.tsx';
 import EscKeyHandler from './components/EscKeyHandler.tsx';
 import NotFound from './components/NotFound.tsx';
 import Loading from './components/Loading.tsx';
+import { Toaster } from 'sonner';
 
 
 // Import the generated route tree
@@ -47,14 +48,14 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <SearchProvider>
-
           <EscKeyHandler />
           <RouterProvider router={router} />
+          <Toaster richColors />
         </SearchProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
-    </StrictMode>,
-  )
+    </StrictMode>
+  );
 }
 
 // If you want to start measuring performance in your app, pass a function
