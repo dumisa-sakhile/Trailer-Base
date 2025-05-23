@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getList } from '@/api/movie';
 import BackHomeBtn from '@/components/BackHomeBtn';
 import Loading from '@/components/Loading';
+import MediaCard from '@/components/MediaCard';
 
 interface MovieProps {
   id: number;
@@ -63,27 +64,15 @@ function List() {
                 poster_path,
                 vote_average,
               }: MovieProps) => (
-                <Link
-                  // search={{ title: title }}
-                  to="/movie/$movieId"
-                  params={{ movieId: id.toString() }}
+                <MediaCard
                   key={id}
-                  className=" w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
-                  <img
-                    src={
-                      poster_path
-                        ? `https://image.tmdb.org/t/p/w500/${poster_path}`
-                        : `https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=truehttps://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/refs/heads/main/public/poster.png`
-                    }
-                    alt={title}
-                    className="w-full h-full object-cover rounded-lg overflow-hidden"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black   transition-opacity flex flex-col justify-end p-4 rounded-lg">
-                    <p className="text-yellow-500 text-sm">{vote_average}</p>
-                    <p className="text-white text-sm">{release_date}</p>
-                    <h3 className="text-white text-lg">{title}</h3>
-                  </div>
-                </Link>
+                  id={id}
+                  title={title}
+                  release_date={release_date}
+                  poster_path={poster_path}
+                  vote_average={vote_average}
+                  type="movie"
+                />
               )
             )}
           </section>

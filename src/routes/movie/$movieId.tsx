@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import TypeLink from "@/components/TypeLink";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +16,8 @@ import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { toast } from "sonner";
 import CastCard from "@/components/CastCard";
+import MediaCard from "@/components/MediaCard";
+import Credits from "@/components/Credit";
 
 // Interfaces for type safety
 interface MovieDetails {
@@ -150,13 +152,16 @@ function MovieDetails() {
           poster_path: data.poster_path,
           vote_average: data.vote_average,
           release_date: data.release_date,
+          category: "movie", // Include category
           addedAt: new Date().toISOString(),
         });
       }
     },
     onSuccess: () => {
       toast.success(isBookmarked ? "Bookmark removed!" : "Bookmark added!");
-      queryClient.invalidateQueries({ queryKey: ["bookmarks", movieId, user?.uid] });
+      queryClient.invalidateQueries({
+        queryKey: ["bookmarks", movieId, user?.uid],
+      });
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -193,6 +198,8 @@ function MovieDetails() {
   // Handle videos for Modal
   const modalVideos =
     videosLoading || videosError ? [] : (videos?.results ?? []);
+
+    
 
   return (
     <>
@@ -533,25 +540,21 @@ function MovieDetails() {
         )}
 
         {/* Cast section */}
-        <h1 className="text-5xl text-left geist-bold">The Cast</h1>
-        <div>
-          <section className="overflow-x-scroll flex flex-start justify-start gap-4 min-h-[190px] w-full *:w-48">
-            {creditsLoading && <Loading />}
-            {credits?.cast?.map((cast) => (
-              <div key={cast.id}>
-                <CastCard
-                  name={cast.name}
-                  id={cast.id}
-                  profile_path={cast.profile_path}
-                  character={cast.character}
-                />
-              </div>
-            ))}
-          </section>
-        </div>
+        <Credits creditsLoading={creditsLoading}>
+          {credits?.cast?.map((cast) => (
+            <div key={cast.id}>
+              <CastCard
+                name={cast.name}
+                id={cast.id}
+                profile_path={cast.profile_path}
+                character={cast.character}
+              />
+            </div>
+          ))}
+        </Credits>
 
         {/* Recommendations section */}
-        <h1 className="text-5xl text-left geist-bold">The Recommendations</h1>
+        <h1 className="text-5xl text-left geist-bold"> Recommendations</h1>
         <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
           {recommendations?.results.length === 0 && (
             <p>No recommendations available</p>
@@ -559,26 +562,15 @@ function MovieDetails() {
           {recommendationsLoading && <Loading />}
           {recommendations?.results?.map(
             ({ id, title, release_date, poster_path, vote_average }) => (
-              <Link
-                to="/movie/$movieId"
-                params={{ movieId: id.toString() }}
+              <MediaCard
                 key={id}
-                className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-black hover:rotate-3">
-                <img
-                  src={
-                    poster_path
-                      ? `https://image.tmdb.org/t/p/w500/${poster_path}`
-                      : FALLBACK_POSTER
-                  }
-                  alt={title}
-                  className="w-full h-full object-cover rounded-lg overflow-hidden"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
-                  <p className="text-yellow-500 text-sm">{vote_average}</p>
-                  <p className="text-white text-sm">{release_date}</p>
-                  <h3 className="text-white text-lg">{title}</h3>
-                </div>
-              </Link>
+                id={id}
+                title={title}
+                release_date={release_date}
+                poster_path={poster_path}
+                vote_average={vote_average}
+                type="movie"
+              />
             )
           )}
         </section>

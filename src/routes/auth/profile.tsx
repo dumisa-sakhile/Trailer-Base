@@ -4,27 +4,22 @@ import { useState, useEffect } from "react";
 import { auth, db } from "@/config/firebase";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import type { User } from "firebase/auth";
-import {
-  collection,
-  getDocs,
-  doc,
-  deleteDoc,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { collection, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Loading from "@/components/Loading";
 import male from "/male.jpg?url"; // fallback profile image
 import female from "/female.jpg?url"; // fallback profile image
+import { useBookmarkMutations } from "@/components/useBookmarkMutations";
 
-// Interface for bookmark data (aligned with MovieDetails.tsx)
-interface Bookmark {
+// Interface for bookmark data
+export interface Bookmark {
   id: number;
   title: string;
   poster_path: string | null;
   vote_average: number;
   release_date: string;
+  category: 'movie' | 'tv'; // Added for routing
 }
 
 // Interface for user data in Firestore
@@ -129,7 +124,8 @@ function EditProfileModal({
           <div>
             <label
               htmlFor="username"
-              className="text-white roboto-condensed-light">
+              className="text-white roboto-condensed-light"
+            >
               Username
             </label>
             <input
@@ -144,14 +140,16 @@ function EditProfileModal({
           <div>
             <label
               htmlFor="gender"
-              className="text-white roboto-condensed-light">
+              className="text-white roboto-condensed-light"
+            >
               Gender
             </label>
             <select
               id="gender"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] peer">
+              className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] peer"
+            >
               <option value="" className="text-black bg-white">
                 Select gender
               </option>
@@ -171,10 +169,17 @@ function EditProfileModal({
             <Button
               type="submit"
               variant="primary"
-              disabled={profileMutation.isPending}>
+              disabled={profileMutation.isPending}
+              
+            >
               {profileMutation.isPending ? "Updating..." : "Update Profile"}
             </Button>
-            <Button type="button" variant="ghost" onClick={hide}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={hide}
+             
+            >
               Cancel
             </Button>
           </div>
@@ -191,7 +196,8 @@ export const Route = createFileRoute("/auth/profile")({
 function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
+  const { removeBookmarkMutation } = useBookmarkMutations();
 
   // Listen for auth state changes
   useEffect(() => {
@@ -223,23 +229,26 @@ function Profile() {
       if (!user) return [];
       const bookmarksRef = collection(db, "users", user.uid, "bookmarks");
       const snapshot = await getDocs(bookmarksRef);
-      return snapshot.docs.map((doc) => doc.data() as Bookmark);
+      const bookmarksData: Bookmark[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        // Validate bookmark data
+        if (
+          typeof data.id === 'number' &&
+          typeof data.title === 'string' &&
+          (data.poster_path === null || typeof data.poster_path === 'string') &&
+          typeof data.vote_average === 'number' &&
+          typeof data.release_date === 'string' &&
+          ['movie', 'tv'].includes(data.category)
+        ) {
+          bookmarksData.push(data as Bookmark);
+        } else {
+          console.warn(`Invalid bookmark data for ${doc.id}:`, data);
+        }
+      });
+      return bookmarksData;
     },
     enabled: !!user,
-  });
-
-  // Remove bookmark mutation
-  const removeBookmarkMutation = useMutation({
-    mutationFn: async (movieId: string) => {
-      if (!user) throw new Error("Not authenticated");
-      const bookmarkRef = doc(db, "users", user.uid, "bookmarks", movieId);
-      await deleteDoc(bookmarkRef);
-    },
-    onSuccess: () => {
-      toast.success("Bookmark removed!");
-      queryClient.invalidateQueries({ queryKey: ["bookmarks", user?.uid] });
-    },
-    onError: (error: Error) => toast.error(error.message),
   });
 
   // Determine fallback image based on gender
@@ -250,7 +259,7 @@ function Profile() {
 
   if (!user) {
     return (
-      <div className="w-full min-h-lvh flex items-center justify-center">
+      <div className="w-full min-h-lvh flex items-center justify-center bg-black">
         <p className="text-white text-xl roboto-condensed-light">
           Please log in to view your profile
         </p>
@@ -264,7 +273,7 @@ function Profile() {
 
   if (error) {
     return (
-      <div className="w-full min-h-lvh flex items-center justify-center">
+      <div className="w-full min-h-lvh flex items-center justify-center bg-black">
         <p className="text-red-500 text-xl roboto-condensed-light">
           Error loading bookmarks: {error.message}
         </p>
@@ -276,8 +285,8 @@ function Profile() {
     <>
       <title>Trailer Base - Profile</title>
 
-      <div className="w-full min-h-lvh flex flex-col gap-12 py-8 px-4 md:px-10">
-        <h1 className="text-4xl md:text-5xl text-left roboto-condensed-bold tracking-tight">
+      <div className="w-full min-h-lvh flex flex-col gap-12 py-8 px-4 md:px-10 bg-black">
+        <h1 className="text-4xl md:text-5xl text-left roboto-condensed-bold tracking-tight text-white">
           Profile
         </h1>
 
@@ -286,34 +295,43 @@ function Profile() {
             <img
               src={getFallbackImage()}
               alt="Profile"
-              className="w-32 h-32 rounded-full object-cover"
+              className="w-32 h-32 rounded-full object-cover border-2 border-gray-700"
             />
             <h3 className="roboto-condensed-light text-xl md:text-2xl text-gray-200">
               {user.displayName || userData?.username || "User"}
             </h3>
           </aside>
-          <Button variant="primary" onClick={() => setModalOpen(true)}>
+          <Button
+            variant="primary"
+            onClick={() => setModalOpen(true)}
+          
+          >
             Edit Profile
           </Button>
         </section>
 
         <section className="mt-12">
-          <h2 className="text-2xl md:text-3xl roboto-condensed-bold mb-6">
+          <h2 className="text-2xl md:text-3xl roboto-condensed-bold mb-6 text-white">
             Your Bookmarks
           </h2>
           {bookmarks?.length === 0 ? (
             <p className="text-gray-300 text-lg roboto-condensed-light">
-              No bookmarks yet. Add some movies to your bookmarks!
+              No bookmarks yet. Add some movies or TV shows to your bookmarks!
             </p>
           ) : (
             <div className="flex flex-wrap gap-6">
               {bookmarks?.map(
-                ({ id, title, poster_path, vote_average, release_date }) => (
-                  <div className="relative group" key={id}>
+                ({ id, title, poster_path, vote_average, release_date, category }) => (
+                  <div className="relative group" key={`${category}-${id}`}>
                     <Link
-                      to="/movie/$movieId"
-                      params={{ movieId: id.toString() }}
-                      className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-3">
+                      to={category === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
+                      params={
+                        category === "movie"
+                          ? { movieId: id?.toString() }
+                          : { tvId: id?.toString() }
+                      }
+                      className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-3"
+                    >
                       <img
                         src={
                           poster_path
@@ -325,7 +343,7 @@ function Profile() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent transition-opacity flex flex-col justify-end p-4 rounded-lg">
                         <p className="text-gray-300 text-sm">
-                          {vote_average.toFixed(1)}
+                          {vote_average?.toFixed(1)}
                         </p>
                         <p className="text-gray-300 text-sm">{release_date}</p>
                         <h3 className="text-white text-lg roboto-condensed-bold">
@@ -335,10 +353,10 @@ function Profile() {
                     </Link>
                     <button
                       className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-all duration-300"
-                      onClick={() =>
-                        removeBookmarkMutation.mutate(id.toString())
-                      }
-                      disabled={removeBookmarkMutation.isPending}>
+                      onClick={() => removeBookmarkMutation.mutate(id?.toString())}
+                      disabled={removeBookmarkMutation.isPending}
+                      aria-label={`Remove ${category} bookmark`}
+                    >
                       Remove
                     </button>
                   </div>

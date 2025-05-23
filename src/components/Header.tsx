@@ -10,6 +10,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // Interface for user data in Firestore
 interface UserData {
@@ -51,7 +52,7 @@ const Header: React.FC = () => {
       setUser(null);
       navigate({ to: "/auth" }); // Redirect to login page after logout
     } catch (error: any) {
-      console.error("Logout error:", error);
+      {toast.error(error.message)}
       // Optionally show toast or error message here
     }
   };

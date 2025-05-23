@@ -1,10 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import Header from "@/components/Header";
 import LinkTo from "@/components/LinkTo";
 import { getTrendingMovies } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import CardLink from "@/components/CardLink";
-import Loading from "@/components/Loading";
+import Display from "@/components/Display";
 
 
 interface pageProps {
@@ -29,18 +29,6 @@ function App() {
     queryFn: () => getTrendingMovies(period, page),
     placeholderData: keepPreviousData,
   });
-
-  // console.log(period, data);
-
-  interface MovieProps {
-    id: number;
-    title: string;
-    release_date: string;
-    poster_path: string;
-    vote_average: number;
-    total_pages: number;
-  }
-
 
   return (
     <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 py-4  min-h-10">
@@ -72,42 +60,7 @@ function App() {
         </LinkTo>
       </section>
       <br />
-      <section>
-        <div className="overflow-x-scroll  w-full h-[470px]">
-          <div className="flex animate-scroll gap-12 scale-95">
-            {isLoading && <Loading/>}
-            {isError && <p className="text-red-500">Error: {error.message}</p>}
-
-            {data?.results.map(
-              ({
-                id,
-                title,
-                release_date,
-                poster_path,
-                vote_average,
-              }: MovieProps) => (
-                <Link
-                  // search={{ title: title }}
-                  to="/movie/$movieId"
-                  params={{ movieId: id.toString() }}
-                  key={id}
-                  className="stack w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  geist-light hover:ring-1 hover:ring-black hover:rotate-3">
-                  <img
-                    src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
-                    alt={title}
-                    className="w-full h-full object-cover rounded-lg overflow-hidden"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black   transition-opacity flex flex-col justify-end p-4 rounded-lg">
-                    <p className="text-yellow-500 text-sm">{vote_average}</p>
-                    <p className="text-white text-sm">{release_date}</p>
-                    <h3 className="text-white text-lg">{title}</h3>
-                  </div>
-                </Link>
-              )
-            )}
-          </div>
-        </div>
-      </section>
+      <Display data={data} isLoading={isLoading} isError={isError} error={error} category="movie" />
       <br />
       <br />
       <section className="pt-10 pb-10 bg-white text-black ring-1 ring-white/20  focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md  min-w-[300px]  mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
