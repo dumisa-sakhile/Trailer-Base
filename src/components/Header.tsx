@@ -2,11 +2,19 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import React, { useEffect, useState } from "react";
 import logo from "../logo.svg";
 import male from "/male.jpg?url"; // fallback profile image
+import female from "/female.jpg?url"; // fallback profile image
 import Button from "./Button";
 import { useSearchContext } from "@/context/searchContext";
-import { auth } from "../config/firebase"; // Adjust path as needed
+import { auth, db } from "../config/firebase"; // Adjust path as needed
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { useQuery } from "@tanstack/react-query";
+
+// Interface for user data in Firestore
+interface UserData {
+  gender?: string;
+}
 
 const Header: React.FC = () => {
   const { setStatus } = useSearchContext();
@@ -16,8 +24,8 @@ const Header: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Listen for auth state changes
   useEffect(() => {
-    // Listen for auth state changes
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -25,6 +33,17 @@ const Header: React.FC = () => {
 
     return () => unsubscribe();
   }, []);
+
+  // Fetch user data (gender) from Firestore
+  const { data: userData } = useQuery<UserData>({
+    queryKey: ["userData", user?.uid],
+    queryFn: async () => {
+      if (!user) return {};
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      return userDoc.exists() ? (userDoc.data() as UserData) : {};
+    },
+    enabled: !!user,
+  });
 
   const handleLogout = async () => {
     try {
@@ -35,6 +54,12 @@ const Header: React.FC = () => {
       console.error("Logout error:", error);
       // Optionally show toast or error message here
     }
+  };
+
+  // Determine fallback image based on gender
+  const getFallbackImage = () => {
+    if (user?.photoURL) return user.photoURL;
+    return userData?.gender === "female" ? female : male;
   };
 
   return (
@@ -108,7 +133,6 @@ const Header: React.FC = () => {
                 d="M18.796 4H5.204a1 1 0 0 0-.753 1.659l5.302 6.058a1 1 0 0 1 .247.659v4.874a.5.5 0 0 0 .2.4l3 2.25a.5.5 0 0 0 .8-.4v-7.124a1 1 0 0 1 .247-.659l5.302-6.059c.566-.646.106-1.658-.753-1.658Z"
               />
             </svg>
-
             <span className="text-md roboto-condensed-light capitalize">
               Genre
             </span>
@@ -124,7 +148,7 @@ const Header: React.FC = () => {
             <>
               <Link to="/auth/profile" aria-label="Profile">
                 <img
-                  src={user.photoURL || male}
+                  src={getFallbackImage()}
                   alt={user.displayName || "Profile"}
                   className="w-12 h-12 rounded-full hover:scale-95 transition-transform duration-300"
                   title={user.displayName || "Profile"}
