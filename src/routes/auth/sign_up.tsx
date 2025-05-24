@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth, db } from "../../config/firebase";
 import {
   GoogleAuthProvider,
   signInWithPopup,
   sendSignInLinkToEmail,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
@@ -21,6 +22,22 @@ function RouteComponent() {
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate({
+          to: "/",
+          search: { page: 1, period: "day" },
+        });
+        toast.info("You are already signed in!");
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [navigate]);
 
   const validateName = (name: string): boolean => {
     return name.trim().length >= 2;

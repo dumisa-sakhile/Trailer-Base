@@ -7,6 +7,7 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
@@ -22,9 +23,25 @@ function RouteComponent() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLinkSent, setIsLinkSent] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Handle magic link sign-in on component mount
+  useEffect(() => {
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate({
+          to: "/",
+          search: { page: 1, period: "day" },
+        });
+        toast.info("You are already signed in!");
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [navigate]);
+
   useEffect(() => {
     const verifyMagicLinkSignIn = async () => {
       if (isSignInWithEmailLink(auth, window.location.href)) {
@@ -42,7 +59,6 @@ function RouteComponent() {
           await signInWithEmailLink(auth, emailForSignIn, window.location.href);
           window.localStorage.removeItem("emailForSignIn");
 
-          // Create or update user document in Firestore
           const user = auth.currentUser;
           if (user) {
             await setDoc(
@@ -90,13 +106,14 @@ function RouteComponent() {
 
     try {
       const actionCodeSettings = {
-        url: `${window.location.origin}/auth/verify`, // Redirect URL for magic link verification
+        url: `${window.location.origin}/auth/verify`,
         handleCodeInApp: true,
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("emailForSignIn", email);
-      setEmail(""); // Clear email input after sending link
+      setEmail("");
       setIsValidEmail(false);
+      setIsLinkSent(true);
       toast.success("Magic link sent! Check your email.");
     } catch (err: any) {
       setError(err.message);
@@ -114,7 +131,6 @@ function RouteComponent() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
 
-      // Create or update user document in Firestore
       const user = result.user;
       if (user) {
         await setDoc(
@@ -150,62 +166,64 @@ function RouteComponent() {
             Welcome back to Trailer Base
           </h2>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-4 text-red-500 text-sm" aria-live="assertive">
               {error}
             </div>
           )}
 
-          {/* Google Sign-In Button */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5] disabled:opacity-50"
-            aria-label="Sign in with Google">
-            <img
-              src="https://www.google.com/favicon.ico"
-              alt="Google Icon"
-              className="w-5 h-5 mr-2"
-            />
-            Log in with Google
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center my-4">
-            <div className="flex-grow border-t border-white/10"></div>
-            <span className="mx-4 text-white">or</span>
-            <div className="flex-grow border-t border-white/10"></div>
-          </div>
-
-          {/* Email Input and Magic Link Form */}
-          <form onSubmit={handleMagicLink}>
-            <div className="mb-4">
-              <label className="block text-sm mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={handleEmailChange}
-                className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
-                required
-                aria-invalid={!isValidEmail}
-              />
+          {isLinkSent ? (
+            <div className="mb-4 text-green-500 text-sm" aria-live="polite">
+              Magic link sent! Please check your email to sign in.
             </div>
+          ) : (
+            <>
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5] disabled:opacity-50"
+                aria-label="Sign in with Google">
+                <img
+                  src="https://www.google.com/favicon.ico"
+                  alt="Google Icon"
+                  className="w-5 h-5 mr-2"
+                />
+                Log in with Google
+              </button>
 
-            {/* Magic Link Button */}
-            <button
-              type="submit"
-              disabled={isLoading || !isValidEmail}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg mb-4 disabled:opacity-50">
-              {isLoading ? "Sending..." : "Email magic link"}
-            </button>
-          </form>
+              <div className="flex items-center my-4">
+                <div className="flex-grow border-t border-white/10"></div>
+                <span className="mx-4 text-white">or</span>
+                <div className="flex-grow border-t border-white/10"></div>
+              </div>
 
-          {/* Sign Up Link */}
+              <form onSubmit={handleMagicLink}>
+                <div className="mb-4">
+                  <label className="block text-sm mb-2" htmlFor="email">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
+                    required
+                    aria-invalid={!isValidEmail}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading || !isValidEmail}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg mb-4 disabled:opacity-50">
+                  {isLoading ? "Sending..." : "Email magic link"}
+                </button>
+              </form>
+            </>
+          )}
+
           <p className="text-sm text-center">
             Don’t have an account yet?{" "}
             <Link
