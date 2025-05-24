@@ -73,7 +73,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
           className="w-full h-full object-cover rounded-lg"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent transition-opacity flex flex-col justify-end p-4 rounded-lg">
-          <p className="text-yellow-500 text-sm">{vote_average.toFixed(1)}</p>
+          <p className="text-sm flex items-center">{vote_average.toFixed(1)}/10</p>
           <p className="text-gray-300 text-sm">{release_date}</p>
           <h3 className="text-white text-lg roboto-condensed-bold">{title}</h3>
         </div>
@@ -90,7 +90,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
             </button>
           ) : (
             <button
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-all duration-300"
+              className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-all duration-300"
               onClick={() =>
                 addBookmarkMutation.mutate({
                   id,

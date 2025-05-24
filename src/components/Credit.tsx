@@ -26,10 +26,10 @@ const Credits: React.FC<CreditsProps> = ({
 
   return (
     <div className="relative">
-      <h1 className="text-5xl text-left geist-bold">The Cast</h1>
+      <h1 className="text-2xl md:text-5xl text-left geist-bold">The Cast</h1>
       <button
         onClick={scrollLeft}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-[#131313] hover:bg-[#333] p-2">
         <svg
           className="w-6 h-6 text-gray-800 dark:text-white"
           aria-hidden="true"
@@ -55,7 +55,7 @@ const Credits: React.FC<CreditsProps> = ({
       </div>
       <button
         onClick={scrollRight}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-[#131313] hover:bg-[#333] p-2">
         <svg
           className="w-6 h-6 text-gray-800 dark:text-white"
           aria-hidden="true"
