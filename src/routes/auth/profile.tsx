@@ -301,11 +301,7 @@ function Profile() {
               {user.displayName || userData?.username || "User"}
             </h3>
           </aside>
-          <Button
-            variant="primary"
-            onClick={() => setModalOpen(true)}
-          
-          >
+          <Button variant="primary" onClick={() => setModalOpen(true)}>
             Edit Profile
           </Button>
         </section>
@@ -321,46 +317,65 @@ function Profile() {
           ) : (
             <div className="flex flex-wrap gap-6">
               {bookmarks?.map(
-                ({ id, title, poster_path, vote_average, release_date, category }) => (
-                  <div className="relative group" key={`${category}-${id}`}>
-                    <Link
-                      to={category === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
-                      params={
-                        category === "movie"
-                          ? { movieId: id?.toString() }
-                          : { tvId: id?.toString() }
-                      }
-                      className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-3"
-                    >
-                      <img
-                        src={
-                          poster_path
-                            ? `https://image.tmdb.org/t/p/w500/${poster_path}`
-                            : "https://via.placeholder.com/300x450?text=No+Poster"
+                ({
+                  id,
+                  title,
+                  poster_path,
+                  vote_average,
+                  release_date,
+                  category,
+                }) => {
+                  // Validate bookmark data before rendering
+                  if (!id || !title || !category) {
+                    console.warn(`Invalid bookmark data for id: ${id}`);
+                    return null;
+                  }
+
+                  return (
+                    <div className="relative group" key={`${category}-${id}`}>
+                      <Link
+                        to={
+                          category === "movie" ? "/movie/$movieId" : "/tv/$tvId"
                         }
-                        alt={title}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent transition-opacity flex flex-col justify-end p-4 rounded-lg">
-                        <p className="text-gray-300 text-sm">
-                          {vote_average?.toFixed(1)}
-                        </p>
-                        <p className="text-gray-300 text-sm">{release_date}</p>
-                        <h3 className="text-white text-lg roboto-condensed-bold">
-                          {title}
-                        </h3>
-                      </div>
-                    </Link>
-                    <button
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-all duration-300"
-                      onClick={() => removeBookmarkMutation.mutate(id?.toString())}
-                      disabled={removeBookmarkMutation.isPending}
-                      aria-label={`Remove ${category} bookmark`}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )
+                        params={
+                          category === "movie"
+                            ? { movieId: id?.toString() }
+                            : { tvId: id?.toString() }
+                        }
+                        className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-3">
+                        <img
+                          src={
+                            poster_path
+                              ? `https://image.tmdb.org/t/p/w500/${poster_path}`
+                              : "https://via.placeholder.com/300x450?text=No+Poster"
+                          }
+                          alt={title}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent transition-opacity flex flex-col justify-end p-4 rounded-lg">
+                          <p className="text-gray-300 text-sm">
+                            {vote_average?.toFixed(1)}
+                          </p>
+                          <p className="text-gray-300 text-sm">
+                            {release_date}
+                          </p>
+                          <h3 className="text-white text-lg roboto-condensed-bold">
+                            {title}
+                          </h3>
+                        </div>
+                      </Link>
+                      <button
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-all duration-300"
+                        onClick={() =>
+                          removeBookmarkMutation.mutate(id?.toString())
+                        }
+                        disabled={removeBookmarkMutation.isPending}
+                        aria-label={`Remove ${category} bookmark`}>
+                        Remove
+                      </button>
+                    </div>
+                  );
+                }
               )}
             </div>
           )}
