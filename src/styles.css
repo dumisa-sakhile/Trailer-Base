@@ -96,7 +96,7 @@ body{
   font-weight: 300;
   font-style: normal;
   font-size: 1rem;
-  background-color: #000;
+  background: #000;
   color: #ffffff;
 }
 
@@ -157,7 +157,7 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 }
 
 .stack{
-
+background: inherit;
 }
 
 .stack:nth-child(even){

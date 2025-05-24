@@ -115,8 +115,8 @@ function EditProfileModal({
   if (!isShowing) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#222222] p-6 rounded-lg w-full max-w-md">
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+      <div className="bg-black p-6 rounded-lg w-full max-w-md">
         <h2 className="text-2xl roboto-condensed-bold text-white mb-4">
           Edit Profile
         </h2>
@@ -124,8 +124,7 @@ function EditProfileModal({
           <div>
             <label
               htmlFor="username"
-              className="text-white roboto-condensed-light"
-            >
+              className="text-white roboto-condensed-light">
               Username
             </label>
             <input
@@ -140,16 +139,14 @@ function EditProfileModal({
           <div>
             <label
               htmlFor="gender"
-              className="text-white roboto-condensed-light"
-            >
+              className="text-white roboto-condensed-light">
               Gender
             </label>
             <select
               id="gender"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] peer"
-            >
+              className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] peer">
               <option value="" className="text-black bg-white">
                 Select gender
               </option>
@@ -169,17 +166,10 @@ function EditProfileModal({
             <Button
               type="submit"
               variant="primary"
-              disabled={profileMutation.isPending}
-              
-            >
+              disabled={profileMutation.isPending}>
               {profileMutation.isPending ? "Updating..." : "Update Profile"}
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={hide}
-             
-            >
+            <Button type="button" variant="ghost" onClick={hide}>
               Cancel
             </Button>
           </div>

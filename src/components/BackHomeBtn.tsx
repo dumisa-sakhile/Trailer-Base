@@ -5,17 +5,18 @@ const BackHomeBtn = () => {
   const { history } = useRouter();
 
   return (
-    <section className="absolute top-10 right-10 min-w-10  z-10 hidden md:flex gap-4">
+    <section className="absolute top-10 right-10 z-20 flex gap-6 md:gap-8">
       <button
-        className="text-white text-sm roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+        className="flex items-center gap-3 px-6 py-3 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-xl text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
         onClick={() =>
           navigate({
             to: "/",
             search: { page: 1, period: "day" },
           })
-        }>
+        }
+        aria-label="Go to homepage">
         <svg
-          className="w-6 h-6 text-white"
+          className="w-6 h-6"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -26,16 +27,19 @@ const BackHomeBtn = () => {
             stroke="currentColor"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="1"
+            strokeWidth="1.8"
             d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"
           />
         </svg>
-        <span className="text-sm roboto-condensed-light uppercase">Home</span>
+        <span className="font-sans">Home</span>
       </button>
 
-      <button className="text-white text-sm roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95" onClick={() => history.back()}>
+      <button
+        className="flex items-center gap-3 px-6 py-3 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-xl text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
+        onClick={() => history.back()}
+        aria-label="Go back to previous page">
         <svg
-          className="w-6 h-6 text-white"
+          className="w-6 h-6"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -46,15 +50,14 @@ const BackHomeBtn = () => {
             stroke="currentColor"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="1"
+            strokeWidth="1.8"
             d="M8 6v12m8-12v12l-8-6 8-6Z"
           />
         </svg>
-
-        <span className="text-sm roboto-condensed-light uppercase">back</span>
+        <span className="font-sans">Back</span>
       </button>
     </section>
   );
-}
+};
 
-export default BackHomeBtn
+export default BackHomeBtn;

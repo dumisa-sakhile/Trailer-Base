@@ -81,18 +81,22 @@ function List() {
           <BackHomeBtn />
         </div>
 
-        {/* Pagination */}
         {!isLoading && !isError && (
-          <footer className="fixed bottom-4 min-w-[10px] flex items-center justify-center  w-full gap-2 touch-none">
-            <section className="flex items-center gap-2 bg-black px-4 py-2 rounded-md ring-1 ring-[rgba(37,37,37,0.5)] roboto-condensed-regular">
+          <footer className="fixed bottom-6 left-0 right-0 flex items-center justify-center w-full gap-3 touch-none z-20">
+            <section className="flex items-center gap-3 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg px-6 py-3 rounded-xl shadow-md border border-gray-700/50 font-sans">
               <Link
                 to="."
                 params={{ list: list }}
                 search={(prev) => ({ ...prev, page: page - 1 })}
-                className="text-white capitalize rounded-lg px-6 py-2 flex items-center gap-2 transition duration-300 ease-in-out hover:scale-95 hover:bg-[rgba(255,255,255,0.1)]"
-                disabled={page === 1}>
+                className={`flex items-center gap-2.5 px-6 py-3 text-gray-200 font-medium text-base capitalize rounded-lg transition-all duration-300 ease-in-out shadow-sm border border-gray-700/50 ${
+                  page === 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-white hover:text-black hover:shadow-md hover:scale-105"
+                }`}
+                disabled={page === 1}
+                aria-label="Go to previous page">
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="w-7 h-7"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -103,13 +107,13 @@ function List() {
                     stroke="currentColor"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="1.7"
+                    strokeWidth="1.8"
                     d="m15 19-7-7 7-7"
                   />
                 </svg>
-                previous
+                Previous
               </Link>
-              <span className="text-white capitalize">
+              <span className="text-gray-200 font-medium text-base capitalize px-4">
                 {page?.toLocaleString()} of{" "}
                 {data?.total_pages?.toLocaleString() ?? "?"} pages
               </span>
@@ -117,11 +121,16 @@ function List() {
                 to="."
                 params={{ list: list }}
                 search={(prev) => ({ ...prev, page: page + 1 })}
+                className={`flex items-center gap-2.5 px-6 py-3 text-gray-200 font-medium text-base capitalize rounded-lg transition-all duration-300 ease-in-out shadow-sm border border-gray-700/50 ${
+                  data?.total_pages === page
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-white hover:text-black hover:shadow-md hover:scale-105"
+                }`}
                 disabled={data?.total_pages === page}
-                className="text-white capitalize rounded-lg px-6 py-2 flex items-center gap-2 transition duration-300 ease-in-out hover:scale-95 hover:bg-[rgba(255,255,255,0.1)]">
-                next
+                aria-label="Go to next page">
+                Next
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="w-7 h-7"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -132,7 +141,7 @@ function List() {
                     stroke="currentColor"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="1.7"
+                    strokeWidth="1.8"
                     d="m9 5 7 7-7 7"
                   />
                 </svg>

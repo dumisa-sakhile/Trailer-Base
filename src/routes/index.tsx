@@ -33,6 +33,7 @@ function App() {
   return (
     <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 py-4  min-h-10">
       <Header />
+      
       <title>Trailer Base - Movies</title>
 
       <section className="min-w-[300px]  mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">

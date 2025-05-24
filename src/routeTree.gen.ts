@@ -11,10 +11,10 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TvRouteImport } from './routes/tv/route'
 import { Route as PeopleRouteImport } from './routes/people/route'
 import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as TvIndexImport } from './routes/tv/index'
 import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as TvTvIdImport } from './routes/tv/$tvId'
 import { Route as PeoplePersonIdImport } from './routes/people/$personId'
@@ -22,22 +22,11 @@ import { Route as MovieMovieIdImport } from './routes/movie/$movieId'
 import { Route as AuthVerifyImport } from './routes/auth/verify'
 import { Route as AuthSignupImport } from './routes/auth/sign_up'
 import { Route as AuthProfileImport } from './routes/auth/profile'
-import { Route as TvLayoutIndexImport } from './routes/tv/_layout.index'
 import { Route as PeopleLayoutIndexImport } from './routes/people/_layout.index'
-import { Route as TvLayoutTopRatedImport } from './routes/tv/_layout.top-rated'
-import { Route as TvLayoutPopularImport } from './routes/tv/_layout.popular'
-import { Route as TvLayoutOnTheAirImport } from './routes/tv/_layout.on-the-air'
-import { Route as TvLayoutAiringTodayImport } from './routes/tv/_layout.airing-today'
 import { Route as MovieListListImport } from './routes/movie/list/$list'
 import { Route as MovieTypeTypeNameTypeIdImport } from './routes/movie/$type.$typeName.$typeId'
 
 // Create/Update Routes
-
-const TvRouteRoute = TvRouteImport.update({
-  id: '/tv',
-  path: '/tv',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const PeopleRouteRoute = PeopleRouteImport.update({
   id: '/people',
@@ -57,6 +46,12 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const TvIndexRoute = TvIndexImport.update({
+  id: '/tv/',
+  path: '/tv/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AuthIndexRoute = AuthIndexImport.update({
   id: '/',
   path: '/',
@@ -64,9 +59,9 @@ const AuthIndexRoute = AuthIndexImport.update({
 } as any)
 
 const TvTvIdRoute = TvTvIdImport.update({
-  id: '/$tvId',
-  path: '/$tvId',
-  getParentRoute: () => TvRouteRoute,
+  id: '/tv/$tvId',
+  path: '/tv/$tvId',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const PeoplePersonIdRoute = PeoplePersonIdImport.update({
@@ -99,40 +94,10 @@ const AuthProfileRoute = AuthProfileImport.update({
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
-const TvLayoutIndexRoute = TvLayoutIndexImport.update({
-  id: '/_layout/',
-  path: '/',
-  getParentRoute: () => TvRouteRoute,
-} as any)
-
 const PeopleLayoutIndexRoute = PeopleLayoutIndexImport.update({
   id: '/_layout/',
   path: '/',
   getParentRoute: () => PeopleRouteRoute,
-} as any)
-
-const TvLayoutTopRatedRoute = TvLayoutTopRatedImport.update({
-  id: '/_layout/top-rated',
-  path: '/top-rated',
-  getParentRoute: () => TvRouteRoute,
-} as any)
-
-const TvLayoutPopularRoute = TvLayoutPopularImport.update({
-  id: '/_layout/popular',
-  path: '/popular',
-  getParentRoute: () => TvRouteRoute,
-} as any)
-
-const TvLayoutOnTheAirRoute = TvLayoutOnTheAirImport.update({
-  id: '/_layout/on-the-air',
-  path: '/on-the-air',
-  getParentRoute: () => TvRouteRoute,
-} as any)
-
-const TvLayoutAiringTodayRoute = TvLayoutAiringTodayImport.update({
-  id: '/_layout/airing-today',
-  path: '/airing-today',
-  getParentRoute: () => TvRouteRoute,
 } as any)
 
 const MovieListListRoute = MovieListListImport.update({
@@ -172,13 +137,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PeopleRouteImport
       parentRoute: typeof rootRoute
     }
-    '/tv': {
-      id: '/tv'
-      path: '/tv'
-      fullPath: '/tv'
-      preLoaderRoute: typeof TvRouteImport
-      parentRoute: typeof rootRoute
-    }
     '/auth/profile': {
       id: '/auth/profile'
       path: '/profile'
@@ -216,10 +174,10 @@ declare module '@tanstack/react-router' {
     }
     '/tv/$tvId': {
       id: '/tv/$tvId'
-      path: '/$tvId'
+      path: '/tv/$tvId'
       fullPath: '/tv/$tvId'
       preLoaderRoute: typeof TvTvIdImport
-      parentRoute: typeof TvRouteImport
+      parentRoute: typeof rootRoute
     }
     '/auth/': {
       id: '/auth/'
@@ -228,6 +186,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthIndexImport
       parentRoute: typeof AuthRouteImport
     }
+    '/tv/': {
+      id: '/tv/'
+      path: '/tv'
+      fullPath: '/tv'
+      preLoaderRoute: typeof TvIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/movie/list/$list': {
       id: '/movie/list/$list'
       path: '/movie/list/$list'
@@ -235,47 +200,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MovieListListImport
       parentRoute: typeof rootRoute
     }
-    '/tv/_layout/airing-today': {
-      id: '/tv/_layout/airing-today'
-      path: '/airing-today'
-      fullPath: '/tv/airing-today'
-      preLoaderRoute: typeof TvLayoutAiringTodayImport
-      parentRoute: typeof TvRouteImport
-    }
-    '/tv/_layout/on-the-air': {
-      id: '/tv/_layout/on-the-air'
-      path: '/on-the-air'
-      fullPath: '/tv/on-the-air'
-      preLoaderRoute: typeof TvLayoutOnTheAirImport
-      parentRoute: typeof TvRouteImport
-    }
-    '/tv/_layout/popular': {
-      id: '/tv/_layout/popular'
-      path: '/popular'
-      fullPath: '/tv/popular'
-      preLoaderRoute: typeof TvLayoutPopularImport
-      parentRoute: typeof TvRouteImport
-    }
-    '/tv/_layout/top-rated': {
-      id: '/tv/_layout/top-rated'
-      path: '/top-rated'
-      fullPath: '/tv/top-rated'
-      preLoaderRoute: typeof TvLayoutTopRatedImport
-      parentRoute: typeof TvRouteImport
-    }
     '/people/_layout/': {
       id: '/people/_layout/'
       path: '/'
       fullPath: '/people/'
       preLoaderRoute: typeof PeopleLayoutIndexImport
       parentRoute: typeof PeopleRouteImport
-    }
-    '/tv/_layout/': {
-      id: '/tv/_layout/'
-      path: '/'
-      fullPath: '/tv/'
-      preLoaderRoute: typeof TvLayoutIndexImport
-      parentRoute: typeof TvRouteImport
     }
     '/movie/$type/$typeName/$typeId': {
       id: '/movie/$type/$typeName/$typeId'
@@ -321,32 +251,10 @@ const PeopleRouteRouteWithChildren = PeopleRouteRoute._addFileChildren(
   PeopleRouteRouteChildren,
 )
 
-interface TvRouteRouteChildren {
-  TvTvIdRoute: typeof TvTvIdRoute
-  TvLayoutAiringTodayRoute: typeof TvLayoutAiringTodayRoute
-  TvLayoutOnTheAirRoute: typeof TvLayoutOnTheAirRoute
-  TvLayoutPopularRoute: typeof TvLayoutPopularRoute
-  TvLayoutTopRatedRoute: typeof TvLayoutTopRatedRoute
-  TvLayoutIndexRoute: typeof TvLayoutIndexRoute
-}
-
-const TvRouteRouteChildren: TvRouteRouteChildren = {
-  TvTvIdRoute: TvTvIdRoute,
-  TvLayoutAiringTodayRoute: TvLayoutAiringTodayRoute,
-  TvLayoutOnTheAirRoute: TvLayoutOnTheAirRoute,
-  TvLayoutPopularRoute: TvLayoutPopularRoute,
-  TvLayoutTopRatedRoute: TvLayoutTopRatedRoute,
-  TvLayoutIndexRoute: TvLayoutIndexRoute,
-}
-
-const TvRouteRouteWithChildren =
-  TvRouteRoute._addFileChildren(TvRouteRouteChildren)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/people': typeof PeopleRouteRouteWithChildren
-  '/tv': typeof TvRouteRouteWithChildren
   '/auth/profile': typeof AuthProfileRoute
   '/auth/sign_up': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
@@ -354,13 +262,9 @@ export interface FileRoutesByFullPath {
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
   '/auth/': typeof AuthIndexRoute
+  '/tv': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
-  '/tv/airing-today': typeof TvLayoutAiringTodayRoute
-  '/tv/on-the-air': typeof TvLayoutOnTheAirRoute
-  '/tv/popular': typeof TvLayoutPopularRoute
-  '/tv/top-rated': typeof TvLayoutTopRatedRoute
   '/people/': typeof PeopleLayoutIndexRoute
-  '/tv/': typeof TvLayoutIndexRoute
   '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
 }
 
@@ -373,13 +277,9 @@ export interface FileRoutesByTo {
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
   '/auth': typeof AuthIndexRoute
+  '/tv': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
-  '/tv/airing-today': typeof TvLayoutAiringTodayRoute
-  '/tv/on-the-air': typeof TvLayoutOnTheAirRoute
-  '/tv/popular': typeof TvLayoutPopularRoute
-  '/tv/top-rated': typeof TvLayoutTopRatedRoute
   '/people': typeof PeopleLayoutIndexRoute
-  '/tv': typeof TvLayoutIndexRoute
   '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
 }
 
@@ -388,7 +288,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/people': typeof PeopleRouteRouteWithChildren
-  '/tv': typeof TvRouteRouteWithChildren
   '/auth/profile': typeof AuthProfileRoute
   '/auth/sign_up': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
@@ -396,13 +295,9 @@ export interface FileRoutesById {
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
   '/auth/': typeof AuthIndexRoute
+  '/tv/': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
-  '/tv/_layout/airing-today': typeof TvLayoutAiringTodayRoute
-  '/tv/_layout/on-the-air': typeof TvLayoutOnTheAirRoute
-  '/tv/_layout/popular': typeof TvLayoutPopularRoute
-  '/tv/_layout/top-rated': typeof TvLayoutTopRatedRoute
   '/people/_layout/': typeof PeopleLayoutIndexRoute
-  '/tv/_layout/': typeof TvLayoutIndexRoute
   '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
 }
 
@@ -412,7 +307,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/people'
-    | '/tv'
     | '/auth/profile'
     | '/auth/sign_up'
     | '/auth/verify'
@@ -420,13 +314,9 @@ export interface FileRouteTypes {
     | '/people/$personId'
     | '/tv/$tvId'
     | '/auth/'
+    | '/tv'
     | '/movie/list/$list'
-    | '/tv/airing-today'
-    | '/tv/on-the-air'
-    | '/tv/popular'
-    | '/tv/top-rated'
     | '/people/'
-    | '/tv/'
     | '/movie/$type/$typeName/$typeId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -438,20 +328,15 @@ export interface FileRouteTypes {
     | '/people/$personId'
     | '/tv/$tvId'
     | '/auth'
-    | '/movie/list/$list'
-    | '/tv/airing-today'
-    | '/tv/on-the-air'
-    | '/tv/popular'
-    | '/tv/top-rated'
-    | '/people'
     | '/tv'
+    | '/movie/list/$list'
+    | '/people'
     | '/movie/$type/$typeName/$typeId'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/people'
-    | '/tv'
     | '/auth/profile'
     | '/auth/sign_up'
     | '/auth/verify'
@@ -459,13 +344,9 @@ export interface FileRouteTypes {
     | '/people/$personId'
     | '/tv/$tvId'
     | '/auth/'
+    | '/tv/'
     | '/movie/list/$list'
-    | '/tv/_layout/airing-today'
-    | '/tv/_layout/on-the-air'
-    | '/tv/_layout/popular'
-    | '/tv/_layout/top-rated'
     | '/people/_layout/'
-    | '/tv/_layout/'
     | '/movie/$type/$typeName/$typeId'
   fileRoutesById: FileRoutesById
 }
@@ -474,8 +355,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   PeopleRouteRoute: typeof PeopleRouteRouteWithChildren
-  TvRouteRoute: typeof TvRouteRouteWithChildren
   MovieMovieIdRoute: typeof MovieMovieIdRoute
+  TvTvIdRoute: typeof TvTvIdRoute
+  TvIndexRoute: typeof TvIndexRoute
   MovieListListRoute: typeof MovieListListRoute
   MovieTypeTypeNameTypeIdRoute: typeof MovieTypeTypeNameTypeIdRoute
 }
@@ -484,8 +366,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   PeopleRouteRoute: PeopleRouteRouteWithChildren,
-  TvRouteRoute: TvRouteRouteWithChildren,
   MovieMovieIdRoute: MovieMovieIdRoute,
+  TvTvIdRoute: TvTvIdRoute,
+  TvIndexRoute: TvIndexRoute,
   MovieListListRoute: MovieListListRoute,
   MovieTypeTypeNameTypeIdRoute: MovieTypeTypeNameTypeIdRoute,
 }
@@ -503,8 +386,9 @@ export const routeTree = rootRoute
         "/",
         "/auth",
         "/people",
-        "/tv",
         "/movie/$movieId",
+        "/tv/$tvId",
+        "/tv/",
         "/movie/list/$list",
         "/movie/$type/$typeName/$typeId"
       ]
@@ -528,17 +412,6 @@ export const routeTree = rootRoute
         "/people/_layout/"
       ]
     },
-    "/tv": {
-      "filePath": "tv/route.tsx",
-      "children": [
-        "/tv/$tvId",
-        "/tv/_layout/airing-today",
-        "/tv/_layout/on-the-air",
-        "/tv/_layout/popular",
-        "/tv/_layout/top-rated",
-        "/tv/_layout/"
-      ]
-    },
     "/auth/profile": {
       "filePath": "auth/profile.tsx",
       "parent": "/auth"
@@ -559,39 +432,21 @@ export const routeTree = rootRoute
       "parent": "/people"
     },
     "/tv/$tvId": {
-      "filePath": "tv/$tvId.tsx",
-      "parent": "/tv"
+      "filePath": "tv/$tvId.tsx"
     },
     "/auth/": {
       "filePath": "auth/index.tsx",
       "parent": "/auth"
     },
+    "/tv/": {
+      "filePath": "tv/index.tsx"
+    },
     "/movie/list/$list": {
       "filePath": "movie/list/$list.tsx"
-    },
-    "/tv/_layout/airing-today": {
-      "filePath": "tv/_layout.airing-today.tsx",
-      "parent": "/tv"
-    },
-    "/tv/_layout/on-the-air": {
-      "filePath": "tv/_layout.on-the-air.tsx",
-      "parent": "/tv"
-    },
-    "/tv/_layout/popular": {
-      "filePath": "tv/_layout.popular.tsx",
-      "parent": "/tv"
-    },
-    "/tv/_layout/top-rated": {
-      "filePath": "tv/_layout.top-rated.tsx",
-      "parent": "/tv"
     },
     "/people/_layout/": {
       "filePath": "people/_layout.index.tsx",
       "parent": "/people"
-    },
-    "/tv/_layout/": {
-      "filePath": "tv/_layout.index.tsx",
-      "parent": "/tv"
     },
     "/movie/$type/$typeName/$typeId": {
       "filePath": "movie/$type.$typeName.$typeId.tsx"
