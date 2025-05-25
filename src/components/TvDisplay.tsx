@@ -82,7 +82,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
               poster_path,
               vote_average,
             }: TVProps) => (
-              <div className="stack relative group" key={id}>
+              <div className=" relative group" key={id}>
                 <Link
                   to="/tv/$tvId"
                   params={{ tvId: id.toString() }}

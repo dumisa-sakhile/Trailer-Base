@@ -72,21 +72,21 @@ function App() {
         <div className="w-full min-h-[470px]">
           <div className="flex items-center justify-center flex-wrap animate-scroll gap-12 scale-95">
             <CardLink
-              to="/movie/list/top_rated"
+              to="/movie/list/$list"
               params={{list  : "top_rated"}}
               imageUrl="https://image.tmdb.org/t/p/w500//9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
               title="Top Rated Movies"
               description="Discover the top rated movies of all time."
             />
             <CardLink
-              to="/movie/list/popular"
+              to="/movie/list/$list"
               params={{list  : "popular"}}
               imageUrl="https://image.tmdb.org/t/p/w500//yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg"
               title="Popular Movies"
               description="Discover the most popular movies of all time."
             />
             <CardLink
-              to="/movie/list/upcoming"
+              to="/movie/list/$list"
               params={{list  : "upcoming"}}
               imageUrl="https://image.tmdb.org/t/p/w500//wWba3TaojhK7NdycRhoQpsG0FaH.jpg"
               title="Upcoming Movies"
@@ -94,7 +94,7 @@ function App() {
             />
 
             <CardLink
-              to="/movie/list/now_playing"
+              to="/movie/list/$list"
               params={{list  : "now_playing"}}
               imageUrl="https://image.tmdb.org/t/p/w500//oLxWocqheC8XbXbxqJ3x422j9PW.jpg"
               title="Now Playing Movies"

@@ -82,7 +82,7 @@ const Display: React.FC<DisplayProps> = ({
               poster_path,
               vote_average,
             }: MovieProps) => (
-              <div className="stack relative group" key={id}>
+              <div className=" relative group" key={id}>
                 <Link
                   to={category === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
                   params={

@@ -23,7 +23,9 @@ import { Route as AuthVerifyImport } from './routes/auth/verify'
 import { Route as AuthSignupImport } from './routes/auth/sign_up'
 import { Route as AuthProfileImport } from './routes/auth/profile'
 import { Route as PeopleLayoutIndexImport } from './routes/people/_layout.index'
+import { Route as TvListListImport } from './routes/tv/list/$list'
 import { Route as MovieListListImport } from './routes/movie/list/$list'
+import { Route as TvTypeTypeNameTypeIdImport } from './routes/tv/$type.$typeName.$typeId'
 import { Route as MovieTypeTypeNameTypeIdImport } from './routes/movie/$type.$typeName.$typeId'
 
 // Create/Update Routes
@@ -100,9 +102,21 @@ const PeopleLayoutIndexRoute = PeopleLayoutIndexImport.update({
   getParentRoute: () => PeopleRouteRoute,
 } as any)
 
+const TvListListRoute = TvListListImport.update({
+  id: '/tv/list/$list',
+  path: '/tv/list/$list',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const MovieListListRoute = MovieListListImport.update({
   id: '/movie/list/$list',
   path: '/movie/list/$list',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TvTypeTypeNameTypeIdRoute = TvTypeTypeNameTypeIdImport.update({
+  id: '/tv/$type/$typeName/$typeId',
+  path: '/tv/$type/$typeName/$typeId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -200,6 +214,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MovieListListImport
       parentRoute: typeof rootRoute
     }
+    '/tv/list/$list': {
+      id: '/tv/list/$list'
+      path: '/tv/list/$list'
+      fullPath: '/tv/list/$list'
+      preLoaderRoute: typeof TvListListImport
+      parentRoute: typeof rootRoute
+    }
     '/people/_layout/': {
       id: '/people/_layout/'
       path: '/'
@@ -212,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/movie/$type/$typeName/$typeId'
       fullPath: '/movie/$type/$typeName/$typeId'
       preLoaderRoute: typeof MovieTypeTypeNameTypeIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/tv/$type/$typeName/$typeId': {
+      id: '/tv/$type/$typeName/$typeId'
+      path: '/tv/$type/$typeName/$typeId'
+      fullPath: '/tv/$type/$typeName/$typeId'
+      preLoaderRoute: typeof TvTypeTypeNameTypeIdImport
       parentRoute: typeof rootRoute
     }
   }
@@ -264,8 +292,10 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/tv': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
+  '/tv/list/$list': typeof TvListListRoute
   '/people/': typeof PeopleLayoutIndexRoute
   '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
+  '/tv/$type/$typeName/$typeId': typeof TvTypeTypeNameTypeIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -279,8 +309,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/tv': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
+  '/tv/list/$list': typeof TvListListRoute
   '/people': typeof PeopleLayoutIndexRoute
   '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
+  '/tv/$type/$typeName/$typeId': typeof TvTypeTypeNameTypeIdRoute
 }
 
 export interface FileRoutesById {
@@ -297,8 +329,10 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/tv/': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
+  '/tv/list/$list': typeof TvListListRoute
   '/people/_layout/': typeof PeopleLayoutIndexRoute
   '/movie/$type/$typeName/$typeId': typeof MovieTypeTypeNameTypeIdRoute
+  '/tv/$type/$typeName/$typeId': typeof TvTypeTypeNameTypeIdRoute
 }
 
 export interface FileRouteTypes {
@@ -316,8 +350,10 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/tv'
     | '/movie/list/$list'
+    | '/tv/list/$list'
     | '/people/'
     | '/movie/$type/$typeName/$typeId'
+    | '/tv/$type/$typeName/$typeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -330,8 +366,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/tv'
     | '/movie/list/$list'
+    | '/tv/list/$list'
     | '/people'
     | '/movie/$type/$typeName/$typeId'
+    | '/tv/$type/$typeName/$typeId'
   id:
     | '__root__'
     | '/'
@@ -346,8 +384,10 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/tv/'
     | '/movie/list/$list'
+    | '/tv/list/$list'
     | '/people/_layout/'
     | '/movie/$type/$typeName/$typeId'
+    | '/tv/$type/$typeName/$typeId'
   fileRoutesById: FileRoutesById
 }
 
@@ -359,7 +399,9 @@ export interface RootRouteChildren {
   TvTvIdRoute: typeof TvTvIdRoute
   TvIndexRoute: typeof TvIndexRoute
   MovieListListRoute: typeof MovieListListRoute
+  TvListListRoute: typeof TvListListRoute
   MovieTypeTypeNameTypeIdRoute: typeof MovieTypeTypeNameTypeIdRoute
+  TvTypeTypeNameTypeIdRoute: typeof TvTypeTypeNameTypeIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -370,7 +412,9 @@ const rootRouteChildren: RootRouteChildren = {
   TvTvIdRoute: TvTvIdRoute,
   TvIndexRoute: TvIndexRoute,
   MovieListListRoute: MovieListListRoute,
+  TvListListRoute: TvListListRoute,
   MovieTypeTypeNameTypeIdRoute: MovieTypeTypeNameTypeIdRoute,
+  TvTypeTypeNameTypeIdRoute: TvTypeTypeNameTypeIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -390,7 +434,9 @@ export const routeTree = rootRoute
         "/tv/$tvId",
         "/tv/",
         "/movie/list/$list",
-        "/movie/$type/$typeName/$typeId"
+        "/tv/list/$list",
+        "/movie/$type/$typeName/$typeId",
+        "/tv/$type/$typeName/$typeId"
       ]
     },
     "/": {
@@ -444,12 +490,18 @@ export const routeTree = rootRoute
     "/movie/list/$list": {
       "filePath": "movie/list/$list.tsx"
     },
+    "/tv/list/$list": {
+      "filePath": "tv/list/$list.tsx"
+    },
     "/people/_layout/": {
       "filePath": "people/_layout.index.tsx",
       "parent": "/people"
     },
     "/movie/$type/$typeName/$typeId": {
       "filePath": "movie/$type.$typeName.$typeId.tsx"
+    },
+    "/tv/$type/$typeName/$typeId": {
+      "filePath": "tv/$type.$typeName.$typeId.tsx"
     }
   }
 }

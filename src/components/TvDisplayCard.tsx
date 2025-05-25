@@ -19,7 +19,7 @@ interface DisplayProps {
   isLoading: boolean;
   isError: boolean;
   error: any;
-  list: "airing_today" | "on_the_air" | "top_rated" | "popular"; // Required list prop
+  list:  "top_rated" | "popular"; // Required list prop
   listName: string; // Manual name for the link
   listLink: string; // Manual URL for the link
   category?: "tv"; // Required for bookmarks, defaults to "tv"

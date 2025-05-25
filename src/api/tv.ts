@@ -41,7 +41,7 @@ export const getTVDetails = async (tvId: string | undefined) => {
   return response.data;
 };
 
-export const getTVVType = async (
+export const getTVType = async (
   page: number,
   type:
     | "with_original_language"
