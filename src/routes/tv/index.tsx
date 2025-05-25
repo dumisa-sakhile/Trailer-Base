@@ -86,7 +86,10 @@ function App() {
 
       {/* Trending Section */}
       <section className="min-w-[300px] mt-10 md:mt-0 w-full flex flex-col items-start justify-center gap-4 px-6 md:px-12">
-        <p className="text-lg text-white font-light w-full text-center">
+        <h1 className="w-full text-5xl text-center geist-bold">
+          Trailer Base -  TV Shows
+        </h1>
+        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           These are the trending TV shows of the{" "}
           <span className="font-bold uppercase text-white">{period}</span>.
         </p>
