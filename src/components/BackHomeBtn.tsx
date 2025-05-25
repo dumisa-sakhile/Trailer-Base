@@ -5,9 +5,52 @@ const BackHomeBtn = () => {
   const { history } = useRouter();
 
   return (
-    <section className="absolute top-10 right-10 z-20 flex gap-6 md:gap-8">
+    <section className="absolute top-8 right-10 z-20 hidden sm:flex gap-4 md:gap-6">
+      {/* Back Button */}
       <button
-        className="flex items-center gap-3 px-6 py-3 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-xl text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
+        className="group flex items-center gap-2 px-5 py-2.5
+          bg-white/90 dark:bg-black/80
+          border border-gray-300 dark:border-gray-700
+          rounded-full shadow-md
+          text-gray-900 dark:text-white
+          font-semibold text-lg
+          hover:bg-gray-100 dark:hover:bg-gray-900
+          hover:scale-105
+          focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white
+          transition-all duration-200"
+        onClick={() => history.back()}
+        aria-label="Go back to previous page">
+        <svg
+          className="w-6 h-6 text-gray-800 dark:text-white"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          viewBox="0 0 24 24">
+          <path
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M8 6v12m8-12v12l-8-6 8-6Z"
+          />
+        </svg>
+        <span className="font-sans tracking-wide">Back</span>
+      </button>
+
+      {/* Home Button */}
+      <button
+        className="group flex items-center gap-2 px-5 py-2.5
+          bg-white/90 dark:bg-black/80
+          border border-gray-300 dark:border-gray-700
+          rounded-full shadow-md
+          text-gray-900 dark:text-white
+          font-semibold text-lg
+          hover:bg-gray-100 dark:hover:bg-gray-900
+          hover:scale-105
+          focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white
+          transition-all duration-200"
         onClick={() =>
           navigate({
             to: "/",
@@ -16,45 +59,20 @@ const BackHomeBtn = () => {
         }
         aria-label="Go to homepage">
         <svg
-          className="w-6 h-6"
+          className="w-6 h-6 text-gray-800 dark:text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
-          fill="none"
+          fill="currentColor"
           viewBox="0 0 24 24">
           <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.8"
-            d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"
+            fillRule="evenodd"
+            d="M11.293 3.293a1 1 0 0 1 1.414 0l6 6 2 2a1 1 0 0 1-1.414 1.414L19 12.414V19a2 2 0 0 1-2 2h-3a1 1 0 0 1-1-1v-3h-2v3a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2v-6.586l-.293.293a1 1 0 0 1-1.414-1.414l2-2 6-6Z"
+            clipRule="evenodd"
           />
         </svg>
-        <span className="font-sans">Home</span>
-      </button>
-
-      <button
-        className="flex items-center gap-3 px-6 py-3 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-xl text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
-        onClick={() => history.back()}
-        aria-label="Go back to previous page">
-        <svg
-          className="w-6 h-6"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          viewBox="0 0 24 24">
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.8"
-            d="M8 6v12m8-12v12l-8-6 8-6Z"
-          />
-        </svg>
-        <span className="font-sans">Back</span>
+        <span className="font-sans tracking-wide">Home</span>
       </button>
     </section>
   );

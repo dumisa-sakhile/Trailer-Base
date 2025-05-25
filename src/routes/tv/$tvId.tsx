@@ -596,7 +596,7 @@ function TVDetails() {
         )}
 
         {/* Created by section */}
-        {data?.production_countries?.length > 0 && (
+        {data?.created_by?.length > 0 && (
           <section className="flex items-center gap-2 flex-wrap">
             <button
               className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
@@ -661,8 +661,8 @@ function TVDetails() {
                 />
               </svg>
             </button>
-            <div className="w-full overflow-x-scroll">
-              <div ref={scrollRef} className="flex gap-12 p-6">
+            <div className="w-full overflow-x-scroll" ref={scrollRef}>
+              <div className="flex gap-12 p-6">
                 {data?.seasons?.map((season) => (
                   <div
                     key={season?.id}
