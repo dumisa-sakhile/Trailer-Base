@@ -6,6 +6,7 @@ import { useSearchContext } from "@/context/searchContext";
 import { useEffect, useRef, useState } from "react";
 import Button from "@/components/Button";
 import CastCard from "@/components/PeopleCastCard";
+import Loading from "@/components/Loading";
 
 interface pageProps {
   page?: number;
@@ -147,7 +148,7 @@ function People() {
           </div>
         </div>
         {trendingLoading ? (
-          <p className="text-center">Loading trending people...</p>
+          <Loading/>
         ) : trendingError ? (
           <p className="text-center text-red-400">
             Error loading trending people: {trendingErrorObj?.message}
@@ -184,7 +185,7 @@ function People() {
             {popularLoading || popularError ? (
               <p className="text-gray-400">
                 {popularLoading
-                  ? "Loading popular people..."
+                  ? <Loading />
                   : `Failed to load popular people: ${popularErrorObj?.message}`}
               </p>
             ) : (
