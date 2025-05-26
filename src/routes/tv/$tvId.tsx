@@ -732,18 +732,20 @@ function TVDetails() {
           </section>
         )}
         {/* Cast section */}
-        <Credits creditsLoading={creditsLoading}>
-          {credits?.cast?.map((cast) => (
-            <div key={cast?.id}>
-              <CastCard
-                name={cast?.name}
-                id={cast?.id}
-                profile_path={cast?.profile_path}
-                character={cast?.character}
-              />
-            </div>
-          ))}
-        </Credits>
+        {(credits?.cast ?? []).length > 0 && (
+          <Credits creditsLoading={creditsLoading}>
+            {(credits?.cast ?? []).map((cast) => (
+              <div key={cast?.id}>
+                <CastCard
+                  name={cast?.name}
+                  id={cast?.id}
+                  profile_path={cast?.profile_path}
+                  character={cast?.character}
+                />
+              </div>
+            ))}
+          </Credits>
+        )}
 
         {/* Recommendations section */}
         <h1 className="text-2xl md:text-5xl text-left geist-bold">

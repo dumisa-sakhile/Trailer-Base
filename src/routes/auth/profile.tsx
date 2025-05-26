@@ -115,16 +115,22 @@ function EditProfileModal({
   if (!isShowing) return null;
 
   return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
-      <div className="bg-black p-6 rounded-lg w-full max-w-md">
-        <h2 className="text-2xl roboto-condensed-bold text-white mb-4">
-          Edit Profile
-        </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent ">
+      <div className="bg-[#222222] ring-1 ring-[rgba(255,255,255,0.1)] p-10 rounded-2xl shadow-xl w-full max-w-md text-white roboto-condensed-light">
+        <h2 className="text-lg  mb-8 text-center">Edit Profile</h2>
+
+        {error && (
+          <div className="text-red-500 text-base mb-4 text-center font-light">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6 text-[1.05rem]">
+          {/* Username */}
           <div>
             <label
               htmlFor="username"
-              className="text-white roboto-condensed-light">
+              className="block text-base mb-2 ">
               Username
             </label>
             <input
@@ -132,21 +138,23 @@ function EditProfileModal({
               type="text"
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
-              className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
               placeholder="Enter username"
+              className="w-full bg-white/5 text-white py-3 px-4 rounded-lg placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 font-light"
+              required
             />
           </div>
+
+          {/* Gender */}
           <div>
-            <label
-              htmlFor="gender"
-              className="text-white roboto-condensed-light">
+            <label htmlFor="gender" className="block text-base mb-2 ">
               Gender
             </label>
             <select
               id="gender"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] peer">
+              className="w-full bg-white/5 text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/20 font-light"
+              required>
               <option value="" className="text-black bg-white">
                 Select gender
               </option>
@@ -160,16 +168,20 @@ function EditProfileModal({
                 Other
               </option>
             </select>
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
-          <div className="flex gap-4">
+
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-4 place-items-center">
             <Button
               type="submit"
-              variant="primary"
-              disabled={profileMutation.isPending}>
-              {profileMutation.isPending ? "Updating..." : "Update Profile"}
+              disabled={profileMutation.isPending}
+              variant="primary">
+              {profileMutation.isPending ? "Updating..." : "save"}
             </Button>
-            <Button type="button" variant="ghost" onClick={hide}>
+            <Button
+              type="button"
+              onClick={hide}
+              variant="ghost">
               Cancel
             </Button>
           </div>

@@ -37,7 +37,7 @@ function App() {
       <title>Trailer Base - Movies</title>
 
       <section className="min-w-[300px]  mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4 ">
-        <h1 className="text-5xl text-left geist-bold ">Trailer Base - Movies</h1>
+        <h1 className="text-5xl text-center geist-bold ">Trailer Base - Movies</h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           Welcome to Trailer Base, where you can find the latest trailers .These
           are the trending movies of the{" "}

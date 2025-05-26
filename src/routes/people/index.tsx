@@ -91,20 +91,20 @@ function People() {
       </section>
       <br />
 
+      {/* Period Buttons */}
       <section className="min-w-[300px] min-h-[50px] flex items-center justify-center gap-4">
-
-<Button
-  onClick={() => setPeriod("day")}
-  variant={period === "day" ? "primary" : "ghost"}
-  aria-label="View daily trending people">
-  Day
-</Button>
-<Button
-  onClick={() => setPeriod("week")}
-  variant={period === "week" ? "primary" : "ghost"}
-  aria-label="View weekly trending people">
-  Week
-</Button>
+        <Button
+          onClick={() => setPeriod("day")}
+          variant={period === "day" ? "primary" : "ghost"}
+          aria-label="View daily trending people">
+          Day
+        </Button>
+        <Button
+          onClick={() => setPeriod("week")}
+          variant={period === "week" ? "primary" : "ghost"}
+          aria-label="View weekly trending people">
+          Week
+        </Button>
       </section>
       <br />
 
@@ -116,7 +116,7 @@ function People() {
             <button
               onClick={() => scrollCarousel("left")}
               aria-label="Scroll left"
-              className="bg-gray-800 hover:bg-gray-700 rounded-full p-2">
+              className="bg-[#333] hover:bg-[#222] rounded-full p-2">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -132,7 +132,7 @@ function People() {
             <button
               onClick={() => scrollCarousel("right")}
               aria-label="Scroll right"
-              className="bg-gray-800 hover:bg-gray-700 rounded-full p-2">
+              className="bg-[#333] hover:bg-[#222] rounded-full p-2">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -148,7 +148,7 @@ function People() {
           </div>
         </div>
         {trendingLoading ? (
-          <Loading/>
+          <Loading />
         ) : trendingError ? (
           <p className="text-center text-red-400">
             Error loading trending people: {trendingErrorObj?.message}
@@ -175,7 +175,7 @@ function People() {
       </section>
 
       {/* Popular People (paginated, no ugly box) */}
-      <section className="pt-10 pb-10 bg-black text-gray-200 min-w-[300px] mt-10 md:mt-0 flex flex-col items-center justify-center gap-4">
+      <section className="pt-10 pb-10 bg-black text-gray-200 min-w-[300px] mt-10 md:mt-0 flex flex-col items-center justify-center gap-6">
         <h2 className="text-3xl text-center geist-bold">Popular People</h2>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           Explore some of the most popular stars in film and television.
@@ -184,9 +184,11 @@ function People() {
           <div className="flex flex-wrap justify-center gap-8">
             {popularLoading || popularError ? (
               <p className="text-gray-400">
-                {popularLoading
-                  ? <Loading />
-                  : `Failed to load popular people: ${popularErrorObj?.message}`}
+                {popularLoading ? (
+                  <Loading />
+                ) : (
+                  `Failed to load popular people: ${popularErrorObj?.message}`
+                )}
               </p>
             ) : (
               popularData?.results?.map((person: any) => (
@@ -259,7 +261,6 @@ function People() {
           </div>
         )}
       </section>
-
     </div>
   );
 }

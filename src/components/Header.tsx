@@ -62,7 +62,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="absolute top-0 left-0 bg-black backdrop-blur-md shadow-lg z-20 w-full">
+    <header className="absolute top-0 left-0 bg-black backdrop-blur-md shadow-lg z-20 w-full roboto-condensed-light">
       {/* Mobile Layout */}
       <div className="md:hidden relative min-h-[180px]">
         {/* Profile/Login Section (Top, Absolute) */}
@@ -70,7 +70,7 @@ const Header: React.FC = () => {
           {!loading && !user && (
             <Link to="/auth">
               <button
-                className="px-4 py-2 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
+                className="px-4 py-2 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200  text-base capitalize tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
                 aria-label="Login">
                 Login
               </button>
@@ -88,7 +88,7 @@ const Header: React.FC = () => {
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
+                className="px-4 py-2 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200  text-base capitalize tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
                 aria-label="Logout">
                 Logout
               </button>
@@ -117,7 +117,7 @@ const Header: React.FC = () => {
               type="search"
               name="search"
               placeholder="Search for TV shows or movies..."
-              className="w-full h-10 pl-12 pr-4 bg-[#111] text-gray-200 text-sm roboto-condensed-light rounded-full border border-[#444444]/50 focus:border-[#555555] focus:ring-2 focus:ring-[#555555]/50 outline-none transition-all duration-300 placeholder:text-gray-400 placeholder:font-light shadow-md"
+              className="w-full h-[50px] pl-12 pr-4 bg-[#111] text-gray-200 text-sm roboto-condensed-light rounded-full border border-[#444444]/50 focus:border-[#555555] focus:ring-2 focus:ring-[#555555]/50 outline-none transition-all duration-300 placeholder:text-white placeholder:font-light shadow-md"
               autoComplete="off"
               onClick={() => setStatus(true)}
             />
@@ -140,8 +140,8 @@ const Header: React.FC = () => {
         </div>
 
         {/* Bottom Text Navigation (Below Search Bar) */}
-        <div className="absolute top-36 left-0 right-0 mx-6 z-20">
-          <nav className="flex justify-around text-gray-200 text-sm font-medium">
+        <div className="absolute top-40 left-0 right-0 mx-6 z-20">
+          <nav className="flex justify-around text-gray-200 text-sm ">
             <Link
               search={{ period: "day", page: 1 }}
               to="/"
@@ -186,7 +186,7 @@ const Header: React.FC = () => {
               className="w-14 h-14 hover:scale-110 transition-transform duration-300"
             />
           </Link>
-          <div className="flex gap-8 text-gray-200 font-semibold text-lg font-sans">
+          <div className="flex gap-8 text-gray-200 text-lg roboto-condensed-light text-md">
             <Link
               search={{ period: "day", page: 1 }}
               to="/"
@@ -224,7 +224,7 @@ const Header: React.FC = () => {
             type="search"
             name="search"
             placeholder="Search for TV shows or movies..."
-            className="w-[250px] md:w-[350px] h-10 pl-12 pr-4 bg-[#111] text-gray-200 text-sm roboto-condensed-light rounded-full border border-[#444444]/50 focus:border-[#555555] focus:ring-2 focus:ring-[#555555]/50 outline-none transition-all duration-300 placeholder:text-gray-400 placeholder:font-light shadow-md"
+            className="w-[250px] md:w-[350px] h-10 pl-12 pr-4 bg-[#111] text-gray-200 text-sm roboto-condensed-light rounded-full border border-[#444444]/50 focus:border-[#555555] focus:ring-2 focus:ring-[#555555]/50 outline-none transition-all duration-300 placeholder:text-white placeholder:font-light shadow-md"
             autoComplete="off"
             onClick={() => setStatus(true)}
           />
@@ -248,7 +248,7 @@ const Header: React.FC = () => {
         {/* Login & Genre */}
         <nav className="flex items-center gap-6">
           <button
-            className="flex items-center gap-2 px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200  text-base capitalize tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
             aria-label="Filter by Genre">
             <svg
               className="w-6 h-6"
@@ -271,7 +271,7 @@ const Header: React.FC = () => {
           {!loading && !user && (
             <Link to="/auth">
               <button
-                className="px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
+                className="px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200  text-base capitalize tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
                 aria-label="Login">
                 Login
               </button>
@@ -290,7 +290,7 @@ const Header: React.FC = () => {
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200 font-medium text-base uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
+                className="px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200  text-base capitalize tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
                 aria-label="Logout">
                 Logout
               </button>
