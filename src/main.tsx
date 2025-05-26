@@ -11,7 +11,8 @@ import EscKeyHandler from './components/EscKeyHandler.tsx';
 import NotFound from './components/NotFound.tsx';
 import Loading from './components/Loading.tsx';
 import { Toaster } from 'sonner';
-
+import { injectSpeedInsights } from "@vercel/speed-insights";
+import { inject } from "@vercel/analytics";
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
@@ -39,6 +40,10 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
+
+injectSpeedInsights();
+inject();
+
 
 // Render the app
 const rootElement = document.getElementById('app')
