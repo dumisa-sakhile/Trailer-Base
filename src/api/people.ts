@@ -31,15 +31,6 @@ export const getTrendingPeople = async (period: string, page: number) => {
   return response.data;
 };
 
-export const getPersonDetails = async (personId: string | undefined) => {
-  const response = await tmdbApi.get(`person/${personId}`, {
-    params: {
-      language: "en-US",
-    },
-  });
-  return response.data;
-};
-
 export const searchPeople = async (page: number, searchQuery: string) => {
   const response = await tmdbApi.get(`search/person?`, {
     params: {
@@ -50,3 +41,20 @@ export const searchPeople = async (page: number, searchQuery: string) => {
   return response.data;
 };
 
+export const getPersonCredits = async (
+  personId: string | number
+) => {
+  const response = await tmdbApi.get(
+    `/person/${personId}/combined_credits?language=en-US`
+  );
+  return response.data;
+};
+
+export const getPersonDetails = async (personId: string | undefined) => {
+  const response = await tmdbApi.get(`person/${personId}`, {
+    params: {
+      language: "en-US",
+    },
+  });
+  return response.data;
+};

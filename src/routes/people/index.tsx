@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getTrendingPeople, getPopularPeople } from "@/api/people";
 import Header from "@/components/Header";
-import BottomNav from "@/components/BottomNav";
 import { useSearchContext } from "@/context/searchContext";
 import { useEffect, useRef, useState } from "react";
 import Button from "@/components/Button";
@@ -260,7 +259,6 @@ function People() {
         )}
       </section>
 
-      <BottomNav />
     </div>
   );
 }
