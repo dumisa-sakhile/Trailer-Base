@@ -1,4 +1,4 @@
-const GenreData = () => {
+const movieGenres = () => {
   const movieGenres = [
     { name: "Action", id: 28 },
     { name: "Adventure", id: 12 },
@@ -24,4 +24,4 @@ const GenreData = () => {
   return movieGenres;
 };
 
-export default GenreData;
+export default movieGenres;

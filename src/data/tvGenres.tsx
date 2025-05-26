@@ -1,5 +1,5 @@
-const TVSeriesGenreData = () => {
-  const tvSeriesGenres = [
+const tvGenres = () => {
+  const tvGenres = [
     { name: "Action & Adventure", id: 10759 },
     { name: "Animation", id: 16 },
     { name: "Comedy", id: 35 },
@@ -18,7 +18,7 @@ const TVSeriesGenreData = () => {
     { name: "Western", id: 37 },
   ];
 
-  return tvSeriesGenres;
+  return tvGenres;
 };
 
-export default TVSeriesGenreData;
+export default tvGenres;
