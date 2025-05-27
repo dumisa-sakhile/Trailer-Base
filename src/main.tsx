@@ -42,7 +42,9 @@ declare module '@tanstack/react-router' {
 }
 
 injectSpeedInsights();
-inject();
+inject({
+  mode: "production",
+});
 
 
 // Render the app
