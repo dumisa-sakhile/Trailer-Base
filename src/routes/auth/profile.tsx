@@ -134,7 +134,7 @@ function EditProfileModal({
 
         {/* Heading */}
         <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">
+          <h2 className="text-2xl max-sm:text-xl font-semibold mb-2">
             Enter your
             <br />
             profile details
@@ -310,7 +310,7 @@ function Profile() {
       <title>Trailer Base - Profile</title>
 
       <div className="w-full min-h-screen flex flex-col gap-12 py-8 px-4 md:px-10 bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
-        <h1 className="text-4xl md:text-5xl text-left roboto-condensed-bold tracking-tight text-white">
+        <h1 className="text-4xl max-sm:text-2xl md:text-5xl text-left roboto-condensed-bold tracking-tight text-white">
           Profile
         </h1>
 
@@ -322,7 +322,9 @@ function Profile() {
               className="w-32 h-32 rounded-full object-cover border-2 border-[rgba(255,255,255,0.2)] shadow-lg"
             />
             <h3 className="roboto-condensed-light text-md text-gray-200">
-              {user.displayName || userData?.username || "Anonymous, please set a username!"}
+              {user.displayName ||
+                userData?.username ||
+                "Anonymous, please set a username!"}
             </h3>
           </aside>
           <button
@@ -334,7 +336,7 @@ function Profile() {
 
         <section className="mt-12">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl md:text-5xl roboto-condensed-bold text-white">
+            <h2 className="text-2xl max-sm:text-xl md:text-5xl max-sm:md:text-3xl roboto-condensed-bold text-white">
               Your Bookmarks
             </h2>
             <div className="flex gap-2">
@@ -342,7 +344,7 @@ function Profile() {
                 <button
                   key={type}
                   onClick={() => setFilter(type as "all" | "movie" | "tv")}
-                  className={`px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-200 ${
+                  className={`px-5 py-2.5 text-sm max-sm:text-xs font-medium rounded-full transition-all duration-200 ${
                     filter === type
                       ? "bg-white text-black shadow-sm"
                       : "bg-[#2A2A2D] text-white hover:bg-[#3A3A3D]"
@@ -358,7 +360,7 @@ function Profile() {
               No bookmarks yet. Add some movies or TV shows to your bookmarks!
             </p>
           ) : (
-            <div className="flex flex-wrap justify-center  gap-6">
+            <div className="flex flex-wrap justify-center gap-6 max-sm:gap-4">
               {filteredBookmarks?.map(
                 ({
                   id,
@@ -384,7 +386,7 @@ function Profile() {
                             ? { movieId: id?.toString() }
                             : { tvId: id?.toString() }
                         }
-                        className="w-[300px] flex-none h-[450px] rounded-xl shadow-lg flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden bg-[rgba(255,255,255,0.05)] backdrop-blur-sm  hover:ring-2 hover:ring-[rgba(255,255,255,0.2)] hover:rotate-2">
+                        className="w-[300px] max-sm:w-[200px] h-[450px] max-sm:h-[300px] flex-none rounded-xl shadow-lg flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden bg-[rgba(255,255,255,0.05)] backdrop-blur-sm hover:ring-2 hover:ring-[rgba(255,255,255,0.2)] hover:rotate-2">
                         <img
                           src={
                             poster_path
@@ -394,20 +396,20 @@ function Profile() {
                           alt={title}
                           className="w-full h-full object-cover rounded-xl"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.7)] to-transparent transition-opacity flex flex-col justify-end p-4 rounded-xl">
-                          <p className="text-gray-200 text-sm">
+                        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.7)] to-transparent transition-opacity flex flex-col justify-end p-4 max-sm:p-2 rounded-xl">
+                          <p className="text-gray-200 text-sm max-sm:text-xs">
                             {vote_average?.toFixed(1)}
                           </p>
-                          <p className="text-gray-200 text-sm">
+                          <p className="text-gray-200 text-sm max-sm:text-xs">
                             {release_date}
                           </p>
-                          <h3 className="text-white text-lg roboto-condensed-bold">
+                          <h3 className="text-white text-lg max-sm:text-sm roboto-condensed-bold">
                             {title}
                           </h3>
                         </div>
                       </Link>
                       <button
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-[rgba(50,50,50,0.7)] backdrop-blur-sm text-white text-sm roboto-condensed-light px-3 py-1 rounded-full border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(50,50,50,0.9)] transition-all duration-300"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-[rgba(50,50,50,0.7)] backdrop-blur-sm text-white text-sm max-sm:text-xs roboto-condensed-light px-3 py-1 rounded-full border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(50,50,50,0.9)] transition-all duration-300"
                         onClick={() =>
                           removeBookmarkMutation.mutate(id?.toString())
                         }

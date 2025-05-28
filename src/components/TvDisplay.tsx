@@ -66,9 +66,8 @@ const TvDisplay: React.FC<DisplayProps> = ({
 
   return (
     <section className="relative">
-     
       <div
-        className="overflow-x-scroll w-full h-[470px] scrollbar-hide"
+        className="overflow-x-scroll w-full min-h-[70px] scrollbar-hide"
         ref={scrollRef}>
         <div className="flex animate-scroll gap-12 scale-95">
           {isLoading && <Loading />}
@@ -86,13 +85,13 @@ const TvDisplay: React.FC<DisplayProps> = ({
                 <Link
                   to="/tv/$tvId"
                   params={{ tvId: id.toString() }}
-                  className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-[#333333] hover:rotate-3">
+                  className="w-[300px] h-[450px] max-sm:w-[220px] max-sm:h-[330px] flex-none rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-[#333333] hover:rotate-3">
                   <img
                     src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
                     alt={title}
                     className="w-full h-full object-cover rounded-lg overflow-hidden"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#222222] transition-opacity flex flex-col justify-end p-4 rounded-lg">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
                     <p className="text-sm flex items-center text-gray-200">
                       {vote_average.toFixed(1)}/10
                     </p>
@@ -102,6 +101,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                     </h3>
                   </div>
                 </Link>
+
                 {auth.currentUser && (
                   <>
                     {bookmarks?.includes(id.toString()) ? (

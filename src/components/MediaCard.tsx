@@ -62,7 +62,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
             ? { movieId: id.toString() }
             : { tvId: id.toString() }
         }
-        className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-3">
+        className="w-[300px] h-[450px] max-sm:w-[220px] max-sm:h-[330px] flex-none rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-3">
         <img
           src={
             poster_path
@@ -72,8 +72,10 @@ const MediaCard: React.FC<MediaCardProps> = ({
           alt={title}
           className="w-full h-full object-cover rounded-lg"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent transition-opacity flex flex-col justify-end p-4 rounded-lg">
-          <p className="text-sm flex items-center">{vote_average.toFixed(1)}/10</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
+          <p className="text-sm flex items-center">
+            {vote_average?.toFixed(1)}/10
+          </p>
           <p className="text-gray-300 text-sm">{release_date}</p>
           <h3 className="text-white text-lg roboto-condensed-bold">{title}</h3>
         </div>
@@ -82,15 +84,15 @@ const MediaCard: React.FC<MediaCardProps> = ({
         <>
           {isBookmarked ? (
             <button
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-all duration-300"
-              onClick={() => removeBookmarkMutation.mutate(id.toString())}
+              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:scale-105 transition-all duration-300"
+              onClick={() => removeBookmarkMutation.mutate(id?.toString())}
               disabled={removeBookmarkMutation.isPending}
               aria-label={`Remove ${type} from bookmarks`}>
               Remove Bookmark
             </button>
           ) : (
             <button
-              className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-all duration-300"
+              className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-black text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:scale-105 transition-all duration-300"
               onClick={() =>
                 addBookmarkMutation.mutate({
                   id,

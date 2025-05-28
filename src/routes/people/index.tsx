@@ -80,7 +80,7 @@ function People() {
       <title>Trailer Base - People</title>
 
       <section className="min-w-[300px] mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4">
-        <h1 className="text-5xl text-center geist-bold">
+        <h1 className="text-5xl max-sm:text-3xl text-center geist-bold">
           Trailer Base - People
         </h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
@@ -185,7 +185,7 @@ function People() {
             {popularLoading || popularError ? (
               <p className="text-gray-400">
                 {popularLoading ? (
-                  <Loading />
+                  <span>Loading popular people...</span>
                 ) : (
                   `Failed to load popular people: ${popularErrorObj?.message}`
                 )}

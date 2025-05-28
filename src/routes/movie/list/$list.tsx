@@ -52,7 +52,7 @@ function List() {
               list.replace(/_/g, " ").slice(1)}{" "}
             Movies
           </h1>
-          <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
+          <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
             {isLoading && <Loading />}
             {isError && <div>Error: {error.message}</div>}
 

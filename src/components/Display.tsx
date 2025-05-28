@@ -4,8 +4,7 @@ import Loading from "@/components/Loading";
 import { useQuery } from "@tanstack/react-query";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { useBookmarkMutations } from "./useBookmarkMutations"; // Adjust path as needed
-
+import { useBookmarkMutations } from "./useBookmarkMutations"; // Adjust path if needed
 
 interface MovieProps {
   id: number;
@@ -20,7 +19,7 @@ interface DisplayProps {
   isLoading: boolean;
   isError: boolean;
   error: any;
-  category: "movie" | "tv"; // Now required as a prop
+  category: "movie" | "tv";
 }
 
 const Display: React.FC<DisplayProps> = ({
@@ -34,7 +33,6 @@ const Display: React.FC<DisplayProps> = ({
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
 
-  // Fetch bookmark IDs to check if a movie/TV show is bookmarked
   const { data: bookmarks } = useQuery<string[]>({
     queryKey: ["bookmarks", auth.currentUser?.uid],
     queryFn: async () => {
@@ -51,14 +49,12 @@ const Display: React.FC<DisplayProps> = ({
     enabled: !!auth.currentUser,
   });
 
-  // Scroll left by 300px (width of one movie card)
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
     }
   };
 
-  // Scroll right by 300px
   const scrollRight = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
@@ -68,9 +64,9 @@ const Display: React.FC<DisplayProps> = ({
   return (
     <section className="relative">
       <div
-        className="overflow-x-scroll w-full h-[470px] scrollbar-hide"
+        className="overflow-x-scroll w-full min-h-[70px] scrollbar-hide"
         ref={scrollRef}>
-        <div className="flex animate-scroll gap-12 scale-95">
+        <div className="flex animate-scroll gap-12 scale-95 sm:gap-10 sm:scale-95 max-sm:gap-6 max-sm:scale-90 px-2">
           {isLoading && <Loading />}
           {isError && <p className="text-red-500">Error: {error.message}</p>}
 
@@ -82,7 +78,7 @@ const Display: React.FC<DisplayProps> = ({
               poster_path,
               vote_average,
             }: MovieProps) => (
-              <div className=" relative group" key={id}>
+              <div className="relative group" key={id}>
                 <Link
                   to={category === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
                   params={
@@ -90,27 +86,31 @@ const Display: React.FC<DisplayProps> = ({
                       ? { movieId: id.toString() }
                       : { tvId: id.toString() }
                   }
-                  className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-black hover:rotate-3">
+                  className="w-[300px] h-[450px] sm:w-[300px] sm:h-[450px] max-sm:w-[220px] max-sm:h-[360px]
+                    flex-none rounded-lg shadow-md flex items-center justify-center relative group
+                    hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden
+                    geist-light hover:ring-1 hover:ring-black hover:rotate-3">
                   <img
                     src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
                     alt={title}
                     className="w-full h-full object-cover rounded-lg overflow-hidden"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
-                    <p className="text-sm flex items-center">
+                    <p className="text-sm text-white flex items-center">
                       {vote_average.toFixed(1)}/10
                     </p>
                     <p className="text-gray-300 text-sm">{release_date}</p>
-                    <h3 className="text-white text-lg roboto-condensed-bold">
+                    <h3 className="text-white text-lg sm:text-lg max-sm:text-base roboto-condensed-bold">
                       {title}
                     </h3>
                   </div>
                 </Link>
+
                 {auth.currentUser && (
                   <>
                     {bookmarks?.includes(id.toString()) ? (
                       <button
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-opacity duration-300"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black text-white text-xs px-2 py-1 rounded-full hover:scale-105 transition-opacity duration-300"
                         onClick={() =>
                           removeBookmarkMutation.mutate(id.toString())
                         }
@@ -120,7 +120,7 @@ const Display: React.FC<DisplayProps> = ({
                       </button>
                     ) : (
                       <button
-                        className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-gray-700 transition-opacity duration-300"
+                        className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-black text-white text-xs px-2 py-1 rounded-full hover:scale-105 transition-opacity duration-300"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id,
@@ -128,7 +128,7 @@ const Display: React.FC<DisplayProps> = ({
                             poster_path,
                             vote_average,
                             release_date,
-                            category, // Use the prop!
+                            category,
                           })
                         }
                         disabled={addBookmarkMutation.isPending}
@@ -143,48 +143,39 @@ const Display: React.FC<DisplayProps> = ({
           )}
         </div>
       </div>
-      {/* Scroll Left Button */}
+
+      {/* Scroll Buttons */}
       <button
         onClick={scrollLeft}
         aria-label="Scroll Left"
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-white/20">
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-white/20 max-sm:hidden">
         <svg
           className="w-6 h-6 text-white"
-          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
           fill="none"
-          viewBox="0 0 24 24">
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}>
           <path
-            stroke="currentColor"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="2"
-            d="m15 19-7-7 7-7"
+            d="M15 19l-7-7 7-7"
           />
         </svg>
       </button>
-      {/* Scroll Right Button */}
+
       <button
         onClick={scrollRight}
         aria-label="Scroll Right"
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-white/20">
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-white/20 max-sm:hidden">
         <svg
           className="w-6 h-6 text-white"
-          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
           fill="none"
-          viewBox="0 0 24 24">
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="m9 5 7 7-7 7"
-          />
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
     </section>

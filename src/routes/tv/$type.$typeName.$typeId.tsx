@@ -59,7 +59,7 @@ function TypeComponent() {
         <h1 className="-mt-10 text-2xl text-left geist-bold capitalize">
           {typeName} TV Shows
         </h1>
-        <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-10">
+        <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
           {isLoading && <Loading />}
           {isError && <div>Error: {error?.message}</div>}
 

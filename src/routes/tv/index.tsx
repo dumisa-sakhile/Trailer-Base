@@ -1,11 +1,13 @@
-import { createFileRoute,Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import Header from "@/components/Header";
 import { getTrendingTV, getTVList } from "@/api/tv";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import TvDisplay from "@/components/TvDisplay";
-import MediaCard from "@/components/MediaCard"; // Updated to use MediaCard directly
-import  LinkTo  from "@/components/LinkTo"; // Assuming LinkTo is a custom component for navigation
+import MediaCard from "@/components/MediaCard";
+import LinkTo from "@/components/LinkTo";
 import Button from "@/components/Button";
+import Loading from "@/components/Loading";
+
 interface pageProps {
   page: number;
   period: string;
@@ -20,7 +22,7 @@ interface TVProps {
 }
 
 export const Route = createFileRoute("/tv/")({
-    validateSearch: (search: Record<string, string>): pageProps => ({
+  validateSearch: (search: Record<string, string>): pageProps => ({
     period: search.period ? search.period : "day",
     page: search.page ? parseInt(search.page) : 1,
   }),
@@ -86,8 +88,8 @@ function App() {
 
       {/* Trending Section */}
       <section className="min-w-[300px] mt-10 md:mt-0 w-full flex flex-col items-start justify-center gap-4 px-6 md:px-12">
-        <h1 className="w-full text-5xl text-center geist-bold">
-          Trailer Base -  TV Shows
+        <h1 className="w-full text-5xl max-sm:text-3xl text-center geist-bold">
+          Trailer Base - TV Shows
         </h1>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           These are the trending TV shows of the{" "}
@@ -100,13 +102,15 @@ function App() {
         <LinkTo
           url="/tv"
           search={{ period: "day", page: 1 }}
-          variant={period === "day" ? "primary" : "ghost"}>
+          variant={period === "day" ? "primary" : "ghost"}
+          className="text-lg max-sm:text-sm">
           Day
         </LinkTo>
         <LinkTo
           url="/tv"
           search={{ period: "week", page: 1 }}
-          variant={period === "week" ? "primary" : "ghost"}>
+          variant={period === "week" ? "primary" : "ghost"}
+          className="text-lg max-sm:text-sm">
           Week
         </LinkTo>
       </section>
@@ -123,13 +127,17 @@ function App() {
 
       {/* Popular TV Shows Section */}
       <section className="min-w-[300px] w-full flex flex-col items-start justify-center gap-4 px-6 md:px-12">
-        <h2 className="text-2xl lg:text-5xl text-white font-bold capitalize">
+        <h2 className="text-2xl max-sm:text-xl lg:text-5xl max-sm:lg:text-3xl text-white font-bold capitalize">
           Popular TV Shows
         </h2>
         <br />
-        {isPopularLoading && <div>Loading...</div>}
+        {isPopularLoading && (
+          <div>
+            <Loading />
+          </div>
+        )}
         {isPopularError && <div>Error: {popularError?.message}</div>}
-        <div className="w-full flex flex-wrap items-start justify-center gap-10">
+        <div className="w-full flex flex-wrap items-start justify-center gap-2 lg:gap-10">
           {popularData?.results?.map(
             ({
               id,
@@ -141,7 +149,7 @@ function App() {
               <MediaCard
                 key={id}
                 id={id}
-                title={title} // Already normalized to use 'name' as 'title'
+                title={title}
                 release_date={first_air_date}
                 poster_path={poster_path}
                 vote_average={vote_average}
@@ -164,13 +172,17 @@ function App() {
 
       {/* Top Rated TV Shows Section */}
       <section className="min-w-[300px] w-full flex flex-col items-start justify-center gap-4 px-6 md:px-12">
-        <h2 className="text-2xl lg:text-5xl text-white font-bold capitalize">
+        <h2 className="text-2xl max-sm:text-xl lg:text-5xl max-sm:lg:text-3xl text-white font-bold capitalize">
           Top Rated TV Shows
-        </h2>{" "}
+        </h2>
         <br />
-        {isTopRatedLoading && <div>Loading...</div>}
+        {isTopRatedLoading && (
+          <div>
+            <Loading />
+          </div>
+        )}
         {isTopRatedError && <div>Error: {topRatedError?.message}</div>}
-        <div className="w-full flex flex-wrap items-start justify-center gap-10">
+        <div className="w-full flex flex-wrap items-start justify-center gap-2 lg:gap-10">
           {topRatedData?.results?.map(
             ({
               id,
@@ -182,7 +194,7 @@ function App() {
               <MediaCard
                 key={id}
                 id={id}
-                title={title} // Already normalized to use 'name' as 'title'
+                title={title}
                 release_date={first_air_date}
                 poster_path={poster_path}
                 vote_average={vote_average}
