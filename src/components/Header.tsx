@@ -1,94 +1,47 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import React, { useEffect, useState, useRef } from "react";
-import logo from "../logo.svg";
-import male from "/male.jpg?url"; // Fallback profile image
-import female from "/female.jpg?url"; // Fallback profile image
 import { useSearchContext } from "@/context/searchContext";
-import { auth, db } from "../config/firebase"; // Adjust path as needed
+import { auth, db } from "../config/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import tvGenres from "@/data/tvGenres"; // Import TV genres data
-import movieGenres from "@/data/movieGenres"; // Import Movie genres data
+import tvGenres from "@/data/tvGenres";
+import movieGenres from "@/data/movieGenres";
+import male from "/male.jpg?url";
+import female from "/female.jpg?url";
+import logo from "./../logo.svg";
+import {
+  TVIcon,
+  LoginIcon,
+  LogoutIcon,
+  MovieIcon,
+  SearchIcon,
+} from "@/components/icons/Icons";
 
-// Interface for user data in Firestore
 interface UserData {
   gender?: string;
 }
 
-// TV Icon as JSX
-const TVIcon = ({ fill }: { fill: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="24px"
-    viewBox="0 -960 960 960"
-    width="24px"
-    fill={fill}>
-    <path d="M400-376.92 623.08-520 400-663.08v286.16ZM360-160v-80H184.62q-27.62 0-46.12-18.5Q120-277 120-304.62v-430.76q0-27.62 18.5-46.12Q157-800 184.62-800h590.76q27.62 0 46.12 18.5Q840-763 840-735.38v430.76q0 27.62-18.5 46.12Q803-240 775.38-240H600v80H360ZM184.62-280h590.76q9.24 0 16.93-7.69 7.69-7.69 7.69-16.93v-430.76q0-9.24-7.69-16.93-7.69-7.69-16.93-7.69H184.62q-9.24 0-16.93 7.69-7.69 7.69-7.69 16.93v430.76q0 9.24 7.69 16.93 7.69 7.69 16.93 7.69ZM160-280v-480 480Z" />
-  </svg>
-);
-
-// Movie Icon as JSX
-const MovieIcon = ({ fill }: { fill: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="24px"
-    viewBox="0 -960 960 960"
-    width="24px"
-    fill={fill}>
-    <path d="M740-667.69q13.15 0 22.73-9.58t9.58-22.73q0-13.15-9.58-22.73T740-732.31q-13.15 0-22.73 9.58T707.69-700q0 13.15 9.58 22.73t22.73 9.58Zm-160 0q13.15 0 22.73-9.58t9.58-22.73q0-13.15-9.58-22.73T580-732.31q-13.15 0-22.73 9.58T547.69-700q0 13.15 9.58 22.73t22.73 9.58Zm-10.77 136h181.54q-3.85-26.54-30.12-43.58T660-592.31q-35.92 0-62.19 17.04-26.27 17.04-28.58 43.58ZM300.18-120q-83.26 0-141.72-58.33Q100-236.67 100-320v-240h400v240q0 83.33-58.28 141.67Q383.44-120 300.18-120Zm-.18-40q66 0 113-47t47-113v-200H140v200q0 66 47 113t113 47Zm360-240q-26.77 0-54.96-7.42-28.19-7.43-46.58-20.73L560-476q21.54 17 46.5 26.5T660-440q66 0 113-47t47-113v-200H500v180h-40v-220h400v240q0 83.33-58.33 141.67Q743.33-400 660-400Zm-440 12.31q13.15 0 22.73-9.58t9.58-22.73q0-13.15-9.58-22.73T220-452.31q-13.15 0-22.73 9.58T187.69-420q0 13.15 9.58 22.73t22.73 9.58Zm160 0q13.15 0 22.73-9.58t9.58-22.73q0-13.15-9.58-22.73T380-452.31q-13.15 0-22.73 9.58T347.69-420q0 13.15 9.58 22.73t22.73 9.58Zm-80 136q35.92 0 62.19-17.04 26.27-17.04 28.58-43.58H209.23q2.31 26.54 28.58 43.58T300-251.69Zm0-88.31Zm360-280Z" />
-  </svg>
-);
-
-// Login Icon as JSX
-const LoginIcon = ({ fill }: { fill: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="20px"
-    viewBox="0 -960 960 960"
-    width="20px"
-    fill={fill}>
-    <path d="M480-120q-83 0-141.5-58.5T280-320v-40h80v40q0 50 35 85t85 35q50 0 85-35t35-85v-320q0-50-35-85t-85-35q-50 0-85 35t-35 85v40h-80v-40q0-83 58.5-141.5T480-840q83 0 141.5 58.5T680-640v320q0 83-58.5 141.5T480-120Zm-40-440v-80h80v80h-80Zm40 360q33 0 56.5-23.5T560-280v-40h-80v40q0 33-23.5 56.5T400-200q-33 0-56.5-23.5T320-280v-40h-80v40q0 66 47 113t113 47Z" />
-  </svg>
-);
-
-// Logout Icon as JSX
-const LogoutIcon = ({ fill }: { fill: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="20px"
-    viewBox="0 -960 960 960"
-    width="20px"
-    fill={fill}>
-    <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-56-56 104-104H360v-80h328L584-624l56-56 200 200-200 200Z" />
-  </svg>
-);
-
 const Header: React.FC = () => {
   const { setStatus } = useSearchContext();
   const navigate = useNavigate();
-
-  // State to hold current user info
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isGenrePopupOpen, setIsGenrePopupOpen] = useState(false); // State for genre popup
-  const [showTVGenres, setShowTVGenres] = useState(true); // State to toggle between TV and Movie genres
-  const genreButtonRef = useRef<HTMLButtonElement>(null); // Ref for buttons
-  const popupRef = useRef<HTMLDivElement>(null); // Ref for popup
+  const [isGenrePopupOpen, setIsGenrePopupOpen] = useState(false);
+  const [showTVGenres, setShowTVGenres] = useState(true);
+  const genreButtonRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
-  // Listen for auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
-  // Fetch user data (gender) from Firestore
   const { data: userData } = useQuery<UserData>({
     queryKey: ["userData", user?.uid],
     queryFn: async () => {
@@ -99,7 +52,6 @@ const Header: React.FC = () => {
     enabled: !!user,
   });
 
-  // Handle clicks outside the popup to close it
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (
@@ -111,7 +63,6 @@ const Header: React.FC = () => {
         setIsGenrePopupOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -120,24 +71,21 @@ const Header: React.FC = () => {
     try {
       await signOut(auth);
       setUser(null);
-      navigate({ to: "/auth" }); // Redirect to login page after logout
+      navigate({ to: "/auth" });
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
-  // Determine fallback image based on Gender
   const getFallbackImage = () => {
     if (user?.photoURL) return user.photoURL;
     return userData?.gender === "female" ? female : male;
   };
 
-  // Toggle genre dropdown
   const toggleGenre = () => {
     setIsGenrePopupOpen(!isGenrePopupOpen);
   };
 
-  // Toggle between TV and Movie genres
   const toggleGenreType = () => {
     setShowTVGenres(!showTVGenres);
   };
@@ -146,20 +94,9 @@ const Header: React.FC = () => {
     <header className="fixed top-0 left-0 bg-black backdrop-blur-md shadow-lg z-20 w-full roboto-condensed">
       {/* Mobile Layout */}
       <div className="md:hidden relative min-h-[110px]">
-        {/* Navigation Bar (Top, Absolute) */}
-        <div className="absolute top-4 left-0 right-0 mx-4 z-10 flex items-center justify-between">
-          {/* Navigation Links (Left) */}
-          <nav className="flex gap-4 text-xs text-gray-200">
-            <Link
-              to="/"
-              search={{ period: "day", page: 1 }}
-              className="hover:text-white transition-all duration-300"
-              activeProps={{ className: "text-white underline" }}
-              onClick={() =>
-                navigate({ to: "/", search: { period: "day", page: 1 } })
-              }>
-              Home
-            </Link>
+        {/* Navigation Bar (Top, Centered) */}
+        <div className="absolute top-4 left-0 right-0 flex items-center justify-center">
+          <nav className="flex items-center gap-4 text-sm text-gray-200">
             <Link
               to="/"
               search={{ period: "day", page: 1 }}
@@ -186,14 +123,10 @@ const Header: React.FC = () => {
               activeProps={{ className: "text-white underline" }}>
               People
             </Link>
-          </nav>
-
-          {/* Profile/Login Section (Right) */}
-          <div className="flex items-center gap-2">
             {!loading && !user && (
               <Link to="/auth">
                 <button
-                  className="flex items-center justify-center gap-1 px-3 py-1.5 max-sm:px-2 max-sm:py-1 w-20 h-8 max-sm:w-16 max-sm:h-6 bg-white text-black rounded-lg text-xs max-sm:text-[0.65rem] font-semibold hover:bg-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/20"
+                  className="flex items-center justify-center gap-1 px-3 py-1.5 w-20 h-8 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/20"
                   aria-label="Login">
                   <LoginIcon fill="#000000" />
                   Login
@@ -201,25 +134,15 @@ const Header: React.FC = () => {
               </Link>
             )}
             {!loading && user && (
-              <>
-                <Link to="/auth/profile" aria-label="Profile">
-                  <img
-                    src={getFallbackImage()}
-                    alt={user.displayName || "Profile"}
-                    className="w-6 h-6 max-sm:w-5 max-sm:h-5 rounded-full hover:scale-110 transition-all duration-300 border border-gray-700/20 shadow-sm"
-                    title={user.displayName || "User"}
-                  />
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center justify-center gap-1 px-3 py-1.5 max-sm:px-2 max-sm:py-1 w-20 h-8 max-sm:w-16 max-sm:h-6 bg-white text-black rounded-lg text-xs max-sm:text-[0.65rem] font-semibold hover:bg-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/20"
-                  aria-label="Logout">
-                  <LogoutIcon fill="#000000" />
-                  Logout
-                </button>
-              </>
+              <button
+                onClick={handleLogout}
+                className="flex items-center justify-center gap-1 px-3 py-1.5 w-20 h-8 bg-white text-black rounded-lg text-sm font-semibold hover:bg-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/20"
+                aria-label="Logout">
+                <LogoutIcon fill="#000000" />
+                Logout
+              </button>
             )}
-          </div>
+          </nav>
         </div>
 
         {/* Search Bar (Below Navigation) */}
@@ -229,32 +152,32 @@ const Header: React.FC = () => {
               type="search"
               name="search"
               placeholder="Search for TV shows or movies..."
-              className="w-full h-10 max-sm:h-10 pl-12 max-sm:pl-12 pr-6 max-sm:pr-6 bg-[#111] text-gray-200 text-sm max-sm:text-sm roboto-condensed rounded-full border border-[#444444]/50 focus:border-[#555555] focus:ring-2 focus:ring-[#555555]/50 outline-none transition-all duration-300 placeholder:text-gray-400 placeholder:font-light shadow-md"
+              className="w-full h-12 pl-12 pr-16 bg-[#111] text-gray-200 text-sm roboto-condensed rounded-full border border-[#444444]/50 focus:border-[#555555] focus:ring-2 focus:ring-[#555555]/50 outline-none transition-all duration-300 placeholder:text-gray-400 placeholder:font-light shadow-md"
               autoComplete="off"
               onClick={() => setStatus(true)}
             />
-            <svg
-              className="w-5 h-5 max-sm:w-5 max-sm:h-5 absolute left-4 max-sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-300"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
-              viewBox="0 0 24 24">
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeWidth="1.5"
-                d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-              />
-            </svg>
+            <SearchIcon
+              fill="#D1D5DB"
+            />
+            {!loading && user && (
+              <Link
+                to="/auth/profile"
+                aria-label="Profile"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                <img
+                  src={getFallbackImage()}
+                  alt={user.displayName || "Profile"}
+                  className="w-8 h-8 rounded-full hover:scale-110 transition-all duration-300 border border-gray-700/20 shadow-sm"
+                  title={user.displayName || "User"}
+                />
+              </Link>
+            )}
           </nav>
         </div>
       </div>
 
       {/* Desktop Layout */}
       <div className="hidden md:flex items-center justify-between px-8 py-6 md:px-16 h-[100px]">
-        {/* Logo & Navigation */}
         <nav className="flex items-center gap-12">
           <Link
             to="/"
@@ -276,17 +199,6 @@ const Header: React.FC = () => {
               onClick={() =>
                 navigate({ to: "/", search: { period: "day", page: 1 } })
               }>
-              Home
-            </Link>
-            <Link
-              to="/"
-              search={{ period: "day", page: 1 }}
-              activeOptions={{ exact: true }}
-              className="hover:text-white hover:underline underline-offset-8 transition-all duration-300"
-              activeProps={{ className: "text-white underline" }}
-              onClick={() =>
-                navigate({ to: "/", search: { period: "day", page: 1 } })
-              }>
               Movies
             </Link>
             <Link
@@ -308,8 +220,6 @@ const Header: React.FC = () => {
             </Link>
           </div>
         </nav>
-
-        {/* Search */}
         <nav className="flex items-center relative">
           <input
             type="search"
@@ -319,24 +229,11 @@ const Header: React.FC = () => {
             autoComplete="off"
             onClick={() => setStatus(true)}
           />
-          <svg
-            className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-300"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24">
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeWidth="1.5"
-              d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-            />
-          </svg>
+          <SearchIcon
+            fill="#D1D5DB"
+            
+          />
         </nav>
-
-        {/* Login & Genre */}
         <nav className="flex items-center gap-6 relative">
           <button
             ref={genreButtonRef}
@@ -361,14 +258,11 @@ const Header: React.FC = () => {
             </svg>
             Genre
           </button>
-
-          {/* Genre Popup */}
           {isGenrePopupOpen && (
             <div
               ref={popupRef}
               className="absolute top-14 right-0 bg-[#1A1A1A] rounded-2xl shadow-xl p-8 w-[400px] max-h-[600px] overflow-y-auto z-30 transition-all duration-300 ease-in-out">
               <div className="space-y-6">
-                {/* Toggle Buttons */}
                 <div className="flex justify-around mb-4">
                   <button
                     onClick={toggleGenreType}
@@ -393,8 +287,6 @@ const Header: React.FC = () => {
                     Movies
                   </button>
                 </div>
-
-                {/* Genres */}
                 <div>
                   <br />
                   <div className="flex flex-wrap gap-4 items-center justify-start">
@@ -420,7 +312,6 @@ const Header: React.FC = () => {
               </div>
             </div>
           )}
-
           {!loading && !user && (
             <Link to="/auth">
               <button

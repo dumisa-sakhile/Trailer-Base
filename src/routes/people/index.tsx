@@ -75,7 +75,7 @@ function People() {
   };
 
   return (
-    <div className="w-full mt-[150px] md:mt-[120px] flex flex-col gap-5 py-4 min-h-screen bg-black text-gray-200">
+    <div className="w-full mt-[100px] md:mt-[120px] flex flex-col gap md:gap-5  min-h-10">
       <Header />
       <title>Trailer Base - People</title>
 
@@ -175,7 +175,7 @@ function People() {
       </section>
 
       {/* Popular People (paginated, no ugly box) */}
-      <section className="pt-10 pb-10 bg-black text-gray-200 min-w-[300px] mt-10 md:mt-0 flex flex-col items-center justify-center gap-6">
+      <section className="pt-10 pb-10 bg-black text-gray-200 min-w-[300px] md:mt-0 flex flex-col items-center justify-center gap-6">
         <h2 className="text-3xl text-center geist-bold">Popular People</h2>
         <p className="roboto-condensed-light w-[300px] md:w-full text-center">
           Explore some of the most popular stars in film and television.
