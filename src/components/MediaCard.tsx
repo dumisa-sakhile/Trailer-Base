@@ -37,7 +37,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
 
   // Check if this media item is bookmarked
   const { data: isBookmarked } = useQuery<boolean>({
-    queryKey: ["bookmarks", auth.currentUser?.uid, id.toString()],
+    queryKey: ["bookmarks", auth.currentUser?.uid, id?.toString()],
     queryFn: async () => {
       if (!auth.currentUser) return false;
       const bookmarksRef = collection(
@@ -47,7 +47,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
         "bookmarks"
       );
       const snapshot = await getDocs(bookmarksRef);
-      return snapshot.docs.some((doc) => doc.id === id.toString());
+      return snapshot.docs.some((doc) => doc.id === id?.toString());
     },
     enabled: !!auth.currentUser,
   });
@@ -58,8 +58,8 @@ const MediaCard: React.FC<MediaCardProps> = ({
         to={type === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
         params={
           type === "movie"
-            ? { movieId: id.toString() }
-            : { tvId: id.toString() }
+            ? { movieId: id?.toString() }
+            : { tvId: id?.toString() }
         }
         className="w-[260px] h-[390px] sm:w-[260px] sm:h-[390px] max-sm:w-[150px] max-sm:h-[240px]
           flex-none rounded-md shadow-sm flex items-center justify-center relative group
