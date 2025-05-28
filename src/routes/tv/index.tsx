@@ -7,6 +7,7 @@ import MediaCard from "@/components/MediaCard";
 import LinkTo from "@/components/LinkTo";
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
+import Footer from "@/components/Footer";
 
 interface pageProps {
   page: number;
@@ -211,8 +212,7 @@ function App() {
           <Button variant="ghost">View All Top Rated TV Shows</Button>
         </Link>
       </section>
-      <br />
-      <br />
+      <Footer/>
     </div>
   );
 }

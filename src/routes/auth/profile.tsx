@@ -190,6 +190,7 @@ function Profile() {
             </div>
           )}
         </section>
+        
       </div>
 
       <EditProfileForm

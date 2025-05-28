@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "@/components/Button";
 import CastCard from "@/components/PeopleCastCard";
 import Loading from "@/components/Loading";
+import Footer from "@/components/Footer";
 
 interface pageProps {
   page?: number;
@@ -261,6 +262,7 @@ function People() {
           </div>
         )}
       </section>
+      <Footer/>
     </div>
   );
 }
