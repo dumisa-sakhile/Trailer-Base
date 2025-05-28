@@ -16,7 +16,7 @@ const Button: React.FC<ButtonProps> = ({
   children,
 }) => {
   const baseClasses = `
-    w-32 h-12 max-sm:w-24 max-sm:h-10
+    min-w-32 h-12 max-sm:w-24 max-sm:h-10
     px-4 py-2 max-sm:px-3 max-sm:py-1.5
     text-sm max-sm:text-xs
     rounded-2xl geist-bold text-[#131313]

@@ -275,7 +275,7 @@ function TVDetails() {
       )}
 
       {/* TV show details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] md:p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
         <div className="relative md:static">
           <img
@@ -547,7 +547,7 @@ function TVDetails() {
         <h1 className="text-2xl md:text-5xl text-left geist-bold">
           Recommendations
         </h1>
-        <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10">
+        <section className="w-full min-h-1/2 flex flex-wrap items-start justify-center gap-2 md:gap-10">
           {recommendations?.results?.length === 0 && (
             <p>No recommendations available</p>
           )}

@@ -55,11 +55,11 @@ function TypeComponent() {
   return (
     <>
       <HeadContent />
-      <div className="fixed top-0 left-0 w-full h-full pt-[10%] md:pt-[5%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto">
+      <div className="fixed top-0 left-0 w-full h-full pt-[15%] md:pt-[5%] md:p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto">
         <h1 className="-mt-10 text-2xl text-left geist-bold capitalize">
           {typeName} TV Shows
         </h1>
-        <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
+        <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
           {isLoading && <Loading />}
           {isError && <div>Error: {error?.message}</div>}
 

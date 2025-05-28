@@ -126,7 +126,7 @@ function App() {
       <br />
 
       {/* Popular TV Shows Section */}
-      <section className="min-w-[300px] w-full flex flex-col items-start justify-center gap-4 px-6 md:px-12">
+      <section className="w-full flex flex-col items-start justify-center gap-4 md:px-12">
         <h2 className="text-2xl max-sm:text-xl lg:text-5xl max-sm:lg:text-3xl text-white font-bold capitalize">
           Popular TV Shows
         </h2>
@@ -137,7 +137,7 @@ function App() {
           </div>
         )}
         {isPopularError && <div>Error: {popularError?.message}</div>}
-        <div className="w-full flex flex-wrap items-start justify-center gap-2 lg:gap-10">
+        <div className="w-full flex flex-wrap items-start justify-center gap-2 lg:gap-10 ">
           {popularData?.results?.map(
             ({
               id,
@@ -171,7 +171,7 @@ function App() {
       <br />
 
       {/* Top Rated TV Shows Section */}
-      <section className="min-w-[300px] w-full flex flex-col items-start justify-center gap-4 px-6 md:px-12">
+      <section className="min-w-[300px] w-full flex flex-col items-start justify-center gap-4  md:px-12">
         <h2 className="text-2xl max-sm:text-xl lg:text-5xl max-sm:lg:text-3xl text-white font-bold capitalize">
           Top Rated TV Shows
         </h2>

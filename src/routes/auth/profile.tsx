@@ -124,7 +124,7 @@ function Profile() {
     <>
       <title>Trailer Base - Profile</title>
 
-      <div className="w-full min-h-screen flex flex-col gap-12 py-8 px-4 md:px-10 bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
+      <div className="w-full min-h-screen flex flex-col gap-12 py-8 md:px-4 md:px-10 bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
         <h1 className="text-4xl max-sm:text-2xl md:text-5xl text-left roboto-condensed-bold tracking-tight text-white">
           Profile
         </h1>
@@ -175,7 +175,7 @@ function Profile() {
               No bookmarks yet. Add some movies or TV shows to your bookmarks!
             </p>
           ) : (
-            <div className="flex flex-wrap justify-center gap-6 max-sm:gap-4">
+            <div className="w-full flex flex-wrap justify-center gap-6 max-sm:gap-2">
               {filteredBookmarks?.map((bookmark) => (
                 <MediaCard
                   key={`${bookmark?.category}-${bookmark?.id}`}

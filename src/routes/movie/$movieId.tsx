@@ -455,7 +455,7 @@ function MovieDetails() {
           {" "}
           Recommendations
         </h1>
-        <section className="w-full min-h-1/2 p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
+        <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
           {recommendations?.results.length === 0 && (
             <p>No recommendations available</p>
           )}

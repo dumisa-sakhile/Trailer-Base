@@ -5,7 +5,6 @@ import { collection, getDocs } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import { useBookmarkMutations } from "./useBookmarkMutations";
 
-
 interface Bookmark {
   id: number;
   title: string;
@@ -22,7 +21,7 @@ interface MediaCardProps {
   release_date: string;
   poster_path: string | null;
   vote_average: number;
-  type: "movie" | "tv"; 
+  type: "movie" | "tv";
 }
 
 const MediaCard: React.FC<MediaCardProps> = ({
@@ -62,7 +61,10 @@ const MediaCard: React.FC<MediaCardProps> = ({
             ? { movieId: id.toString() }
             : { tvId: id.toString() }
         }
-        className="w-[300px] h-[450px] max-sm:w-[220px] max-sm:h-[330px] flex-none rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-3">
+        className="w-[260px] h-[390px] sm:w-[260px] sm:h-[390px] max-sm:w-[150px] max-sm:h-[240px]
+          flex-none rounded-md shadow-sm flex items-center justify-center relative group
+          hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden
+          geist-light hover:ring-1 hover:ring-gray-400 hover:rotate-2">
         <img
           src={
             poster_path
@@ -70,29 +72,33 @@ const MediaCard: React.FC<MediaCardProps> = ({
               : "https://github.com/dumisa-sakhile/CinemaLand/blob/main/public/poster.png?raw=true"
           }
           alt={title}
-          className="w-full h-full object-cover rounded-lg"
+          className="w-full h-full object-cover rounded-md"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
-          <p className="text-sm flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-2 rounded-md max-sm:p-1.5">
+          <p className="text-[10px] sm:text-[10px] max-sm:text-[8px] text-gray-300 flex items-center">
             {vote_average?.toFixed(1)}/10
           </p>
-          <p className="text-gray-300 text-sm">{release_date}</p>
-          <h3 className="text-white text-lg roboto-condensed-bold">{title}</h3>
+          <p className="text-[10px] sm:text-[10px] max-sm:text-[8px] text-gray-300">
+            {release_date}
+          </p>
+          <h3 className="text-white text-sm sm:text-sm max-sm:text-xs roboto-condensed-bold">
+            {title}
+          </h3>
         </div>
       </Link>
       {auth.currentUser && (
         <>
           {isBookmarked ? (
             <button
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:scale-105 transition-all duration-300"
+              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-black text-white text-[10px] max-sm:text-[8px] roboto-condensed-light px-2 py-0.5 rounded-full hover:scale-105 transition-all duration-300"
               onClick={() => removeBookmarkMutation.mutate(id?.toString())}
               disabled={removeBookmarkMutation.isPending}
               aria-label={`Remove ${type} from bookmarks`}>
-              Remove Bookmark
+              Remove
             </button>
           ) : (
             <button
-              className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-black text-white text-sm roboto-condensed-light px-3 py-1 rounded-full hover:scale-105 transition-all duration-300"
+              className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 bg-black text-white text-[10px] max-sm:text-[8px] roboto-condensed-light px-2 py-0.5 rounded-full hover:scale-105 transition-all duration-300"
               onClick={() =>
                 addBookmarkMutation.mutate({
                   id,
@@ -105,7 +111,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               }
               disabled={addBookmarkMutation.isPending}
               aria-label={`Add ${type} to bookmarks`}>
-              Add Bookmark
+              Add
             </button>
           )}
         </>
