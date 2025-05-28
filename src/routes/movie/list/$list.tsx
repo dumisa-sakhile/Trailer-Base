@@ -82,21 +82,21 @@ function List() {
         </div>
 
         {!isLoading && !isError && (
-          <footer className="fixed bottom-6 left-0 right-0 flex items-center justify-center w-full gap-3 touch-none z-20">
-            <section className="flex items-center gap-3 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg px-6 py-3 rounded-xl shadow-md border border-gray-700/50 font-sans">
+          <footer className="fixed bottom-4 left-0 right-0 flex items-center justify-center w-full gap-2 touch-none z-20">
+            <section className="flex items-center gap-2 bg-[rgba(0,0,0,0.85)] backdrop-blur-md px-4 py-2 max-sm:px-3 max-sm:py-1.5 rounded-lg shadow-sm border border-gray-600/50 font-sans">
               <Link
                 to="."
                 params={{ list: list }}
                 search={(prev) => ({ ...prev, page: page - 1 })}
-                className={`flex items-center gap-2.5 px-6 py-3 text-gray-200 font-medium text-base capitalize rounded-lg transition-all duration-300 ease-in-out shadow-sm border border-gray-700/50 ${
+                className={`flex items-center gap-1.5 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-sm max-sm:text-xs roboto-condensed-bold capitalize rounded-md transition-all duration-200 ease-in-out border border-gray-600/50 ${
                   page === 1
                     ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-white hover:text-black hover:shadow-md hover:scale-105"
+                    : "hover:bg-gray-800 hover:text-white hover:shadow-md hover:scale-105"
                 }`}
                 disabled={page === 1}
                 aria-label="Go to previous page">
                 <svg
-                  className="w-7 h-7"
+                  className="w-5 h-5 max-sm:w-4 max-sm:h-4"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -107,30 +107,30 @@ function List() {
                     stroke="currentColor"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="1.8"
+                    strokeWidth="2"
                     d="m15 19-7-7 7-7"
                   />
                 </svg>
-                Previous
+                Prev
               </Link>
-              <span className="text-gray-200 font-medium text-base capitalize px-4">
-                {page?.toLocaleString()} of{" "}
-                {data?.total_pages?.toLocaleString() ?? "?"} pages
+              <span className="text-gray-200 font-medium text-sm max-sm:text-xs roboto-condensed-light px-3 max-sm:px-2">
+                {page?.toLocaleString()} /{" "}
+                {data?.total_pages?.toLocaleString() ?? "?"}
               </span>
               <Link
                 to="."
                 params={{ list: list }}
                 search={(prev) => ({ ...prev, page: page + 1 })}
-                className={`flex items-center gap-2.5 px-6 py-3 text-gray-200 font-medium text-base capitalize rounded-lg transition-all duration-300 ease-in-out shadow-sm border border-gray-700/50 ${
+                className={`flex items-center gap-1.5 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-sm max-sm:text-xs roboto-condensed-bold capitalize rounded-md transition-all duration-200 ease-in-out border border-gray-600/50 ${
                   data?.total_pages === page
                     ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-white hover:text-black hover:shadow-md hover:scale-105"
+                    : "hover:bg-gray-800 hover:text-white hover:shadow-md hover:scale-105"
                 }`}
                 disabled={data?.total_pages === page}
                 aria-label="Go to next page">
                 Next
                 <svg
-                  className="w-7 h-7"
+                  className="w-5 h-5 max-sm:w-4 max-sm:h-4"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -141,7 +141,7 @@ function List() {
                     stroke="currentColor"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth="1.8"
+                    strokeWidth="2"
                     d="m9 5 7 7-7 7"
                   />
                 </svg>
