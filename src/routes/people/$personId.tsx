@@ -228,7 +228,7 @@ function PersonDetailsPage() {
                   onClick={() => scrollCarousel(movieCastRef, "left")}
                   aria-label="Scroll left"
                   className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24">
                     <path
                       d="M15 19l-7-7 7-7"
                       stroke="currentColor"
@@ -241,7 +241,7 @@ function PersonDetailsPage() {
                   onClick={() => scrollCarousel(movieCastRef, "right")}
                   aria-label="Scroll right"
                   className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24">
                     <path
                       d="M9 5l7 7-7 7"
                       stroke="currentColor"
