@@ -117,7 +117,7 @@ function PersonDetailsPage() {
           alt={person?.name}
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-cover fixed opacity-20 block lg:hidden filter grayscale"
+          className="w-full h-full object-cover fixed opacity-20 block lg:hidden"
           src={`https://image.tmdb.org/t/p/original/${person?.profile_path}`}
         />
       )}
@@ -138,7 +138,7 @@ function PersonDetailsPage() {
                   : FALLBACK_POSTER
               }
               alt={person?.name || "Profile Image"}
-              className="w-64 h-auto rounded-lg shadow-lg filter "
+              className="w-64 h-auto scale-75 md:scale-100 rounded-full md:rounded-lg shadow-lg filter "
             />
           </div>
 
