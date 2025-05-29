@@ -6,13 +6,11 @@ import type { User } from "firebase/auth";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "@/components/Loading";
-import MediaCard from "@/components/MediaCard"; // Adjust path as needed
-import EditProfileForm from "@/components/EditProfileForm"; // Adjust path as needed
+import MediaCard from "@/components/MediaCard";
+import EditProfileForm from "@/components/EditProfileForm";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
 
-
-// Interface for bookmark data
 export interface Bookmark {
   id: number;
   title: string;
@@ -22,7 +20,6 @@ export interface Bookmark {
   category: "movie" | "tv";
 }
 
-// Interface for user data in Firestore
 interface UserData {
   username?: string;
   gender?: string;
@@ -36,7 +33,6 @@ function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "movie" | "tv">("all");
-  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -56,9 +52,10 @@ function Profile() {
   });
 
   const {
-    data: bookmarks,
+    data: bookmarks = [],
     isLoading,
     error,
+    refetch,
   } = useQuery<Bookmark[]>({
     queryKey: ["bookmarks", user?.uid],
     queryFn: async () => {
@@ -71,11 +68,10 @@ function Profile() {
         if (
           typeof data?.id === "number" &&
           typeof data?.title === "string" &&
-          (data?.poster_path === null ||
-            typeof data?.poster_path === "string") &&
           typeof data?.vote_average === "number" &&
           typeof data?.release_date === "string" &&
-          ["movie", "tv"].includes(data?.category)
+          ["movie", "tv"].includes(data?.category) &&
+          (data?.poster_path === null || typeof data?.poster_path === "string")
         ) {
           bookmarksData.push(data as Bookmark);
         } else {
@@ -85,11 +81,19 @@ function Profile() {
       return bookmarksData;
     },
     enabled: !!user,
+    refetchOnMount: "always",
   });
 
-  const filteredBookmarks = bookmarks?.filter((bookmark) =>
-    filter === "all" ? true : bookmark?.category === filter
-  );
+  useEffect(() => {
+    if (user) {
+      refetch();
+    }
+  }, [user, refetch]);
+
+  const filteredBookmarks =
+    bookmarks?.filter((bookmark) =>
+      filter === "all" ? true : bookmark?.category === filter
+    ) || [];
 
   const getFallbackImage = () => {
     if (user?.photoURL) return user.photoURL;
@@ -104,10 +108,6 @@ function Profile() {
         </p>
       </div>
     );
-  }
-
-  if (isLoading) {
-    return <Loading />;
   }
 
   if (error) {
@@ -170,27 +170,32 @@ function Profile() {
               ))}
             </div>
           </div>
-          {filteredBookmarks?.length === 0 ? (
+          {isLoading ? (
+            <Loading />
+          ) : filteredBookmarks?.length === 0 ? (
             <p className="text-gray-300 text-lg roboto-condensed-light bg-[rgba(255,255,255,0.05)] backdrop-blur-sm p-4 rounded-lg border border-[rgba(255,255,255,0.1)]">
               No bookmarks yet. Add some movies or TV shows to your bookmarks!
             </p>
           ) : (
             <div className="w-full flex flex-wrap justify-center gap-6 max-sm:gap-2">
-              {filteredBookmarks?.map((bookmark) => (
-                <MediaCard
-                  key={`${bookmark?.category}-${bookmark?.id}`}
-                  id={bookmark?.id}
-                  title={bookmark?.title}
-                  release_date={bookmark?.release_date}
-                  poster_path={bookmark?.poster_path}
-                  vote_average={bookmark?.vote_average}
-                  type={bookmark?.category}
-                />
-              ))}
+              {filteredBookmarks
+                ?.filter(
+                  (bookmark) => bookmark && bookmark.id && bookmark.title
+                )
+                .map((bookmark) => (
+                  <MediaCard
+                    key={`${bookmark.category}-${bookmark.id}`}
+                    id={bookmark.id}
+                    title={bookmark.title}
+                    release_date={bookmark.release_date}
+                    poster_path={bookmark.poster_path}
+                    vote_average={bookmark.vote_average}
+                    type={bookmark.category}
+                  />
+                ))}
             </div>
           )}
         </section>
-        
       </div>
 
       <EditProfileForm
