@@ -57,18 +57,11 @@ const Modal: React.FC<ModalProps> = ({ isShowing, hide, videos }) => {
   return ReactDOM.createPortal(
     <div
       onClick={hide}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)] backdrop-blur-sm"
-    >
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.5)] backdrop-blur-sm">
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-[rgba(39,39,39,0.5)] backdrop-blur-sm md:rounded-lg w-full md:min-h-1 md:w-[516px] md:h-[638px] overflow-auto text-gray-400"
-      >
-        <ReactPlayer
-          url={sortedUrls}
-          controls
-          width="100%"
-          height="100%"
-        />
+        className="bg-[rgba(39,39,39,0.7)] backdrop-blur-md rounded-lg w-full max-w-[90vw] md:max-w-[516px] h-[75vh] max-h-[550px] md:h-[638px] overflow-auto text-gray-100 geist-light shadow-sm">
+        <ReactPlayer url={sortedUrls} controls width="100%" height="100%" />
       </div>
     </div>,
     modalRoot
