@@ -112,17 +112,17 @@ function PersonDetailsPage() {
   return (
     <div className="relative w-full min-h-screen bg-black">
       {/* Background Profile Image */}
-      {/* {person?.profile_path && (
+      {person?.poster_path && (
         <img
-          alt={person?.name}
+          alt={person?.name || "TV Show Poster"}
           loading="lazy"
           width="1920"
           height="1080"
           decoding="async"
-          className="w-full h-full object-cover fixed opacity-20 hidden lg:block filter grayscale"
-          src={`https://image.tmdb.org/t/p/original/${person?.profile_path}`}
+          className="w-full h-full object-cover fixed block lg:hidden -z-0"
+          src={`https://image.tmdb.org/t/p/original/${person?.poster_path}`}
         />
-      )} */}
+      )}
 
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col gap-8">
