@@ -31,7 +31,7 @@ const Credits: React.FC<CreditsProps> = ({
         onClick={scrollLeft}
         className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-[#131313] hover:bg-[#333] p-2">
         <svg
-          className="w-6 h-6 text-gray-800 dark:text-white"
+          className="w-6 h-6 text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -57,7 +57,7 @@ const Credits: React.FC<CreditsProps> = ({
         onClick={scrollRight}
         className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-[#131313] hover:bg-[#333] p-2">
         <svg
-          className="w-6 h-6 text-gray-800 dark:text-white"
+          className="w-6 h-6 text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
