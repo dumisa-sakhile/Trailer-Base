@@ -112,15 +112,13 @@ function PersonDetailsPage() {
   return (
     <div className="relative w-full min-h-screen bg-black">
       {/* Background Profile Image */}
-      {person?.poster_path && (
+      {person?.profile_path && (
         <img
-          alt={person?.name || "TV Show Poster"}
+          alt={person?.name}
           loading="lazy"
-          width="1920"
-          height="1080"
           decoding="async"
-          className="w-full h-full object-cover fixed block lg:hidden -z-0"
-          src={`https://image.tmdb.org/t/p/original/${person?.poster_path}`}
+          className="w-full h-full object-cover fixed opacity-20 block lg:hidden filter grayscale"
+          src={`https://image.tmdb.org/t/p/original/${person?.profile_path}`}
         />
       )}
 
