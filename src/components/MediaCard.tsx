@@ -90,15 +90,15 @@ const MediaCard: React.FC<MediaCardProps> = ({
         <>
           {isBookmarked ? (
             <button
-              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-black text-white text-[10px] max-sm:text-[8px] roboto-condensed-light px-2 py-0.5 rounded-full hover:scale-105 transition-all duration-300"
+              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-white text-black text-sm max-sm:text-[8px] roboto-condensed-light px-2 py-2 rounded-full hover:bg-black hover:text-white transition-all duration-300"
               onClick={() => removeBookmarkMutation.mutate(id?.toString())}
               disabled={removeBookmarkMutation.isPending}
               aria-label={`Remove ${type} from bookmarks`}>
-              Remove
+              Remove Bookmark
             </button>
           ) : (
             <button
-              className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 bg-black text-white text-[10px] max-sm:text-[8px] roboto-condensed-light px-2 py-0.5 rounded-full hover:scale-105 transition-all duration-300"
+              className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 bg-white text-black text-sm max-sm:text-[8px] roboto-condensed-light px-2 py-2 rounded-full hover:bg-black hover:text-white transition-all duration-300"
               onClick={() =>
                 addBookmarkMutation.mutate({
                   id,
@@ -111,7 +111,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               }
               disabled={addBookmarkMutation.isPending}
               aria-label={`Add ${type} to bookmarks`}>
-              Add
+              Add Bookmark
             </button>
           )}
         </>
