@@ -349,7 +349,7 @@ function MovieDetails() {
         </section>
 
         {/* Release, rating, duration */}
-        <article className="flex items-center flex-wrap gap-4 geist-regular text-lg">
+        <article className="flex items-center flex-wrap gap-4 geist-regular text-sm">
           {data.release_date && (
             <p className="flex items-center gap-2">
               Released:{" "}

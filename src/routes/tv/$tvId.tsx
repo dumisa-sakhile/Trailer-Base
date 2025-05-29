@@ -275,7 +275,7 @@ function TVDetails() {
       )}
 
       {/* TV show details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] md:p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
         <div className="relative md:static">
           <img
@@ -393,7 +393,7 @@ function TVDetails() {
         </section>
 
         {/* First air date, rating, seasons, status */}
-        <article className="flex items-center flex-wrap gap-4 geist-regular text-lg">
+        <article className="flex items-center flex-wrap gap-4 geist-regular text-sm">
           {data?.first_air_date && (
             <p className="flex items-center gap-2">
               First Aired:{" "}
