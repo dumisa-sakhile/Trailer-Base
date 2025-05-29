@@ -112,7 +112,7 @@ function PersonDetailsPage() {
   return (
     <div className="relative w-full min-h-screen bg-black">
       {/* Background Profile Image */}
-      {person?.profile_path && (
+      {/* {person?.profile_path && (
         <img
           alt={person?.name}
           loading="lazy"
@@ -120,7 +120,7 @@ function PersonDetailsPage() {
           className="w-full h-full object-cover fixed opacity-20 block lg:hidden"
           src={`https://image.tmdb.org/t/p/original/${person?.profile_path}`}
         />
-      )}
+      )} */}
 
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col gap-8">
