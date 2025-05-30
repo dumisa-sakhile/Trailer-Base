@@ -58,3 +58,13 @@ export const getPersonDetails = async (personId: string | undefined) => {
   });
   return response.data;
 };
+
+export const searchPerson = async (page: number, searchQuery: string) => {
+  const response = await tmdbApi.get(`search/person?`, {
+    params: {
+      page: `${page}`,
+      query: `${searchQuery}`,
+    },
+  });
+  return response.data;
+};
