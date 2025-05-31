@@ -61,7 +61,15 @@ const Modal: React.FC<ModalProps> = ({ isShowing, hide, videos }) => {
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-[rgba(39,39,39,0.7)] backdrop-blur-md rounded-lg w-full max-w-[90vw] md:max-w-[516px] h-[75vh] max-h-[550px] md:h-[638px] overflow-auto text-gray-100 geist-light shadow-sm">
-        <ReactPlayer url={sortedUrls} controls width="100%" height="100%" />
+        {sortedUrls.length > 0 && (
+          <ReactPlayer
+            url={sortedUrls}
+            controls
+            width="100%"
+            height="100%"
+            key={sortedUrls.join(",")} // Use key to force re-render
+          />
+        )}
       </div>
     </div>,
     modalRoot
