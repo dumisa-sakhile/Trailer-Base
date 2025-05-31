@@ -10,6 +10,7 @@ import {
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import { useState, useEffect } from "react";
+import ReactPlayer from "react-player";
 import { auth, db } from "@/config/firebase";
 import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
@@ -130,6 +131,8 @@ function TVDetails() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoDuration, setVideoDuration] = useState<number | null>(null);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -138,8 +141,7 @@ function TVDetails() {
     });
     return () => unsubscribe();
   }, []);
-  
-  
+
   // TV details query
   const { data, isLoading, error } = useQuery<TVDetails>({
     queryKey: ["tv", tvId],
@@ -199,7 +201,7 @@ function TVDetails() {
       } else {
         await setDoc(bookmarkRef, {
           id: data?.id,
-          title: data?.name, // Use 'name' as 'title' for bookmark
+          title: data?.name,
           poster_path: data?.poster_path,
           vote_average: data?.vote_average,
           release_date: data?.first_air_date,
@@ -225,6 +227,57 @@ function TVDetails() {
     bookmarkMutation.mutate();
   };
 
+  // Select background video: prefer "Extended Preview", fallback to "Trailer"
+  const videoUrl = videos?.results?.find(
+    (video) =>
+      video?.site === "YouTube" &&
+      video?.key &&
+      video?.type === "Extended Preview"
+  )?.key
+    ? `https://www.youtube.com/watch?v=${
+        videos.results.find(
+          (video) =>
+            video?.site === "YouTube" &&
+            video?.key &&
+            video?.type === "Extended Preview"
+        )?.key
+      }`
+    : videos?.results?.find(
+          (video) =>
+            video?.site === "YouTube" && video?.key && video?.type === "Trailer"
+        )?.key
+      ? `https://www.youtube.com/watch?v=${
+          videos.results.find(
+            (video) =>
+              video?.site === "YouTube" &&
+              video?.key &&
+              video?.type === "Trailer"
+          )?.key
+        }`
+      : null;
+
+  // Preload fallback images
+  useEffect(() => {
+    if (data?.backdrop_path) {
+      const img = new Image();
+      img.src = `https://image.tmdb.org/t/p/original/${data.backdrop_path}`;
+    }
+    if (data?.poster_path) {
+      const img = new Image();
+      img.src = `https://image.tmdb.org/t/p/original/${data.poster_path}`;
+    }
+  }, [data?.backdrop_path, data?.poster_path]);
+
+  // Set showVideo based on video availability
+  useEffect(() => {
+    if (!videosLoading && !videosError && videoUrl) {
+      console.log("Video ready, showing ReactPlayer:", videoUrl);
+      setShowVideo(true);
+    } else {
+      console.log("No video or loading/error, showing images");
+      setShowVideo(false);
+    }
+  }, [videosLoading, videosError, videoUrl]);
 
   // Early return for loading or error state
   if (isLoading) {
@@ -250,28 +303,63 @@ function TVDetails() {
         hide={() => setModalOpen(false)}
         videos={modalVideos}
       />
-      {data?.backdrop_path && (
-        <img
-          alt={data?.name || "TV Show Poster"}
-          loading="lazy"
-          width="1920"
-          height="1080"
-          decoding="async"
-          className="w-full h-full object-cover fixed hidden lg:block -z-0"
-          src={`https://image.tmdb.org/t/p/original/${data?.backdrop_path}`}
+      {/* Background: Video or Image */}
+      {videosLoading ? (
+        <div className="w-full h-full fixed -z-10 flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-t-gray-100 border-gray-500 rounded-full animate-spin"></div>
+        </div>
+      ) : showVideo && videoUrl ? (
+        <ReactPlayer
+          url={videoUrl}
+          playing={true}
+          loop={false}
+          muted={true}
+          controls={false}
+          width="100%"
+          height="100%"
+          className="fixed -z-10 object-cover transition-opacity duration-500"
+          onDuration={(duration) => setVideoDuration(duration)}
+          onProgress={({ playedSeconds }) => {
+            if (videoDuration && playedSeconds >= videoDuration - 15) {
+              console.log("15s remaining, switching to image");
+              setShowVideo(false);
+            }
+          }}
+          onEnded={() => {
+            console.log("Video ended, switching to image");
+            setShowVideo(false);
+          }}
+          config={{
+            youtube: {
+              playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
+            },
+          }}
         />
-      )}
-
-      {data?.poster_path && (
-        <img
-          alt={data?.name || "TV Show Poster"}
-          loading="lazy"
-          width="1920"
-          height="1080"
-          decoding="async"
-          className="w-full h-full object-cover fixed block lg:hidden -z-0"
-          src={`https://image.tmdb.org/t/p/original/${data?.poster_path}`}
-        />
+      ) : (
+        <>
+          {data?.backdrop_path && (
+            <img
+              alt={data?.name || "TV Show Poster"}
+              loading="lazy"
+              width="1920"
+              height="1080"
+              decoding="async"
+              className="w-full h-full object-cover fixed hidden lg:block -z-10 transition-opacity duration-500"
+              src={`https://image.tmdb.org/t/p/original/${data?.backdrop_path}`}
+            />
+          )}
+          {data?.poster_path && (
+            <img
+              alt={data?.name || "TV Show Poster"}
+              loading="lazy"
+              width="1920"
+              height="1080"
+              decoding="async"
+              className="w-full h-full object-cover fixed block lg:hidden -z-10 transition-opacity duration-500"
+              src={`https://image.tmdb.org/t/p/original/${data?.poster_path}`}
+            />
+          )}
+        </>
       )}
 
       {/* TV show details */}
@@ -367,7 +455,7 @@ function TVDetails() {
 
           {/* Videos collection */}
           <button
-            className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:gr grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+            className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
             onClick={() => setModalOpen(true)}
             aria-label="Open videos collection">
             <svg
@@ -557,8 +645,8 @@ function TVDetails() {
               <MediaCard
                 key={id}
                 id={id}
-                title={name} // Map 'name' to 'title' for MediaCard
-                release_date={first_air_date} // Map 'first_air_date' to 'release_date'
+                title={name}
+                release_date={first_air_date}
                 poster_path={poster_path}
                 vote_average={vote_average}
                 type="tv"

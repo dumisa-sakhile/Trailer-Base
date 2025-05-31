@@ -10,6 +10,7 @@ import {
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import { useState, useEffect } from "react";
+import ReactPlayer from "react-player";
 import { auth, db } from "@/config/firebase";
 import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
@@ -80,6 +81,7 @@ function MovieDetails() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -152,7 +154,7 @@ function MovieDetails() {
           poster_path: data.poster_path,
           vote_average: data.vote_average,
           release_date: data.release_date,
-          category: "movie", // Include category
+          category: "movie",
           addedAt: new Date().toISOString(),
         });
       }
@@ -182,6 +184,44 @@ function MovieDetails() {
     return `${hours ? `${hours}h ` : ""}${mins ? `${mins}m` : ""}`.trim();
   };
 
+  // Select background video: prefer "Extended Preview", fallback to "Trailer"
+  const videoUrl = videos?.results?.find(
+    (video) =>
+      video?.site === "YouTube" &&
+      video?.key &&
+      video?.type === "Extended Preview"
+  )?.key
+    ? `https://www.youtube.com/watch?v=${
+        videos.results.find(
+          (video) =>
+            video?.site === "YouTube" &&
+            video?.key &&
+            video?.type === "Extended Preview"
+        )?.key
+      }`
+    : videos?.results?.find(
+          (video) =>
+            video?.site === "YouTube" && video?.key && video?.type === "Trailer"
+        )?.key
+      ? `https://www.youtube.com/watch?v=${
+          videos.results.find(
+            (video) =>
+              video?.site === "YouTube" &&
+              video?.key &&
+              video?.type === "Trailer"
+          )?.key
+        }`
+      : null;
+
+  // Set showVideo based on video availability
+  useEffect(() => {
+    if (!videosLoading && !videosError && videoUrl) {
+      setShowVideo(true);
+    } else {
+      setShowVideo(false);
+    }
+  }, [videosLoading, videosError, videoUrl]);
+
   // Early return for loading or error state
   if (isLoading) {
     return <Loading />;
@@ -206,28 +246,53 @@ function MovieDetails() {
         hide={() => setModalOpen(false)}
         videos={modalVideos}
       />
-      {data.backdrop_path && (
-        <img
-          alt={data.title || "Movie Poster"}
-          loading="lazy"
-          width="1920"
-          height="1080"
-          decoding="async"
-          className="w-full h-full object-cover fixed hidden lg:block -z-0"
-          src={`https://image.tmdb.org/t/p/original/${data.backdrop_path}`}
+      {/* Background: Video or Image */}
+      {videosLoading ? (
+        <div className="w-full h-full fixed -z-10 flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-t-gray-100 border-gray-500 rounded-full animate-spin"></div>
+        </div>
+      ) : showVideo && videoUrl ? (
+        <ReactPlayer
+          url={videoUrl}
+          playing={true}
+          loop={false} // Set to false to allow onEnded to trigger
+          muted={true}
+          controls={false}
+          width="100%"
+          height="100%"
+          className="fixed -z-10 object-cover"
+          onEnded={() => setShowVideo(false)} // Hide video and show image when video ends
+          config={{
+            youtube: {
+              playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
+            },
+          }}
         />
-      )}
-
-      {data.poster_path && (
-        <img
-          alt={data.title || "Movie Poster"}
-          loading="lazy"
-          width="1920"
-          height="1080"
-          decoding="async"
-          className="w-full h-full object-cover fixed block lg:hidden -z-0"
-          src={`https://image.tmdb.org/t/p/original/${data.poster_path}`}
-        />
+      ) : (
+        <>
+          {data.backdrop_path && (
+            <img
+              alt={data.title || "Movie Poster"}
+              loading="lazy"
+              width="1920"
+              height="1080"
+              decoding="async"
+              className="w-full h-full object-cover fixed hidden lg:block -z-10"
+              src={`https://image.tmdb.org/t/p/original/${data.backdrop_path}`}
+            />
+          )}
+          {data.poster_path && (
+            <img
+              alt={data.title || "Movie Poster"}
+              loading="lazy"
+              width="1920"
+              height="1080"
+              decoding="async"
+              className="w-full h-full object-cover fixed block lg:hidden -z-10"
+              src={`https://image.tmdb.org/t/p/original/${data.poster_path}`}
+            />
+          )}
+        </>
       )}
 
       {/* Movie details */}
@@ -452,7 +517,6 @@ function MovieDetails() {
 
         {/* Recommendations section */}
         <h1 className="text-2xl md:text-5xl text-left geist-bold">
-          {" "}
           Recommendations
         </h1>
         <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
