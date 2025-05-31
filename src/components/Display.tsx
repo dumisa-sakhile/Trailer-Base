@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import React, { useRef } from "react";
+import React, { useRef, Suspense } from "react";
 import Loading from "@/components/Loading";
 import { useQuery } from "@tanstack/react-query";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { useBookmarkMutations } from "./useBookmarkMutations"; // Adjust path if needed
+import { useBookmarkMutations } from "./useBookmarkMutations";
+import Tooltip from "./Tooltip";
 
 interface MovieProps {
   id: number;
@@ -90,11 +91,13 @@ const Display: React.FC<DisplayProps> = ({
                     flex-none rounded-lg shadow-md flex items-center justify-center relative group
                     hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden
                     geist-light hover:ring-1 hover:ring-black hover:rotate-3">
-                  <img
-                    src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
-                    alt={title}
-                    className="w-full h-full object-cover rounded-lg overflow-hidden"
-                  />
+                  <Suspense fallback={<Loading />}>
+                    <img
+                      src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
+                      alt={title}
+                      className="w-full h-full object-cover rounded-2xl overflow-hidden"
+                    />
+                  </Suspense>
                   <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-4 rounded-lg">
                     <p className="text-sm text-white flex items-center">
                       {vote_average.toFixed(1)}/10
@@ -106,21 +109,35 @@ const Display: React.FC<DisplayProps> = ({
                   </div>
                 </Link>
 
-                {auth.currentUser && (
+                {auth?.currentUser && (
                   <>
                     {bookmarks?.includes(id.toString()) ? (
                       <button
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black text-white text-xs px-2 py-1 rounded-full hover:scale-105 transition-opacity duration-300"
+                        className="absolute top-3 right-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                         onClick={() =>
                           removeBookmarkMutation.mutate(id.toString())
                         }
                         disabled={removeBookmarkMutation.isPending}
-                        aria-label="Remove from Playlist">
-                        Remove Bookmark
+                        aria-label={`Remove ${title ?? "media item"} from bookmarks`}>
+                        <Tooltip
+                          label={`Remove ${title ?? "media item"} from bookmarks`}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="w-5 h-5 max-sm:w-4 max-sm:h-4 bi bi-bookmark-check-fill"
+                            viewBox="0 0 16 16">
+                            <path
+                              fillRule="evenodd"
+                              d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5m8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"
+                            />
+                          </svg>
+                        </Tooltip>
                       </button>
                     ) : (
                       <button
-                        className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-black text-white text-xs px-2 py-1 rounded-full hover:scale-105 transition-opacity duration-300"
+                        className="absolute top-3 right-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-[#FACC15] hover:bg-[#FACC15] hover:text-black focus:ring-2 focus:ring-[#FACC15]/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id,
@@ -132,8 +149,19 @@ const Display: React.FC<DisplayProps> = ({
                           })
                         }
                         disabled={addBookmarkMutation.isPending}
-                        aria-label="Add to Playlist">
-                        Add Bookmark
+                        aria-label={`Add ${title ?? "media item"} to bookmarks`}>
+                        <Tooltip
+                          label={`Add ${title ?? "media item"} to bookmarks`}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="w-5 h-5 max-sm:w-4 max-sm:h-4 bi bi-bookmark"
+                            viewBox="0 0 16 16">
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
+                          </svg>
+                        </Tooltip>
                       </button>
                     )}
                   </>

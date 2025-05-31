@@ -73,24 +73,28 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
     <section className="relative">
       <div
         className="overflow-x-scroll w-full h-[470px] scrollbar-hide"
-        ref={scrollRef}
-      >
+        ref={scrollRef}>
         <div className="flex animate-scroll gap-12 scale-95">
           {isLoading && <Loading />}
           {isError && <p className="text-red-500">Error: {error.message}</p>}
 
           {data?.results.map(
-            ({ id, title, first_air_date, poster_path, vote_average }: TVProps) => (
+            ({
+              id,
+              title,
+              first_air_date,
+              poster_path,
+              vote_average,
+            }: TVProps) => (
               <div className="relative group" key={id}>
                 <Link
                   to="/tv/$tvId"
                   params={{ tvId: id.toString() }}
-                  className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-[#333333] hover:rotate-3"
-                >
+                  className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-[#333333] hover:rotate-3">
                   <img
                     src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
                     alt={title}
-                    className="w-full h-full object-cover rounded-lg overflow-hidden"
+                    className="w-full h-full object-cover rounded-2xl overflow-hidden"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#222222] transition-opacity flex flex-col justify-end p-4 rounded-lg">
                     <p className="text-sm flex items-center text-gray-200">
@@ -111,8 +115,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
                           removeBookmarkMutation.mutate(id.toString())
                         }
                         disabled={removeBookmarkMutation.isPending}
-                        aria-label="Remove from Playlist"
-                      >
+                        aria-label="Remove from Playlist">
                         Remove Bookmark
                       </button>
                     ) : (
@@ -129,8 +132,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
                           })
                         }
                         disabled={addBookmarkMutation.isPending}
-                        aria-label="Add to Playlist"
-                      >
+                        aria-label="Add to Playlist">
                         Add Bookmark
                       </button>
                     )}
@@ -145,8 +147,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
       <button
         onClick={scrollLeft}
         aria-label="Scroll Left"
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-[#333333]/50"
-      >
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-[#333333]/50">
         <svg
           className="w-6 h-6 text-gray-200"
           aria-hidden="true"
@@ -154,8 +155,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
           width="24"
           height="24"
           fill="none"
-          viewBox="0 0 24 24"
-        >
+          viewBox="0 0 24 24">
           <path
             stroke="currentColor"
             strokeLinecap="round"
@@ -169,8 +169,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
       <button
         onClick={scrollRight}
         aria-label="Scroll Right"
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-[#333333]/50"
-      >
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#222222] p-2 rounded-full opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-300 ring-1 ring-[#333333]/50">
         <svg
           className="w-6 h-6 text-gray-200"
           aria-hidden="true"
@@ -178,8 +177,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
           width="24"
           height="24"
           fill="none"
-          viewBox="0 0 24 24"
-        >
+          viewBox="0 0 24 24">
           <path
             stroke="currentColor"
             strokeLinecap="round"
@@ -194,8 +192,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
         <Link
           to={listLink}
           params={{ list }}
-          className="text-gray-200 hover:text-white font-semibold text-lg roboto-condensed-bold px-4 py-2 rounded-md bg-[#222222] hover:bg-[#333333] transition-all duration-300"
-        >
+          className="text-gray-200 hover:text-white font-semibold text-lg roboto-condensed-bold px-4 py-2 rounded-md bg-[#222222] hover:bg-[#333333] transition-all duration-300">
           {listName}
         </Link>
       </div>

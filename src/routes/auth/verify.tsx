@@ -113,7 +113,7 @@ function VerifyMagicLink() {
   return (
     <section className="w-full h-lvh flex items-center justify-center bg-black text-white">
       <div className="bg-[#222222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6">Verify Your Sign-In</h2>
+        <h2 className="text-2xl font-bold mb-6">Verifying Your Sign-In</h2>
         {isLoading ? (
           <div>Verifying your sign-in link...</div>
         ) : error ? (

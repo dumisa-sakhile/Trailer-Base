@@ -86,19 +86,20 @@ function List() {
       </div>
 
       {!isLoading && !isError && (
-        <footer className="fixed bottom-4 left-0 right-0 flex items-center justify-center w-full gap-2 touch-none z-20">
-          <section className="flex items-center gap-2 bg-[rgba(0,0,0,0.85)] backdrop-blur-md px-4 py-2 max-sm:px-3 max-sm:py-1.5 rounded-lg shadow-sm border border-gray-600/50 font-sans">
+        <footer className="fixed bottom-4 left-0 right-0 flex items-center justify-center w-full z-20 pointer-events-none">
+          <section className="flex items-center gap-3 bg-[rgba(24,24,28,0.85)] backdrop-blur-lg px-6 py-3 max-sm:px-3 max-sm:py-2 rounded-xl shadow-lg border border-gray-700/40 font-sans pointer-events-auto">
             <Link
               to="."
               params={{ list: list }}
               search={(prev) => ({ ...prev, page: page - 1 })}
-              className={`flex items-center gap-1.5 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-sm max-sm:text-xs roboto-condensed-bold capitalize rounded-md transition-all duration-200 ease-in-out border border-gray-600/50 ${
+              className={`flex items-center gap-2 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-base max-sm:text-xs roboto-condensed-bold capitalize rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/60 ${
                 page === 1
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-800 hover:text-white hover:shadow-md hover:scale-105"
+                  ? "opacity-40 cursor-not-allowed"
+                  : "hover:bg-blue-600/80 hover:text-white hover:shadow-lg hover:scale-[1.06] active:scale-100"
               }`}
               disabled={page === 1}
-              aria-label="Go to previous page">
+              aria-label="Go to previous page"
+              tabIndex={page === 1 ? -1 : 0}>
               <svg
                 className="w-5 h-5 max-sm:w-4 max-sm:h-4"
                 aria-hidden="true"
@@ -115,24 +116,26 @@ function List() {
                   d="m15 19-7-7 7-7"
                 />
               </svg>
-              Prev
+              <span className="max-sm:hidden">Previous</span>
+              <span className="sm:hidden">Prev</span>
             </Link>
-            <span className="text-gray-200 font-medium text-sm max-sm:text-xs roboto-condensed-light px-3 max-sm:px-2">
-              {page?.toLocaleString()} /{" "}
+            <span className="text-gray-100 font-semibold text-base max-sm:text-xs roboto-condensed-light px-4 max-sm:px-2 select-none">
+              {page?.toLocaleString()} <span className="opacity-60">/</span>{" "}
               {data?.total_pages?.toLocaleString() ?? "?"}
             </span>
             <Link
               to="."
               params={{ list: list }}
               search={(prev) => ({ ...prev, page: page + 1 })}
-              className={`flex items-center gap-1.5 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-sm max-sm:text-xs roboto-condensed-bold capitalize rounded-md transition-all duration-200 ease-in-out border border-gray-600/50 ${
+              className={`flex items-center gap-2 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-base max-sm:text-xs roboto-condensed-bold capitalize rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/60 ${
                 data?.total_pages === page
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-800 hover:text-white hover:shadow-md hover:scale-105"
+                  ? "opacity-40 cursor-not-allowed"
+                  : "hover:bg-blue-600/80 hover:text-white hover:shadow-lg hover:scale-[1.06] active:scale-100"
               }`}
               disabled={data?.total_pages === page}
-              aria-label="Go to next page">
-              Next
+              aria-label="Go to next page"
+              tabIndex={data?.total_pages === page ? -1 : 0}>
+              <span className="max-sm:hidden">Next</span>
               <svg
                 className="w-5 h-5 max-sm:w-4 max-sm:h-4"
                 aria-hidden="true"

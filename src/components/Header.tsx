@@ -323,7 +323,7 @@ const Header: React.FC = () => {
                 <button
                   className="flex items-center gap-2 px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200 text-base capitalize tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
                   aria-label="Login">
-                  <LoginIcon fill="#D1D5DB" />
+                  <LoginIcon fill="currentColor" />
                   Login
                 </button>
               </Link>
@@ -342,7 +342,7 @@ const Header: React.FC = () => {
                   onClick={handleLogout}
                   className="flex items-center gap-2 px-5 py-2.5 bg-[rgba(0,0,0,0.8)] backdrop-blur-lg rounded-lg text-gray-200 text-base capitalize tracking-wider hover:bg-white hover:text-black hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm border border-gray-700/50"
                   aria-label="Logout">
-                  <LogoutIcon fill="#D1D5DB" />
+                  <LogoutIcon fill="currentColor" />
                   Logout
                 </button>
               </>

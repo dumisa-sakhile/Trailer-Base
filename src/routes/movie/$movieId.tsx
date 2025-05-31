@@ -390,7 +390,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data.overview && (
-          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6 ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
+          <p className="text-white text-md roboto-condensed-light w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6 ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data.overview}
           </p>
         )}

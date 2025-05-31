@@ -27,7 +27,7 @@ const CardLink: React.FC<CardLinkProps> = ({
       <img
         src={imageUrl}
         alt={title}
-        className="w-full h-full object-cover rounded-md overflow-hidden"
+        className="w-full h-full object-cover rounded-2xl overflow-hidden"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black transition-opacity flex flex-col justify-end p-2 rounded-md max-sm:p-1.5">
         <h3 className="text-white text-sm sm:text-sm max-sm:text-xs roboto-condensed-bold">

@@ -124,7 +124,7 @@ function Profile() {
     <>
       <title>Trailer Base - Profile</title>
 
-      <div className="w-full min-h-screen flex flex-col gap-12 py-8 md:px-4 md:px-10 bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
+      <div className="w-full min-h-screen flex flex-col gap-12 py-8 md:px-10 bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
         <h1 className="text-4xl max-sm:text-2xl md:text-5xl text-left roboto-condensed-bold tracking-tight text-white">
           Profile
         </h1>
@@ -154,17 +154,19 @@ function Profile() {
             <h2 className="text-2xl max-sm:text-xl md:text-5xl roboto-condensed-bold text-white">
               Your Bookmarks
             </h2>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               {["all", "movie", "tv"].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFilter(type as "all" | "movie" | "tv")}
-                  className={`px-5 py-2.5 text-sm max-sm:text-xs font-medium rounded-full transition-all duration-200 ${
+                  className={`geist-regular px-5 py-2.5 max-sm:px-3 max-sm:py-2 text-sm max-sm:text-xs  rounded-full transition-colors duration-200 ${
                     filter === type
-                      ? "bg-white text-black shadow-sm"
-                      : "bg-[#2A2A2D] text-white hover:bg-[#3A3A3D]"
+                      ? "bg-white text-black shadow-md"
+                      : "bg-black text-gray-300 hover:bg-[#222] hover:text-white focus:ring-blue-500"
                   }`}
-                  aria-label={`Show ${type} bookmarks`}>
+                  aria-pressed={filter === type}
+                  aria-label={`Show ${type === "all" ? "All" : type === "movie" ? "Movies" : "TV"} bookmarks`}
+                  role="button">
                   {type === "all" ? "All" : type === "movie" ? "Movies" : "TV"}
                 </button>
               ))}
@@ -173,7 +175,7 @@ function Profile() {
           {isLoading ? (
             <Loading />
           ) : filteredBookmarks?.length === 0 ? (
-            <p className="text-gray-300 text-lg roboto-condensed-light bg-[rgba(255,255,255,0.05)] backdrop-blur-sm p-4 rounded-lg border border-[rgba(255,255,255,0.1)]">
+            <p className="text-gray-300 text-lg g-light p-4">
               No bookmarks yet. Add some movies or TV shows to your bookmarks!
             </p>
           ) : (
