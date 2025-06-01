@@ -94,6 +94,7 @@ const Modal: React.FC<ModalProps> = ({ isShowing, hide, videos }) => {
             width="100%"
             height="100%"
             playing // Autoplay to ensure loading
+            loop
             onError={(e) => setError(e?.message ?? "Unknown error")}
             config={{
               youtube: {

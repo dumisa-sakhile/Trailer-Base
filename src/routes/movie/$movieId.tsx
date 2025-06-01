@@ -252,22 +252,30 @@ function MovieDetails() {
           <div className="w-12 h-12 border-4 border-t-gray-100 border-gray-500 rounded-full animate-spin"></div>
         </div>
       ) : showVideo && videoUrl ? (
-        <ReactPlayer
-          url={videoUrl}
-          playing={true}
-          loop={false} // Set to false to allow onEnded to trigger
-          muted={true}
-          controls={false}
-          width="100%"
-          height="100%"
-          className="fixed -z-10 object-cover"
-          onEnded={() => setShowVideo(false)} // Hide video and show image when video ends
-          config={{
-            youtube: {
-              playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
-            },
-          }}
-        />
+        <div className="fixed -z-10 w-full h-full overflow-hidden hidden lg:block">
+          <ReactPlayer
+            url={videoUrl}
+            playing={true}
+            loop={false}
+            muted={true}
+            controls={false}
+            width="100%"
+            height="100%"
+            className="absolute transform scale-150"
+            onEnded={() => setShowVideo(false)}
+            config={{
+              youtube: {
+                playerVars: {
+                  autoplay: 1,
+                  controls: 0,
+                  modestbranding: 1,
+                  showinfo: 0,
+                  rel: 0,
+                },
+              },
+            }}
+          />
+        </div>
       ) : (
         <>
           {data.backdrop_path && (
@@ -296,19 +304,22 @@ function MovieDetails() {
       )}
 
       {/* Movie details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
-        <div className="relative md:static">
-          <img
-            src={
-              data.poster_path
-                ? `https://image.tmdb.org/t/p/w500/${data.poster_path}`
-                : FALLBACK_POSTER
-            }
-            alt={data.title || "Movie Poster"}
-            className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
-          />
-        </div>
+        {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
+        {(videosLoading || !videoUrl || !showVideo) && data.poster_path && (
+          <div className="relative md:static">
+            <img
+              src={
+                data.poster_path
+                  ? `https://image.tmdb.org/t/p/w500/${data.poster_path}`
+                  : FALLBACK_POSTER
+              }
+              alt={data.title || "Movie Poster"}
+              className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
+            />
+          </div>
+        )}
 
         {/* Tagline */}
         {data.tagline && (

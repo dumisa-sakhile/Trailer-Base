@@ -118,7 +118,7 @@ interface TVProps {
 
 export const Route = createFileRoute("/tv/$tvId")({
   loader: async ({ params }) => {
-    return { tvId: params.tvId };
+    return { tvId: params?.tvId };
   },
   component: TVDetails,
 });
@@ -235,7 +235,7 @@ function TVDetails() {
       video?.type === "Extended Preview"
   )?.key
     ? `https://www.youtube.com/watch?v=${
-        videos.results.find(
+        videos?.results?.find(
           (video) =>
             video?.site === "YouTube" &&
             video?.key &&
@@ -247,7 +247,7 @@ function TVDetails() {
             video?.site === "YouTube" && video?.key && video?.type === "Trailer"
         )?.key
       ? `https://www.youtube.com/watch?v=${
-          videos.results.find(
+          videos?.results?.find(
             (video) =>
               video?.site === "YouTube" &&
               video?.key &&
@@ -260,11 +260,11 @@ function TVDetails() {
   useEffect(() => {
     if (data?.backdrop_path) {
       const img = new Image();
-      img.src = `https://image.tmdb.org/t/p/original/${data.backdrop_path}`;
+      img.src = `https://image.tmdb.org/t/p/original/${data?.backdrop_path}`;
     }
     if (data?.poster_path) {
       const img = new Image();
-      img.src = `https://image.tmdb.org/t/p/original/${data.poster_path}`;
+      img.src = `https://image.tmdb.org/t/p/original/${data?.poster_path}`;
     }
   }, [data?.backdrop_path, data?.poster_path]);
 
@@ -309,32 +309,40 @@ function TVDetails() {
           <div className="w-12 h-12 border-4 border-t-gray-100 border-gray-500 rounded-full animate-spin"></div>
         </div>
       ) : showVideo && videoUrl ? (
-        <ReactPlayer
-          url={videoUrl}
-          playing={true}
-          loop={false}
-          muted={true}
-          controls={false}
-          width="100%"
-          height="100%"
-          className="fixed -z-10 object-cover transition-opacity duration-500"
-          onDuration={(duration) => setVideoDuration(duration)}
-          onProgress={({ playedSeconds }) => {
-            if (videoDuration && playedSeconds >= videoDuration - 15) {
-              console.log("15s remaining, switching to image");
+        <div className="fixed -z-10 w-full h-full overflow-hidden hidden lg:block">
+          <ReactPlayer
+            url={videoUrl}
+            playing={true}
+            loop={false}
+            muted={true}
+            controls={false}
+            width="100%"
+            height="100%"
+            className="absolute transform scale-150"
+            onDuration={(duration) => setVideoDuration(duration)}
+            onProgress={({ playedSeconds }) => {
+              if (videoDuration && playedSeconds >= videoDuration - 15) {
+                console.log("15s remaining, switching to image");
+                setShowVideo(false);
+              }
+            }}
+            onEnded={() => {
+              console.log("Video ended, switching to image");
               setShowVideo(false);
-            }
-          }}
-          onEnded={() => {
-            console.log("Video ended, switching to image");
-            setShowVideo(false);
-          }}
-          config={{
-            youtube: {
-              playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
-            },
-          }}
-        />
+            }}
+            config={{
+              youtube: {
+                playerVars: {
+                  autoplay: 1,
+                  controls: 0,
+                  modestbranding: 1,
+                  showinfo: 0,
+                  rel: 0,
+                },
+              },
+            }}
+          />
+        </div>
       ) : (
         <>
           {data?.backdrop_path && (
@@ -363,19 +371,22 @@ function TVDetails() {
       )}
 
       {/* TV show details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
-        <div className="relative md:static">
-          <img
-            src={
-              data?.poster_path
-                ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
-                : FALLBACK_POSTER
-            }
-            alt={data?.name || "TV Show Poster"}
-            className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
-          />
-        </div>
+        {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
+        {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
+          <div className="relative md:static">
+            <img
+              src={
+                data?.poster_path
+                  ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
+                  : FALLBACK_POSTER
+              }
+              alt={data?.name || "TV Show Poster"}
+              className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
+            />
+          </div>
+        )}
 
         {/* Tagline */}
         {data?.tagline && (
@@ -533,10 +544,12 @@ function TVDetails() {
         {data?.spoken_languages && (
           <InfoTvSection
             title="Languages"
-            items={data.spoken_languages.map(({ english_name, iso_639_1 }) => ({
-              id: iso_639_1,
-              name: english_name,
-            }))}
+            items={data?.spoken_languages?.map(
+              ({ english_name, iso_639_1 }) => ({
+                id: iso_639_1,
+                name: english_name,
+              })
+            )}
             typeKey="with_original_language"
           />
         )}
@@ -544,7 +557,7 @@ function TVDetails() {
         {data?.genres && (
           <InfoTvSection
             title="Genre"
-            items={data.genres.map(({ name, id }) => ({ id, name }))}
+            items={data?.genres?.map(({ name, id }) => ({ id, name }))}
             typeKey="with_genres"
           />
         )}
@@ -552,7 +565,7 @@ function TVDetails() {
         {data?.production_companies && (
           <InfoTvSection
             title="Production Companies"
-            items={data.production_companies.map(({ name, id }) => ({
+            items={data?.production_companies?.map(({ name, id }) => ({
               id,
               name,
             }))}
@@ -563,7 +576,7 @@ function TVDetails() {
         {data?.production_countries && (
           <InfoTvSection
             title="Production Countries"
-            items={data.production_countries.map(({ name, iso_3166_1 }) => ({
+            items={data?.production_countries?.map(({ name, iso_3166_1 }) => ({
               id: iso_3166_1,
               name,
             }))}
@@ -613,7 +626,7 @@ function TVDetails() {
         <br />
 
         {/* Seasons section */}
-        {data?.seasons && <SeasonsSection seasons={data.seasons} />}
+        {data?.seasons && <SeasonsSection seasons={data?.seasons} />}
 
         {/* Cast section */}
         {(credits?.cast ?? []).length > 0 && (
@@ -635,10 +648,8 @@ function TVDetails() {
         <h1 className="text-2xl md:text-5xl text-left geist-bold">
           Recommendations
         </h1>
-        <section className="w-full min-h-1/2 flex flex-wrap items-start justify-center gap-2 md:gap-10">
-          {recommendations?.results?.length === 0 && (
-            <p>No recommendations available</p>
-          )}
+        <section className="flex flex-wrap items-start justify-center gap-2 md:w-full">
+          {recommendations?.results?.length === 0 && <p>No recommendations</p>}
           {recommendationsLoading && <Loading />}
           {recommendations?.results?.map(
             ({ id, name, first_air_date, poster_path, vote_average }) => (
@@ -662,3 +673,5 @@ function TVDetails() {
     </>
   );
 }
+
+export default TVDetails;
