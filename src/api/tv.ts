@@ -106,3 +106,8 @@ export const getTVCredits = async (tvId: string | undefined) => {
   });
   return response.data;
 };
+
+export const getTVImages = async (tvId: string | undefined) => {
+  const response = await tmdbApi.get(`tv/${tvId}/images`);
+  return response.data.logos || [];
+};

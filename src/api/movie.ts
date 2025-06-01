@@ -104,3 +104,7 @@ export const getMovieCredits = async (movieId: string | undefined) => {
   return response.data;
 };
 
+export const getMovieImages = async (movieId: string | undefined) => {
+  const response = await tmdbApi.get(`movie/${movieId}/images`);
+  return response.data.logos || [];
+};

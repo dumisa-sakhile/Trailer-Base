@@ -6,6 +6,7 @@ import {
   getMovieVideos,
   getMovieCredits,
   getMovieRecommendations,
+  getMovieImages,
 } from "@/api/movie";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
@@ -64,6 +65,16 @@ interface MovieProps {
   release_date: string;
   poster_path: string;
   vote_average: number;
+}
+
+interface MovieImage {
+  aspect_ratio: number;
+  height: number;
+  iso_639_1: string | null;
+  file_path: string;
+  vote_average: number;
+  vote_count: number;
+  width: number;
 }
 
 export const Route = createFileRoute("/movie/$movieId")({
@@ -125,6 +136,16 @@ function MovieDetails() {
       queryKey: ["movie-recommendations", movieId],
       queryFn: () => getMovieRecommendations(movieId),
     });
+
+  // Movie logos query
+  const {
+    data: logos,
+    isLoading: logosLoading,
+    error: logosError,
+  } = useQuery<MovieImage[]>({
+    queryKey: ["movie-logos", movieId],
+    queryFn: () => getMovieImages(movieId),
+  });
 
   // Bookmark query
   const { data: isBookmarked } = useQuery({
@@ -222,6 +243,19 @@ function MovieDetails() {
     }
   }, [videosLoading, videosError, videoUrl]);
 
+  // Select the best logo: highest vote_average
+  const selectedLogo = logos?.length
+    ? (() => {
+        // Filter English logos
+        const englishLogos = logos.filter((logo) => logo.iso_639_1 === "en");
+        // Return highest vote_average English logo, or highest vote_average overall if no English logos
+        const logoPool = englishLogos.length > 0 ? englishLogos : logos;
+        return logoPool.reduce((prev, curr) =>
+          prev.vote_average > curr.vote_average ? prev : curr
+        );
+      })()
+    : undefined;
+
   // Early return for loading or error state
   if (isLoading) {
     return <Loading />;
@@ -318,6 +352,29 @@ function MovieDetails() {
               alt={data.title || "Movie Poster"}
               className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
             />
+          </div>
+        )}
+
+        {/* Logo */}
+        {logosLoading ? (
+          <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 animate-pulse rounded"></div>
+        ) : logosError ? (
+          <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
+            <p className="text-white text-sm md:text-base geist-regular text-center px-2">
+              {data.title}
+            </p>
+          </div>
+        ) : selectedLogo ? (
+          <img
+            src={`https://image.tmdb.org/t/p/w500/${selectedLogo.file_path}`}
+            alt={`${data.title} Logo`}
+            className="w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
+          />
+        ) : (
+          <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
+            <p className="text-white text-sm md:text-base geist-regular text-center px-2">
+              {data.title}
+            </p>
           </div>
         )}
 
