@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import BackHomeBtn from "@/components/BackHomeBtn";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery} from "@tanstack/react-query";
 import {
   getTVDetails,
   getTVVideos,
@@ -11,121 +11,25 @@ import {
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import { useState, useEffect } from "react";
-import ReactPlayer from "react-player";
 import { auth, db } from "@/config/firebase";
-import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { toast } from "sonner";
 import CastCard from "@/components/CastCard";
 import MediaCard from "@/components/MediaCard";
 import Credits from "@/components/Credit";
 import SeasonsSection from "@/components/SeasonsSection";
 import InfoTvSection from "@/components/InfoTvSection";
-
-// Interfaces for type safety
-interface CreatedBy {
-  id: number;
-  credit_id: string;
-  name: string;
-  original_name: string;
-  gender: number;
-  profile_path?: string | null;
-}
-
-interface Season {
-  air_date: string;
-  episode_count: number;
-  id: number;
-  name: string;
-  overview: string;
-  poster_path?: string | null;
-  season_number: number;
-  vote_average: number;
-}
-
-interface LastEpisode {
-  id: number;
-  name: string;
-  overview: string;
-  vote_average: number;
-  vote_count: number;
-  air_date: string;
-  episode_number: number;
-  episode_type: string;
-  production_code: string;
-  runtime: number;
-  season_number: number;
-  show_id: number;
-  still_path?: string | null;
-}
-
-interface TVDetails {
-  id: number;
-  name: string;
-  poster_path?: string | null;
-  backdrop_path?: string | null;
-  vote_average: number;
-  first_air_date: string;
-  episode_run_time?: number[];
-  tagline?: string;
-  overview?: string;
-  homepage?: string;
-  spoken_languages: { english_name: string; iso_639_1: string; name: string }[];
-  genres: { id: number; name: string }[];
-  production_companies: {
-    id: number;
-    logo_path?: string | null;
-    name: string;
-    origin_country: string;
-  }[];
-  production_countries: { iso_3166_1: string; name: string }[];
-  created_by: CreatedBy[];
-  number_of_episodes: number;
-  number_of_seasons: number;
-  last_air_date?: string;
-  last_episode_to_air?: LastEpisode | null;
-  seasons: Season[];
-  status: string;
-  type: string;
-}
-
-interface Video {
-  iso_639_1: string;
-  iso_3166_1: string;
-  name: string;
-  key: string;
-  site: string;
-  size: number;
-  type: string;
-  official: boolean;
-  published_at: string;
-  id: string;
-}
-
-interface CastCardProps {
-  id: number;
-  name: string;
-  profile_path?: string;
-  character: string;
-}
-
-interface TVProps {
-  id: number;
-  name: string;
-  first_air_date: string;
-  poster_path: string | null;
-  vote_average: number;
-}
-
-interface MediaImage {
-  aspect_ratio: number;
-  height: number;
-  iso_639_1: string | null;
-  file_path: string;
-  vote_average: number;
-  vote_count: number;
-  width: number;
-}
+import type {
+  TVDetails,
+  Video,
+  MediaImage,
+  TVProps,
+  CastCardProps,
+} from "@/Types/tvInterfaces";
+import BackgroundMedia from "@/components/BackgroundMedia";
+import TvLogoDisplay from "@/components/TvLogoDisplay";
+import { WebsiteIcon } from "@/components/icons/Icons";
+import TvBookmarkBtn from "@/components/TvBookmarkBtn";
 
 export const Route = createFileRoute("/tv/$tvId")({
   loader: async ({ params }) => {
@@ -139,11 +43,10 @@ const FALLBACK_POSTER =
 
 function TVDetails() {
   const { tvId } = Route.useLoaderData();
-  const queryClient = useQueryClient();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  const [videoDuration, setVideoDuration] = useState<number | null>(null);
+  
 
   // Listen for auth state changes
   useEffect(() => {
@@ -210,44 +113,7 @@ function TVDetails() {
     enabled: !!user,
   });
 
-  // Bookmark mutation
-  const bookmarkMutation = useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error("Not authenticated");
-      if (!data) throw new Error("TV data not available");
-      const bookmarkRef = doc(db, "users", user?.uid, "bookmarks", tvId);
-
-      if (isBookmarked) {
-        await deleteDoc(bookmarkRef);
-      } else {
-        await setDoc(bookmarkRef, {
-          id: data?.id,
-          title: data?.name,
-          poster_path: data?.poster_path,
-          vote_average: data?.vote_average,
-          release_date: data?.first_air_date,
-          category: "tv",
-          addedAt: new Date().toISOString(),
-        });
-      }
-    },
-    onSuccess: () => {
-      toast.success(isBookmarked ? "Bookmark removed!" : "Bookmark added!");
-      queryClient.invalidateQueries({
-        queryKey: ["bookmarks", tvId, user?.uid],
-      });
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
-
-  const handleBookmark = () => {
-    if (!user) {
-      toast.error("Please login to bookmark TV shows");
-      return;
-    }
-    bookmarkMutation.mutate();
-  };
-
+  
   // Select background video: prefer "Extended Preview", fallback to "Trailer"
   const videoUrl = videos?.results?.find(
     (video) =>
@@ -338,71 +204,15 @@ function TVDetails() {
         videos={modalVideos}
       />
       {/* Background: Video or Image */}
-      {videosLoading ? (
-        <div className="w-full h-full fixed -z-10 flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-t-gray-100 border-gray-500 rounded-full animate-spin"></div>
-        </div>
-      ) : showVideo && videoUrl ? (
-        <div className="fixed -z-10 w-full h-full overflow-hidden hidden lg:block">
-          <ReactPlayer
-            url={videoUrl}
-            playing={true}
-            loop={false}
-            muted={true}
-            controls={false}
-            width="100%"
-            height="100%"
-            className="absolute transform scale-150"
-            onDuration={(duration) => setVideoDuration(duration)}
-            onProgress={({ playedSeconds }) => {
-              if (videoDuration && playedSeconds >= videoDuration - 15) {
-                console.log("15s remaining, switching to image");
-                setShowVideo(false);
-              }
-            }}
-            onEnded={() => {
-              console.log("Video ended, switching to image");
-              setShowVideo(false);
-            }}
-            config={{
-              youtube: {
-                playerVars: {
-                  autoplay: 1,
-                  controls: 0,
-                  modestbranding: 1,
-                  showinfo: 0,
-                  rel: 0,
-                },
-              },
-            }}
-          />
-        </div>
-      ) : (
-        <>
-          {data?.backdrop_path && (
-            <img
-              alt={data?.name || "TV Show Poster"}
-              loading="lazy"
-              width="1920"
-              height="1080"
-              decoding="async"
-              className="w-full h-full object-cover fixed hidden lg:block -z-10 transition-opacity duration-500"
-              src={`https://image.tmdb.org/t/p/original/${data?.backdrop_path}`}
-            />
-          )}
-          {data?.poster_path && (
-            <img
-              alt={data?.name || "TV Show Poster"}
-              loading="lazy"
-              width="1920"
-              height="1080"
-              decoding="async"
-              className="w-full h-full object-cover fixed block lg:hidden -z-10 transition-opacity duration-500"
-              src={`https://image.tmdb.org/t/p/original/${data?.poster_path}`}
-            />
-          )}
-        </>
-      )}
+      <BackgroundMedia
+        videosLoading={videosLoading}
+        showVideo={showVideo}
+        videoUrl={videoUrl}
+        backdropPath={data?.backdrop_path ?? null}
+        posterPath={data?.poster_path ?? null}
+        title={data?.name}
+        setShowVideo={setShowVideo}
+      />
 
       {/* TV show details */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
@@ -423,27 +233,13 @@ function TVDetails() {
         )}
 
         {/* Logo */}
-        {logosLoading ? (
-          <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 animate-pulse rounded"></div>
-        ) : logosError ? (
-          <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
-            <p className="text-white text-sm md:text-base geist-regular text-center px-2">
-              {data.name}
-            </p>
-          </div>
-        ) : selectedLogo ? (
-          <img
-            src={`https://image.tmdb.org/t/p/w500/${selectedLogo.file_path}`}
-            alt={`${data.name} Logo`}
-            className="w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
-          />
-        ) : (
-          <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
-            <p className="text-white text-sm md:text-base geist-regular text-center px-2">
-              {data.name}
-            </p>
-          </div>
-        )}
+        <TvLogoDisplay
+          isVideoPlaying={showVideo}
+          logosLoading={logosLoading}
+          logosError={!!logosError}
+          selectedLogo={selectedLogo}
+          title={data?.name}
+        />
 
         {/* Tagline */}
         {data?.tagline && (
@@ -462,22 +258,7 @@ function TVDetails() {
               rel="noopener noreferrer"
               className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
               aria-label="Visit TV show website">
-              <svg
-                className="w-6 h-6 text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24">
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1"
-                  d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"
-                />
-              </svg>
+              <WebsiteIcon/>
               <span className="text-md roboto-condensed-light capitalize">
                 website
               </span>
@@ -485,41 +266,17 @@ function TVDetails() {
           )}
 
           {/* Bookmark */}
-          <button
-            onClick={handleBookmark}
-            disabled={bookmarkMutation.isPending}
-            aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-            className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
-            {bookmarkMutation.isPending ? (
-              <span className="loading loading-spinner loading-sm"></span>
-            ) : (
-              <>
-                <svg
-                  className="w-6 h-6 text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24">
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={isBookmarked ? "1.6" : "1"}
-                    d={
-                      isBookmarked
-                        ? "M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
-                        : "m17 21-5-4-5 4V3.889a.92.92 0 0 1 .244-.629.808.808 0 0 1 .59-.26h8.333a.81.81 0 0 1 .589.26.92.92 0 0 1 .244.63V21Z"
-                    }
-                  />
-                </svg>
-                <span className="text-md roboto-condensed-light capitalize">
-                  {isBookmarked ? "Remove Bookmark" : "Bookmark"}
-                </span>
-              </>
-            )}
-          </button>
+         <TvBookmarkBtn
+  user={user}
+  id={data?.id ? data?.id.toString() : ""}
+  data={{
+    poster_path: data?.poster_path ?? "",
+    vote_average: data?.vote_average ?? 0,
+    release_date: data?.first_air_date ?? "",
+  }}
+  isBookmarked={!!isBookmarked}
+  category="tv"
+/>
 
           {/* Videos collection */}
           <button
