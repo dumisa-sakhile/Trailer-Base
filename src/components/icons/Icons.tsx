@@ -60,5 +60,85 @@ const SearchIcon = ({ fill }: { fill: string }) => (
   </svg>
 );
   
+const WebsiteIcon = ()=> (
+  <svg
+    className="w-6 h-6 text-white"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    fill="none"
+    viewBox="0 0 24 24">
+    <path
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1"
+      d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"
+    />
+  </svg>
+);
 
-export { TVIcon, LoginIcon, LogoutIcon, MovieIcon, SearchIcon };
+interface BookmarkIconProps {
+  isBookmarked: boolean;
+}
+
+const BookmarkIcon: React.FC<BookmarkIconProps> = ({ isBookmarked }) => {
+  return (
+    <svg
+      className="w-6 h-6 text-white"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24">
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={isBookmarked ? "1.6" : "1"}
+        d={
+          isBookmarked
+            ? "M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+            : "m17 21-5-4-5 4V3.889a.92.92 0 0 1 .244-.629.808.808 0 0 1 .59-.26h8.333a.81.81 0 0 1 .589.26.92.92 0 0 1 .244.63V21Z"
+        }
+      />
+    </svg>
+  );
+};
+
+const VideoIcon = ()=>(<svg
+  className="w-6 h-6 text-white"
+  aria-hidden="true"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  fill="none"
+  viewBox="0 0 24 24">
+  <path
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="1"
+    d="M14 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Zm7 11-6-2V9l6-2v10Z"
+  />
+</svg>);
+
+const VoteIcon = () => (<svg
+  aria-hidden="true"
+  focusable="false"
+  data-prefix="fas"
+  data-icon="star"
+  className="w-5 h-5"
+  role="img"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 576 512"
+  style={{ color: "#FFD43B" }}>
+  <path
+    fill="currentColor"
+    d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"
+  />
+</svg>);
+
+export { TVIcon, LoginIcon, LogoutIcon, MovieIcon, SearchIcon, WebsiteIcon, BookmarkIcon, VideoIcon, VoteIcon };
