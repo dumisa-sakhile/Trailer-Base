@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useBookmarkMutations } from "./useBookmarkMutations";
-import Tooltip from "./Tooltip";
 
 interface MovieProps {
   id: number;
@@ -31,8 +30,7 @@ const Display: React.FC<DisplayProps> = ({
   category,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { addBookmarkMutation, removeBookmarkMutation } =
-    useBookmarkMutations();
+  const { addBookmarkMutation, removeBookmarkMutation } = useBookmarkMutations();
 
   const { data: bookmarks } = useQuery<string[]>({
     queryKey: ["bookmarks", auth.currentUser?.uid],
@@ -113,27 +111,21 @@ const Display: React.FC<DisplayProps> = ({
                   <>
                     {bookmarks?.includes(id.toString()) ? (
                       <button
-                        className="absolute top-3 right-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                        className="absolute top-3 left-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                         onClick={() =>
                           removeBookmarkMutation.mutate(id.toString())
                         }
                         disabled={removeBookmarkMutation.isPending}
                         aria-label={`Remove ${title ?? "media item"} from bookmarks`}>
-                        <Tooltip
-                          label={`Remove ${title ?? "media item"} from bookmarks`}>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="w-5 h-5 max-sm:w-4 max-sm:h-4 bi bi-bookmark-check-fill"
-                            viewBox="0 0 16 16">
-                            <path
-                              fillRule="evenodd"
-                              d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5m8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"
-                            />
-                          </svg>
-                        </Tooltip>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="w-5 h-5 max-sm:w-4 max-sm:h-4 bi bi-trash3-fill"
+                          viewBox="0 0 16 16">
+                          <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                        </svg>
                       </button>
                     ) : (
                       <button
@@ -150,18 +142,18 @@ const Display: React.FC<DisplayProps> = ({
                         }
                         disabled={addBookmarkMutation.isPending}
                         aria-label={`Add ${title ?? "media item"} to bookmarks`}>
-                        <Tooltip
-                          label={`Add ${title ?? "media item"} to bookmarks`}>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="w-5 h-5 max-sm:w-4 max-sm:h-4 bi bi-bookmark"
-                            viewBox="0 0 16 16">
-                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
-                          </svg>
-                        </Tooltip>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="w-5 h-5 max-sm:w-4 max-sm:h-4 bi bi-plus-lg"
+                          viewBox="0 0 16 16">
+                          <path
+                            fillRule="evenodd"
+                            d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+                          />
+                        </svg>
                       </button>
                     )}
                   </>
