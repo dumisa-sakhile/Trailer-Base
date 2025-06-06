@@ -191,7 +191,6 @@ Trailer-Base/
 ├── .cta.json                      # Configuration file (if applicable)
 ├── .env                           # Environment variables
 ├── .gitignore
-├── file_tree.txt                  # File structure documentation
 ├── index.html                     # HTML entry point
 ├── package.json                   # Dependencies and scripts
 ├── package-lock.json
