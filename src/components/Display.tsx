@@ -192,11 +192,11 @@ const Display: React.FC<DisplayProps> = ({
                         }
                         disabled={removeBookmarkMutation.isPending}
                         aria-label={`Remove ${featuredMovie?.title || "Unknown Title"} from bookmarks`}>
-                        <DeleteIcon/>
+                        <DeleteIcon />
                       </button>
                     ) : (
                       <button
-                        className="bg-lime-600 text-white px-4 sm:px-5 py-2 sm:py-3 rounded hover:bg-lime-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-gray-500"
+                        className="bg-[#333]/50 backdrop-blur-md text-gray-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredMovie?.id || 0,
@@ -212,7 +212,7 @@ const Display: React.FC<DisplayProps> = ({
                           !featuredMovie?.poster_path
                         }
                         aria-label={`Add ${featuredMovie?.title || "Unknown Title"} to bookmarks`}>
-                       <AddIcon/>
+                        <AddIcon />
                       </button>
                     ))}
                 </div>
@@ -297,7 +297,7 @@ const Display: React.FC<DisplayProps> = ({
                         }
                         disabled={removeBookmarkMutation.isPending}
                         aria-label={`Remove ${title || "Unknown Title"} from bookmarks`}>
-                        <DeleteIcon/>
+                        <DeleteIcon />
                       </button>
                     ) : (
                       <button
@@ -314,7 +314,7 @@ const Display: React.FC<DisplayProps> = ({
                         }
                         disabled={addBookmarkMutation.isPending || !poster_path}
                         aria-label={`Add ${title || "Unknown Title"} to bookmarks`}>
-                        <AddIcon/>
+                        <AddIcon />
                       </button>
                     )}
                   </div>
@@ -331,13 +331,13 @@ const Display: React.FC<DisplayProps> = ({
           onClick={scrollLeft}
           aria-label="Scroll Left"
           className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-          <LeftIcon/>
+          <LeftIcon />
         </button>
         <button
           onClick={scrollRight}
           aria-label="Scroll Right"
           className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-          <RightIcon/>
+          <RightIcon />
         </button>
       </div>
     </section>

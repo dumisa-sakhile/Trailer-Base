@@ -232,7 +232,7 @@ const Header: React.FC = () => {
               {isGenrePopupOpen && (
                 <div
                   ref={popupRef}
-                  className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 top-10 bg-[#404040] rounded-xl lg:rounded-lg shadow-xl p-5 w-[80vw] max-w-[90vw] sm:w-[350px] max-h-[60vh] overflow-y-auto z-30 ring-1 ring-white/10">
+                  className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 top-10 bg-[#333]/50 backdrop-blur-md text-base text-gray-100 rounded-xl lg:rounded-lg shadow-xl p-5 w-[80vw] max-w-[90vw] sm:w-[350px] max-h-[60vh] overflow-y-auto z-30  geist-light">
                   <div className="flex gap-4 mb-6 items-center justify-center border-b border-white/10 pb-4">
                     <button
                       onClick={toggleGenreType}

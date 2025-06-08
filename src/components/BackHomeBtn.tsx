@@ -12,10 +12,9 @@ const BackHomeBtn = () => {
         aria-label="Go back to previous page"
         className="
           flex items-center gap-2 px-4 py-4 rounded-lg
-          bg-[rgba(0,0,0,0.7)] backdrop-blur-md
-          text-white shadow-md
+          bg-[#333]/50 backdrop-blur-md text-gray-100
           transition-colors duration-200 ease-in-out
-          hover:bg-[#222] hover:shadow-lg hover:scale-105
+           hover:scale-105
           
           font-semibold text-sm select-none
         ">
@@ -45,10 +44,9 @@ const BackHomeBtn = () => {
         aria-label="Go to homepage"
         className="
           flex items-center gap-2 px-4 py-4 rounded-lg
-          bg-[rgba(0,0,0,0.7)] backdrop-blur-md
-          text-white shadow-md
+          bg-[#333]/50 backdrop-blur-md text-gray-100
           transition-colors duration-200 ease-in-out
-          hover:bg-[#222] hover:shadow-lg hover:scale-105
+           hover:scale-105
           
           font-semibold text-sm select-none
         ">
