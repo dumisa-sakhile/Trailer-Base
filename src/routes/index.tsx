@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Header from "@/components/Header";
-import LinkTo from "@/components/LinkTo";
 import { getTrendingMovies } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import CardLink from "@/components/CardLink";
@@ -31,40 +30,9 @@ function App() {
   });
 
   return (
-    <div className=" w-full mt-[100px] md:mt-[120px] flex flex-col gap md:gap-5  min-h-10">
-      <Header />
+    <div className=" w-full flex flex-col gap md:gap-5  min-h-10">
+        <Header />
 
-      <title>Trailer Base - Movies</title>
-
-      <section className="min-w-[300px] mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4">
-        <h1 className="text-5xl max-sm:text-3xl text-center geist-bold">
-          Trailer Base - Movies
-        </h1>
-        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
-          Welcome to Trailer Base, where you can find the latest trailers. These
-          are the trending movies of the{" "}
-          <span className="font-bold uppercase">{period}</span>.
-        </p>
-      </section>
-      <br />
-      {/* period */}
-      <section className="min-w-[300px] min-h-[50px] flex items-center justify-center gap-4">
-        <LinkTo
-          url="/"
-          search={{ period: "day", page: 1 }}
-          variant={period === "day" ? "primary" : "ghost"}
-          className="text-lg max-sm:text-sm">
-          Day
-        </LinkTo>
-        <LinkTo
-          url="/"
-          search={{ period: "week", page: 1 }}
-          variant={period === "week" ? "primary" : "ghost"}
-          className="text-lg max-sm:text-sm">
-          Week
-        </LinkTo>
-      </section>
-      <br />
       <Display
         data={data}
         isLoading={isLoading}
@@ -115,7 +83,7 @@ function App() {
           </div>
         </div>
       </section>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

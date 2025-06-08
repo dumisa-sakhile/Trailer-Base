@@ -137,7 +137,7 @@ const Search = () => {
   // Modal content
   const modalContent = (
     <section
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-md overflow-hidden transition-opacity duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-md overflow-hidden transition-opacity duration-300"
       onClick={() => setStatus(false)}>
       <div
         className="relative bg-[rgba(20,20,20,0.9)] backdrop-blur-lg md:rounded-xl w-full h-full md:w-[800px] md:h-[700px] max-w-[90vw] max-h-[90vh] overflow-auto text-gray-200 shadow-2xl ring-1 ring-gray-800/50"

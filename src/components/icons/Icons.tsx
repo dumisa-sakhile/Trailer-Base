@@ -44,7 +44,7 @@ const LogoutIcon = ({ fill }: { fill: string }) => (
 
 const SearchIcon = ({ fill }: { fill: string }) => (
   <svg
-    className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2"
+    className="w-5 h-5 absolute left-0 top-1/2 transform -translate-y-1/2"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     width="24"
