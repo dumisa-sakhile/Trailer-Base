@@ -12,10 +12,8 @@ import movieGenres from "@/data/movieGenres";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
 import {
-  TVIcon,
   LoginIcon,
   LogoutIcon,
-  MovieIcon,
   SearchIcon,
 } from "@/components/icons/Icons";
 import Search from "./Search";
@@ -234,28 +232,26 @@ const Header: React.FC = () => {
               {isGenrePopupOpen && (
                 <div
                   ref={popupRef}
-                  className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 top-2 bg-[#111] rounded-xl lg:rounded-2xl shadow-xl p-5 w-[80vw] max-w-[90vw] sm:w-[420px] max-h-[60vh] overflow-y-auto z-30">
-                  <div className="flex gap-4 mb-6 items-center justify-center">
+                  className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 top-10 bg-[#404040] rounded-xl lg:rounded-lg shadow-xl p-5 w-[80vw] max-w-[90vw] sm:w-[350px] max-h-[60vh] overflow-y-auto z-30 ring-1 ring-white/10">
+                  <div className="flex gap-4 mb-6 items-center justify-center border-b border-white/10 pb-4">
                     <button
                       onClick={toggleGenreType}
-                      className={`px-4 py-2 text-sm rounded flex items-center gap-2 transition focus:outline-none ${
+                      className={`px-4 py-3 text-sm flex items-center gap-2 transition focus:outline-none ${
                         showTVGenres
-                          ? "bg-white text-black"
-                          : "bg-transparent text-gray-200 hover:bg-[#222]"
+                          ? "font-bold text-white"
+                          : "font-light text-gray-400"
                       }`}
                       aria-label="Show TV Genres">
-                      <TVIcon fill={showTVGenres ? "#000" : "#fff"} />
-                      TV Shows
+                      Series
                     </button>
                     <button
                       onClick={toggleGenreType}
-                      className={`px-4 py-2 text-sm rounded flex items-center gap-2 transition focus:outline-none ${
+                      className={`px-4 py-3 text-sm flex items-center gap-2 transition focus:outline-none ${
                         !showTVGenres
-                          ? "bg-white text-black"
-                          : "bg-transparent text-gray-200 hover:bg-[#222]"
+                          ? "font-bold text-white"
+                          : "font-light text-gray-400"
                       }`}
                       aria-label="Show Movie Genres">
-                      <MovieIcon fill={!showTVGenres ? "#000" : "#fff"} />
                       Movies
                     </button>
                   </div>
@@ -271,7 +267,7 @@ const Header: React.FC = () => {
                             typeId: String(genre.id),
                           }}
                           search={{ page: 1 }}
-                          className="px-4 py-2 text-sm rounded-full bg-transparent hover:bg-white hover:text-black focus:outline-none text-gray-200 shadow-sm ring-1 ring-white/10 transition text-center"
+                          className="px-4 py-2 text-sm rounded-full hover:bg-white hover:text-black focus:outline-none text-white  transition text-center"
                           onClick={() => {
                             setIsGenrePopupOpen(false);
                             setIsMenuOpen(false);

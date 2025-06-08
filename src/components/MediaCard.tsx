@@ -4,6 +4,7 @@ import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import { useBookmarkMutations } from "./useBookmarkMutations";
+import { AddIcon, DeleteIcon, StarIcon } from "./icons/Icons";
 
 
 interface MediaCardProps {
@@ -73,14 +74,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 max-sm:p-2">
           <div className="flex items-center gap-2">
-            <svg
-              aria-hidden="true"
-              className="w-4 h-4 text-[#FACC15]"
-              fill="currentColor"
-              viewBox="0 0 576 512"
-              xmlns="http://www.w3.org/2000/svg">
-              <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z" />
-            </svg>
+<StarIcon/>
             <span className="text-xs font-semibold text-[#FACC15]">
               {vote_average?.toFixed(1) ?? "N/A"}/10
             </span>
@@ -103,19 +97,11 @@ const MediaCard: React.FC<MediaCardProps> = ({
               }
               disabled={removeBookmarkMutation?.isPending}
               aria-label={`Remove ${title ?? "media item"} from bookmarks`}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-trash3-fill"
-                viewBox="0 0 16 16">
-                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
-              </svg>
+              <DeleteIcon/>
             </button>
           ) : (
             <button
-              className="absolute top-3 right-3 p-2 bg-black rounded-full text-white hover:bg-white hover:text-black focus:ring-2 focus:ring-[#FACC15]/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              className="absolute top-3 left-3 p-2 bg-black rounded-full text-white hover:bg-white hover:text-black focus:ring-2 focus:ring-[#FACC15]/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
               onClick={() =>
                 addBookmarkMutation?.mutate({
                   id: id ?? 0,
@@ -128,18 +114,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               }
               disabled={addBookmarkMutation?.isPending}
               aria-label={`Add ${title ?? "media item"} to bookmarks`}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-plus-lg"
-                viewBox="0 0 16 16">
-                <path
-                  fillRule="evenodd"
-                  d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
-                />
-              </svg>
+              <AddIcon/>
             </button>
           )}
         </>

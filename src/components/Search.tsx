@@ -155,7 +155,7 @@ const Search = () => {
                   ? "Breaking Bad"
                   : "Robert Downey Jr."
             }`}
-            className="w-full p-4 bg-[rgba(30,30,30,0.8)] rounded-lg text-gray-200 text-lg placeholder:text-gray-400 placeholder:font-light font-sans outline-none focus:ring-2 focus:ring-[#FACC15] transition-all duration-300 ease-in-out shadow-inner"
+            className="w-full p-4 bg-[rgba(30,30,30,0.8)] rounded-lg text-gray-200 text-lg placeholder:text-gray-400 placeholder:font-light font-sans outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out shadow-inner"
             autoComplete="off"
             onChange={(e) => setSearch(e.target.value)}
             value={search}
@@ -168,7 +168,7 @@ const Search = () => {
                 {resultTypeLabel} Search Results
               </h2>
               <button
-                className="px-4 py-2 bg-[rgba(50,50,50,0.7)] rounded-lg text-gray-200 font-medium hover:bg-[#FACC15] hover:text-black transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md"
+                className="px-4 py-2 bg-[rgba(50,50,50,0.7)] rounded-lg text-gray-200 font-medium hover:bg-blue-500 hover:text-black transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md"
                 onClick={() => setStatus(false)}>
                 Close
               </button>

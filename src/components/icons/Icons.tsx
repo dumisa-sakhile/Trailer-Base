@@ -1,3 +1,5 @@
+import React from "react";
+
 const TVIcon = ({ fill }: { fill: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -59,8 +61,8 @@ const SearchIcon = ({ fill }: { fill: string }) => (
     />
   </svg>
 );
-  
-const WebsiteIcon = ()=> (
+
+const WebsiteIcon = () => (
   <svg
     className="w-6 h-6 text-white"
     aria-hidden="true"
@@ -108,37 +110,123 @@ const BookmarkIcon: React.FC<BookmarkIconProps> = ({ isBookmarked }) => {
   );
 };
 
-const VideoIcon = ()=>(<svg
-  className="w-6 h-6 text-white"
-  aria-hidden="true"
-  xmlns="http://www.w3.org/2000/svg"
-  width="24"
-  height="24"
-  fill="none"
-  viewBox="0 0 24 24">
-  <path
+const VideoIcon = () => (
+  <svg
+    className="w-6 h-6 text-white"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    fill="none"
+    viewBox="0 0 24 24">
+    <path
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1"
+      d="M14 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Zm7 11-6-2V9l6-2v10Z"
+    />
+  </svg>
+);
+
+const VoteIcon = () => (
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    data-prefix="fas"
+    data-icon="star"
+    className="w-5 h-5"
+    role="img"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 576 512"
+    style={{ color: "#FFD43B" }}>
+    <path
+      fill="currentColor"
+      d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"
+    />
+  </svg>
+);
+
+const RightIcon = () => (
+  <svg
+    className="w-4 h-4 sm:w-6 sm:h-6 text-white"
+    fill="none"
+    viewBox="0 0 24 24"
     stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    strokeWidth="1"
-    d="M14 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Zm7 11-6-2V9l6-2v10Z"
-  />
-</svg>);
+    strokeWidth="3">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      stroke="currentColor"
+      d="M9 5l6 7-6 7m6-6"></path>
+  </svg>
+);
 
-const VoteIcon = () => (<svg
-  aria-hidden="true"
-  focusable="false"
-  data-prefix="fas"
-  data-icon="star"
-  className="w-5 h-5"
-  role="img"
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 576 512"
-  style={{ color: "#FFD43B" }}>
-  <path
+const LeftIcon = () => (
+  <svg
+    className="w-4 h-4 sm:w-6 sm:h-6 text-white"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="3">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 19l-7-7 7-7m-6"></path>
+  </svg>
+);
+
+const StarIcon = () => (
+  <svg
+    aria-hidden="true"
+    className="w-4 h-4 text-[#FACC15]"
     fill="currentColor"
-    d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"
-  />
-</svg>);
+    viewBox="0 0 576 512"
+    xmlns="http://www.w3.org/2000/svg">
+    <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z" />
+  </svg>
+);
 
-export { TVIcon, LoginIcon, LogoutIcon, MovieIcon, SearchIcon, WebsiteIcon, BookmarkIcon, VideoIcon, VoteIcon };
+const AddIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    className="bi bi-plus-lg"
+    viewBox="0 0 16 16">
+    <path
+      fillRule="evenodd"
+      d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+    />
+  </svg>
+);
+
+const DeleteIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    className="bi bi-trash3-fill"
+    viewBox="0 0 16 16">
+    <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+  </svg>
+);
+
+export {
+  TVIcon,
+  LoginIcon,
+  LogoutIcon,
+  MovieIcon,
+  SearchIcon,
+  WebsiteIcon,
+  BookmarkIcon,
+  VideoIcon,
+  VoteIcon,
+  RightIcon,
+  LeftIcon,
+  StarIcon,
+  AddIcon,
+  DeleteIcon,
+};

@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Header from "@/components/Header";
-import { getTrendingMovies } from "@/api/movie";
+import { getTrendingMovies, getList } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import CardLink from "@/components/CardLink";
+import MediaList from "@/components/MediaList"; // Adjust import path as needed
 import Display from "@/components/Display";
 import Footer from "@/components/Footer";
 
@@ -23,66 +23,109 @@ export const Route = createFileRoute("/")({
 function App() {
   const { period, page } = Route.useSearch();
 
-  const { data, isLoading, isError, error } = useQuery({
+  // Trending Movies Query
+  const {
+    data: trendingData,
+    isLoading: isTrendingLoading,
+    isError: isTrendingError,
+    error: trendingError,
+  } = useQuery({
     queryKey: ["trending", period, page],
     queryFn: () => getTrendingMovies(period, page),
     placeholderData: keepPreviousData,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  // Popular Movies Query
+  const {
+    data: popularMovieData,
+    isLoading: isPopularMovieLoading,
+    isError: isPopularMovieError,
+    error: popularMovieError,
+  } = useQuery({
+    queryKey: ["popularMovies", page],
+    queryFn: () => getList(page, "popular"),
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  // Top Rated Movies Query
+  const {
+    data: topRatedMovieData,
+    isLoading: isTopRatedMovieLoading,
+    isError: isTopRatedMovieError,
+    error: topRatedMovieError,
+  } = useQuery({
+    queryKey: ["topRatedMovies", page],
+    queryFn: () => getList(page, "top_rated"),
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  // Upcoming Movies Query
+  const {
+    data: upcomingMovieData,
+    isLoading: isUpcomingMovieLoading,
+    isError: isUpcomingMovieError,
+    error: upcomingMovieError,
+  } = useQuery({
+    queryKey: ["upcomingMovies", page],
+    queryFn: () => getList(page, "upcoming"),
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 60 * 1000,
   });
 
   return (
-    <div className=" w-full flex flex-col gap md:gap-5  min-h-10">
-        <Header />
-
+    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen">
+      <Header />
       <Display
-        data={data}
-        isLoading={isLoading}
-        isError={isError}
-        error={error}
+        data={trendingData}
+        isLoading={isTrendingLoading}
+        isError={isTrendingError}
+        error={trendingError}
         category="movie"
+      />
+      <section className=" rounded-md flex flex-col items-center justify-center gap-6 md:px-12 lg:w-[90%] lg:mx-auto">
+        <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
+          Explore Movies
+        </h1>
+        <p className="text-gray-300 font-medium text-center max-w-md">
+          Discover the best in movies, curated for you.
+        </p>
+      </section>
+
+      <MediaList
+        mediaType="movie"
+        list="popular"
+        title="Popular Movies"
+        data={popularMovieData}
+        isLoading={isPopularMovieLoading}
+        isError={isPopularMovieError}
+        error={popularMovieError}
       />
       <br />
       <br />
-      <section className="pt-10 pb-10 bg-white text-black ring-1 ring-white/20 focus:ring-white/50 transition duration-300 ease-in-out transform hover:scale-105 shadow-md min-w-[300px] mt-10 md:mt-0 lg:w-[90%] lg:ml-[5%] flex flex-col items-center justify-center gap-4 rounded-lg">
-        <h1 className="text-5xl max-sm:text-3xl text-center geist-bold">
-          Movie Lists
-        </h1>
-        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
-          Pick a list below and explore the world of movies.
-        </p>
+      <MediaList
+        mediaType="movie"
+        list="top_rated"
+        title="Top Rated Movies"
+        data={topRatedMovieData}
+        isLoading={isTopRatedMovieLoading}
+        isError={isTopRatedMovieError}
+        error={topRatedMovieError}
+      />
+      <br />
+      <br />
+      <MediaList
+        mediaType="movie"
+        list="upcoming"
+        title="Upcoming Movies"
+        data={upcomingMovieData}
+        isLoading={isUpcomingMovieLoading}
+        isError={isUpcomingMovieError}
+        error={upcomingMovieError}
+      />
 
-        <div className="w-full min-h-[70px]">
-          <div className="flex items-center justify-center flex-wrap animate-scroll gap-2 md:gap-12 scale-95">
-            <CardLink
-              to="/movie/list/$list"
-              params={{ list: "top_rated" }}
-              imageUrl="https://image.tmdb.org/t/p/w500//9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
-              title="Top Rated Movies"
-              description="Discover the top rated movies of all time."
-            />
-            <CardLink
-              to="/movie/list/$list"
-              params={{ list: "popular" }}
-              imageUrl="https://image.tmdb.org/t/p/w500//yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg"
-              title="Popular Movies"
-              description="Discover the most popular movies of all time."
-            />
-            <CardLink
-              to="/movie/list/$list"
-              params={{ list: "upcoming" }}
-              imageUrl="https://image.tmdb.org/t/p/w500//wWba3TaojhK7NdycRhoQpsG0FaH.jpg"
-              title="Upcoming Movies"
-              description="Discover the upcoming movies on the big screen."
-            />
-            <CardLink
-              to="/movie/list/$list"
-              params={{ list: "now_playing" }}
-              imageUrl="https://image.tmdb.org/t/p/w500//oLxWocqheC8XbXbxqJ3x422j9PW.jpg"
-              title="Now Playing Movies"
-              description="Discover the movies that are currently playing in theaters."
-            />
-          </div>
-        </div>
-      </section>
       <Footer />
     </div>
   );

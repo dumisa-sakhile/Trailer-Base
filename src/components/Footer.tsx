@@ -1,31 +1,67 @@
+import React from "react";
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
-    <>
-      <br />
-      <footer className="w-full py-3 max-sm:py-2 bg-gradient-to-t from-[rgba(0,0,0,0.8)] to-[rgba(0,0,0,0.6)] backdrop-blur-xl border-t border-gray-600/20 shadow-sm">
-        <p className="text-center text-gray-100 text-md max-sm:text-xs roboto-condensed-light">
-          © {new Date().getFullYear()} Trailer Base | Powered by{" "}
+    <footer className="bg-[#131313] rounded-lg shadow-sm m-4 roboto-condensed-regular text-center mx-auto max-w-[1020px]">
+      <div className="w-full p-4 md:flex md:items-center md:justify-between">
+        <span className="text-sm text-gray-200 sm:text-center">
+          © {new Date().getFullYear()}{" "}
+          <a href="#" className="hover:underline">
+            Trailer Base
+          </a>
+          . All Rights Reserved.
+        </span>
+        <span className="text-sm text-gray-200 sm:text-center">
+          &nbsp;Made with ❤️ by{" "}
           <a
-            href="https://www.themoviedb.org/"
+            href="https://sakhile-dumisa.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-100 hover:text-yellow-600 roboto-condensed-bold transition-colors duration-200">
-            TMDb API
-          </a>{" "}
-          | Made with <span className="text-white">❤</span> by{" "}
-          <a
-            href="https://github.com/dumisa-sakhile"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-100 hover:text-yellow-600 roboto-condensed-bold transition-colors duration-200">
+            className="hover:underline">
             Dumisa Sakhile
           </a>
-        </p>
-      </footer>
-      <br />
-    </>
+        </span>
+        <ul className="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-200 sm:mt-0">
+          <li>
+            <a
+              href="https://github.com/dumisa-sakhile"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline me-4 md:me-6">
+              GitHub
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.themoviedb.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline me-4 md:me-6">
+              TMDb API
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://tanstack.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline me-4 md:me-6">
+              TanStack
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://tailwindcss.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline">
+              TailwindCSS
+            </a>
+          </li>
+        </ul>
+      </div>
+    </footer>
   );
-}
+};
 
-export default Footer
+export default Footer;
