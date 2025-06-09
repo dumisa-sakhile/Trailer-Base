@@ -103,7 +103,7 @@ function Profile() {
   if (!user) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
-        <p className="text-white text-xl roboto-condensed-light">
+        <p className="text-white text-xl font-light">
           Please log in to view your profile
         </p>
       </div>
@@ -113,7 +113,7 @@ function Profile() {
   if (error) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
-        <p className="text-red-400 text-xl roboto-condensed-light">
+        <p className="text-red-400 text-xl font-light">
           Error loading bookmarks: {error?.message}
         </p>
       </div>
@@ -124,19 +124,19 @@ function Profile() {
     <>
       <title>Trailer Base - Profile</title>
 
-      <div className="w-full min-h-screen flex flex-col gap-12 py-8 md:px-10 bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
-        <h1 className="text-4xl max-sm:text-2xl md:text-5xl text-left roboto-condensed-bold tracking-tight text-white">
+      <div className="w-full min-h-screen flex flex-col gap-6 py-4 px-6 mx-auto max-w-6xl  text-gray-200">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
           Profile
         </h1>
 
-        <section className="flex flex-col md:flex-row items-center justify-around gap-8 md:gap-12">
-          <aside className="flex items-center gap-6 flex-col">
+        <section className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <aside className="flex items-center gap-6 flex-col md:flex-row">
             <img
               src={getFallbackImage()}
               alt="Profile"
               className="w-32 h-32 rounded-full object-cover border-2 border-[rgba(255,255,255,0.2)] shadow-lg"
             />
-            <h3 className="roboto-condensed-light text-md text-gray-200">
+            <h3 className="text-md sm:text-lg font-light text-white">
               {user?.displayName ||
                 userData?.username ||
                 "Anonymous, please set a username!"}
@@ -144,25 +144,24 @@ function Profile() {
           </aside>
           <button
             onClick={() => setModalOpen(true)}
-            className="bg-white text-black font-semibold text-sm px-5 py-2.5 rounded-full hover:opacity-90 transition-all shadow-md">
+            className="bg-[#333]/50 backdrop-blur-md text-white font-semibold text-sm px-5 py-3 rounded-full hover:scale-105 transition-all shadow-md">
             Edit Profile
           </button>
         </section>
+        <div className="border-t border-white/10"></div>
 
-        <section className="mt-12">
-          <div className="flex flex-col max-sm:gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
-            <h2 className="text-2xl max-sm:text-xl md:text-5xl roboto-condensed-bold text-white">
+        <section className="mt-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">
               Your Bookmarks
             </h2>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {["all", "movie", "tv"].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFilter(type as "all" | "movie" | "tv")}
-                  className={`geist-regular px-5 py-2.5 max-sm:px-3 max-sm:py-2 text-sm max-sm:text-xs  rounded-full transition-colors duration-200 ${
-                    filter === type
-                      ? "bg-white text-black shadow-md"
-                      : "bg-black text-gray-300 hover:bg-[#222] hover:text-white focus:ring-blue-500"
+                  className={`flex items-center gap-2 px-6 py-4 rounded-lg bg-[#333]/50 backdrop-blur-md  transition-colors duration-200 ease-in-out hover:scale-105 ${
+                    filter === type ? "bg-white text-black" : "text-gray-100"
                   }`}
                   aria-pressed={filter === type}
                   aria-label={`Show ${type === "all" ? "All" : type === "movie" ? "Movies" : "TV"} bookmarks`}
@@ -175,13 +174,14 @@ function Profile() {
           {isLoading ? (
             <Loading />
           ) : filteredBookmarks?.length === 0 ? (
-            <p className="text-gray-300 text-lg g-light p-4">
+            <p className="text-gray-300 text-lg font-light p-4">
               No bookmarks yet. Add some movies or TV shows to your bookmarks!
             </p>
           ) : (
-            <div className="w-full flex flex-wrap justify-center gap-6 max-sm:gap-2">
+            
+            <div className="w-full absolute left-0 flex flex-wrap gap-2 md:gap-6 justify-center mt-10">
               {filteredBookmarks
-                ?.filter(
+                 ?.filter(
                   (bookmark) => bookmark && bookmark.id && bookmark.title
                 )
                 .map((bookmark) => (
@@ -208,3 +208,5 @@ function Profile() {
     </>
   );
 }
+
+export default Profile;
