@@ -158,7 +158,8 @@ const RightIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       stroke="currentColor"
-      d="M9 5l6 7-6 7m6-6"></path>
+      d="M9 5l6 7-6 7m6-6"
+    />
   </svg>
 );
 
@@ -172,7 +173,9 @@ const LeftIcon = () => (
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
-      d="M15 19l-7-7 7-7m-6"></path>
+      stroke="currentColor"
+      d="M15 5l-6 7 6 7m-6-6"
+    />
   </svg>
 );
 

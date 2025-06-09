@@ -56,12 +56,12 @@ const MediaList: React.FC<MediaListProps> = ({
           to={`/${mediaType}/list/$list`}
           params={{ list: list }}
           search={{ page: 1 }}>
-          <button className="px-4 py-2 text-sm font-medium bg-[#333]/50 backdrop-blur-md  text-gray-100 transition-all duration-300">
+          <button className="px-3 py-2 text-sm font-medium text-white bg-blue-700 backdrop-blur-md rounded-md hover:bg-blue-900/80 hover:text-white transition-all duration-300">
             View All {title}
           </button>
         </Link>
       </div>
-      <div className="h-4" /> {/* Replaces <br /> for cleaner spacing */}
+      <div className="h-4" /> 
       {isLoading && (
         <div className="w-full text-center">
           <Loading />
@@ -77,7 +77,7 @@ const MediaList: React.FC<MediaListProps> = ({
           onClick={scrollLeft}
           aria-label="Scroll Left"
           className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 z-10">
-          <LeftIcon />
+          <LeftIcon/>
         </button>
         <div
           ref={scrollRef}
@@ -99,7 +99,7 @@ const MediaList: React.FC<MediaListProps> = ({
           onClick={scrollRight}
           aria-label="Scroll Right"
           className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 z-10">
-          <RightIcon />
+           <RightIcon/>
         </button>
       </div>
     </section>

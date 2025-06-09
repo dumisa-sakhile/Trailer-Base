@@ -4,10 +4,10 @@ import { getTrendingPeople, getPopularPeople } from "@/api/people";
 import Header from "@/components/Header";
 import { useSearchContext } from "@/context/searchContext";
 import { useEffect, useRef, useState } from "react";
-import Button from "@/components/Button";
 import CastCard from "@/components/PeopleCastCard";
 import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
+import { LeftIcon, RightIcon } from "@/components/icons/Icons";
 
 interface pageProps {
   page?: number;
@@ -19,8 +19,6 @@ export const Route = createFileRoute("/people/")({
   }),
   component: People,
 });
-
-
 
 function People() {
   const search = Route.useSearch();
@@ -76,88 +74,74 @@ function People() {
   };
 
   return (
-    <div className="w-full mt-[100px] md:mt-[120px] flex flex-col gap md:gap-5  min-h-10">
+    <div className="w-full mt-[80px] sm:mt-[100px] flex flex-col gap-4 bg-black text-white">
       <Header />
       <title>Trailer Base - People</title>
 
-      <section className="min-w-[300px] mt-10 md:mt-0 w-full flex flex-col items-center justify-center gap-4">
-        <h1 className="text-5xl max-sm:text-3xl text-center geist-bold">
+      <section className="w-full flex flex-col items-center justify-center gap-4 py-4">
+        <h1 className="text-4xl sm:text-5xl text-center font-bold uppercase">
           Trailer Base - People
         </h1>
-        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
+        <p className="text-sm sm:text-base font-light text-center max-w-2xl">
           Welcome to Trailer Base, where you can explore the stars of film and
           TV. These are the trending people of the{" "}
-          <span className="font-bold uppercase">{period}</span>.
+          <span className="font-semibold uppercase">{period}</span>.
         </p>
       </section>
-      <br />
 
       {/* Period Buttons */}
-      <section className="min-w-[300px] min-h-[50px] flex items-center justify-center gap-4">
-        <Button
+      <section className="flex items-center justify-center gap-2 py-2">
+        <button
           onClick={() => setPeriod("day")}
-          variant={period === "day" ? "primary" : "ghost"}
+          className={`bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ${
+            period === "day"
+              ? "bg-blue-900/20 opacity-80"
+              : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105"
+          } ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50`}
           aria-label="View daily trending people">
           Day
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => setPeriod("week")}
-          variant={period === "week" ? "primary" : "ghost"}
+          className={`bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ${
+            period === "week"
+              ? "bg-blue-900/20 opacity-80"
+              : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105"
+          } ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50`}
           aria-label="View weekly trending people">
           Week
-        </Button>
+        </button>
       </section>
-      <br />
 
       {/* Trending People Carousel */}
-      <section className="relative w-full max-w-[98vw] overflow-x-hidden">
-        <div className="flex items-center justify-between mb-4 px-2">
-          <h2 className="text-2xl geist-bold">Trending People</h2>
+      <section className="relative w-full max-w-[98vw] overflow-x-hidden py-4">
+        <div className="flex items-center justify-between mb-4 px-4">
+          <h2 className="text-2xl font-bold">Trending People</h2>
           <div className="flex gap-2">
             <button
               onClick={() => scrollCarousel("left")}
               aria-label="Scroll left"
-              className="bg-[#333] hover:bg-[#222] rounded-full p-2">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24">
-                <path
-                  d="M15 19l-7-7 7-7"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
+              className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
+              <LeftIcon />
             </button>
             <button
               onClick={() => scrollCarousel("right")}
               aria-label="Scroll right"
-              className="bg-[#333] hover:bg-[#222] rounded-full p-2">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24">
-                <path
-                  d="M9 5l7 7-7 7"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
+              className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
+              <RightIcon />
             </button>
           </div>
         </div>
         {trendingLoading ? (
           <Loading />
         ) : trendingError ? (
-          <p className="text-center text-red-400">
+          <p className="text-center text-red-500">
             Error loading trending people: {trendingErrorObj?.message}
           </p>
         ) : (
           <div
             ref={carouselRef}
-            className="flex gap-6 overflow-x-auto pb-4 px-2 snap-x snap-mandatory scroll-smooth"
+            className="flex gap-6 overflow-x-auto pb-4 px-4 snap-x snap-mandatory scroll-smooth"
             style={{ WebkitOverflowScrolling: "touch" }}>
             {trendingData?.results.map((person: any) => (
               <div key={person.id} className="snap-start">
@@ -175,14 +159,14 @@ function People() {
         )}
       </section>
 
-      {/* Popular People (paginated, no ugly box) */}
-      <section className="pt-10 pb-10 bg-black text-gray-200 min-w-[300px] md:mt-0 flex flex-col items-center justify-center gap-6">
-        <h2 className="text-3xl text-center geist-bold">Popular People</h2>
-        <p className="roboto-condensed-light w-[300px] md:w-full text-center">
+      {/* Popular People (paginated) */}
+      <section className="py-6 bg-black flex flex-col items-center justify-center gap-4">
+        <h2 className="text-3xl text-center font-bold">Popular People</h2>
+        <p className="text-sm sm:text-base font-light text-center max-w-2xl">
           Explore some of the most popular stars in film and television.
         </p>
-        <div className="w-full min-h-[270px]">
-          <div className="flex flex-wrap justify-center gap-8">
+        <div className="w-full">
+          <div className="flex flex-wrap justify-center gap-8 px-4">
             {popularLoading || popularError ? (
               <p className="text-gray-400">
                 {popularLoading ? (
@@ -205,35 +189,24 @@ function People() {
           </div>
         </div>
         {!popularLoading && !popularError && (
-          <div className="flex items-center justify-center gap-2 mt-4 max-sm:mt-3 bg-[rgba(0,0,0,0.85)] backdrop-blur-md px-4 py-2 max-sm:px-3 max-sm:py-1.5 rounded-lg shadow-sm border border-gray-600/30">
+          <div className="flex items-center justify-center gap-2 mt-4">
             <Link
               to="/people"
               search={(prev) => ({
                 ...prev,
                 page: page - 1,
               })}
-              className={`flex items-center gap-1.5 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-100 font-medium text-sm max-sm:text-xs roboto-condensed-bold capitalize rounded-md transition-all duration-200 ease-in-out border border-gray-600/30 ${
+              className={`flex items-center gap-1.5 bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 ${
                 page === 1
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-800 hover:text-white hover:shadow-md hover:scale-105"
+                  ? "opacity-30 cursor-not-allowed"
+                  : "opacity-80 hover:opacity-100 hover:bg-blue-900/20 hover:scale-105"
               }`}
               disabled={page === 1}
               aria-label="Go to previous popular page">
-              <svg
-                className="w-5 h-5 max-sm:w-4 max-sm:h-4"
-                aria-hidden="true"
-                viewBox="0 0 24 24">
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m15 19-7-7 7-7"
-                />
-              </svg>
+              <LeftIcon />
               Prev
             </Link>
-            <span className="text-gray-100 font-medium text-sm max-sm:text-xs geist-light px-3 max-sm:px-2">
+            <span className="text-gray-200 text-sm font-light px-3">
               {page?.toLocaleString()} /{" "}
               {popularData?.total_pages?.toLocaleString() ?? "?"}
             </span>
@@ -243,26 +216,15 @@ function People() {
                 ...prev,
                 page: page + 1,
               })}
-              className={`flex items-center gap-1.5 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-100 font-medium text-sm max-sm:text-xs roboto-condensed-bold capitalize rounded-md transition-all duration-200 ease-in-out border border-gray-600/30 ${
+              className={`flex items-center gap-1.5 bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 ${
                 popularData?.total_pages === page
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-800 hover:text-white hover:shadow-md hover:scale-105"
+                  ? "opacity-30 cursor-not-allowed"
+                  : "opacity-80 hover:opacity-100 hover:bg-blue-900/20 hover:scale-105"
               }`}
               disabled={popularData?.total_pages === page}
               aria-label="Go to next popular page">
               Next
-              <svg
-                className="w-5 h-5 max-sm:w-4 max-sm:h-4"
-                aria-hidden="true"
-                viewBox="0 0 24 24">
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m9 5 7 7-7 7"
-                />
-              </svg>
+              <RightIcon />
             </Link>
           </div>
         )}

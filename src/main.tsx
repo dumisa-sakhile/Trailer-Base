@@ -57,7 +57,7 @@ if (rootElement && !rootElement.innerHTML) {
         <SearchProvider>
           <EscKeyHandler />
           <RouterProvider router={router} />
-          <Toaster richColors theme='dark'/>
+          <Toaster/>
         </SearchProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

@@ -1,7 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import React, { useRef, useState, useMemo, Suspense } from "react";
-import Loading from "@/components/Loading";
+import React, {
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  Suspense,
+  useEffect,
+} from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { FixedSizeList } from "react-window";
+import type { ListChildComponentProps } from "react-window";
+import debounce from "lodash/debounce";
+import { ErrorBoundary } from "react-error-boundary";
+import Loading from "@/components/Loading";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useBookmarkMutations } from "./useBookmarkMutations";
@@ -23,6 +35,8 @@ interface DetailedMovieProps extends MovieProps {
   tagline?: string;
   runtime?: number;
   genres?: { id: number; name: string }[];
+  original_language?: string;
+  original_title?: string;
 }
 
 interface DisplayProps {
@@ -33,6 +47,103 @@ interface DisplayProps {
   category: "movie" | "tv";
 }
 
+const ErrorFallback: React.FC<{ error: Error }> = ({ error }) => (
+  <div className="text-red-500 text-center p-4">Error: {error.message}</div>
+);
+
+const MovieCard: React.FC<{
+  movie: MovieProps;
+  index: number;
+  style: React.CSSProperties;
+  isSelected: boolean;
+  onClick: (id: number) => void;
+  bookmarks?: string[];
+  category: "movie" | "tv";
+}> = ({ movie, index, style, isSelected, onClick, bookmarks, category }) => {
+  const { addBookmarkMutation, removeBookmarkMutation } =
+    useBookmarkMutations();
+
+  return (
+    <div style={style} className="relative group inline-block">
+      <Suspense
+        fallback={
+          <div
+            className="w-[180px] h-[101px] bg-gray-900 rounded-md"
+            style={{ borderRadius: "0.375rem" }}>
+            <Loading />
+          </div>
+        }>
+        <button
+          onClick={() => onClick(movie.id)}
+          className={`w-[180px] h-[101px] overflow-hidden shadow-md focus:outline-none rounded-md ${
+            isSelected ? "border-2 border-blue-500" : ""
+          }`}
+          style={{ borderRadius: "0.375rem" }}>
+          {movie.backdrop_path ? (
+            <img
+              src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+              srcSet={`
+                https://image.tmdb.org/t/p/w342${movie.backdrop_path} 342w,
+                https://image.tmdb.org/t/p/w500${movie.backdrop_path} 500w
+              `}
+              sizes="(max-width: 640px) 342px, 500px"
+              alt={movie.title || "Movie"}
+              className="w-full h-full object-cover rounded-md"
+              loading="lazy"
+              style={{ borderRadius: "0.375rem" }}
+            />
+          ) : (
+            <div
+              className="w-full h-full bg-gray-900 flex items-center justify-center rounded-md"
+              style={{ borderRadius: "0.375rem" }}>
+              <p className="text-gray-500 text-sm">No backdrop</p>
+            </div>
+          )}
+          <div
+            className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
+            style={{ borderRadius: "0.375rem" }}>
+            <h3 className="text-white text-sm font-semibold text-left line-clamp-1">
+              {index + 1}. {movie.title}
+            </h3>
+          </div>
+        </button>
+        {auth?.currentUser && (
+          <div className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity">
+            {bookmarks?.includes(movie.id.toString()) ? (
+              <button
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200"
+                onClick={() =>
+                  removeBookmarkMutation.mutate(movie.id.toString())
+                }
+                disabled={removeBookmarkMutation.isPending}
+                aria-label={`Remove ${movie.title || "Unknown Title"} from bookmarks`}>
+                <DeleteIcon />
+              </button>
+            ) : (
+              <button
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                onClick={() =>
+                  addBookmarkMutation.mutate({
+                    id: movie.id,
+                    title: movie.title,
+                    poster_path: movie.poster_path,
+                    vote_average: movie.vote_average,
+                    release_date: movie.release_date,
+                    category,
+                  })
+                }
+                disabled={addBookmarkMutation.isPending || !movie.poster_path}
+                aria-label={`Add ${movie.title || "Unknown Title"} to bookmarks`}>
+                <AddIcon />
+              </button>
+            )}
+          </div>
+        )}
+      </Suspense>
+    </div>
+  );
+};
+
 const Display: React.FC<DisplayProps> = ({
   data,
   isLoading,
@@ -40,12 +151,15 @@ const Display: React.FC<DisplayProps> = ({
   error,
   category,
 }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<FixedSizeList>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const queryClient = useQueryClient();
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
-  const [featuredMovieId, setFeaturedMovieId] = useState<number | null>(
-    data?.results?.[0]?.id ?? 1233413
-  );
+  const [featuredMovieId, setFeaturedMovieId] = useState<number>(1233413);
+
+  const otherMovies = useMemo(() => data?.results || [], [data?.results]);
 
   const { data: bookmarks } = useQuery<string[]>({
     queryKey: ["bookmarks", auth.currentUser?.uid],
@@ -69,90 +183,185 @@ const Display: React.FC<DisplayProps> = ({
     error: detailsError,
   } = useQuery<DetailedMovieProps>({
     queryKey: ["movieDetails", featuredMovieId],
-    queryFn: () => getMovieDetails(featuredMovieId!.toString()),
+    queryFn: () => getMovieDetails(featuredMovieId.toString()),
     enabled: !!featuredMovieId,
   });
 
-  const featuredMovie = data?.results?.find(
-    (movie) => movie.id === featuredMovieId
+  const featuredMovie = useMemo(
+    () =>
+      otherMovies.find((movie) => movie.id === featuredMovieId) ||
+      (data?.results?.length ? data.results[0] : null),
+    [otherMovies, featuredMovieId, data?.results]
   );
-  const otherMovies = data?.results || [];
 
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
+  // Handle initial loading state
+  useEffect(() => {
+    if (
+      !isLoading &&
+      !isDetailsLoading &&
+      (featuredMovie || featuredMovieDetails)
+    ) {
+      setIsInitialLoading(false);
     }
-  };
+  }, [isLoading, isDetailsLoading, featuredMovie, featuredMovieDetails]);
 
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
+  // Smooth scroll animation
+  const smoothScrollTo = useCallback(
+    (targetOffset: number, duration: number) => {
+      const startOffset = scrollOffset;
+      const startTime = performance.now();
+
+      const animateScroll = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = progress * (2 - progress); // Ease-in-out
+        const newOffset = startOffset + (targetOffset - startOffset) * ease;
+
+        if (listRef.current) {
+          listRef.current.scrollTo(newOffset);
+          setScrollOffset(newOffset);
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
+
+      requestAnimationFrame(animateScroll);
+    },
+    [scrollOffset]
+  );
+
+  const scrollLeft = useCallback(() => {
+    if (listRef.current) {
+      const currentIndex = Math.round(scrollOffset / 190);
+      const newIndex = Math.max(currentIndex - 1, 0);
+      const newOffset = newIndex * 190;
+      smoothScrollTo(newOffset, 500); // 500ms duration
     }
-  };
+  }, [scrollOffset, smoothScrollTo]);
 
-  const handleMovieClick = (id: number) => {
-    setFeaturedMovieId(id);
-  };
+  const scrollRight = useCallback(() => {
+    if (listRef.current) {
+      const currentIndex = Math.round(scrollOffset / 190);
+      const maxIndex = otherMovies.length - 1;
+      const newIndex = Math.min(currentIndex + 1, maxIndex);
+      const newOffset = newIndex * 190;
+      smoothScrollTo(newOffset, 500); // 500ms duration
+    }
+  }, [scrollOffset, otherMovies.length, smoothScrollTo]);
 
-  const getGenreNames = useMemo(() => {
-    return (genres?: { id: number; name: string }[], genreIds?: number[]) => {
-      if (genres?.length) return genres.map((g) => g.name).join(" | ");
-      return genreIds?.join(" | ") || "N/A";
-    };
+  const prefetchMovieDetails = useCallback(
+    (id: number) => {
+      queryClient.prefetchQuery({
+        queryKey: ["movieDetails", id],
+        queryFn: () => getMovieDetails(id.toString()),
+      });
+    },
+    [queryClient]
+  );
+
+  const handleMovieClick = useMemo(
+    () =>
+      debounce((id: number) => {
+        setFeaturedMovieId(id);
+        const currentIndex = otherMovies.findIndex((m) => m.id === id);
+        if (currentIndex >= 0) {
+          [currentIndex - 1, currentIndex + 1]
+            .filter((i) => i >= 0 && i < otherMovies.length)
+            .forEach((i) => prefetchMovieDetails(otherMovies[i].id));
+          const newOffset = currentIndex * 190;
+          smoothScrollTo(newOffset, 500); // 500ms duration
+        }
+      }, 300),
+    [otherMovies, prefetchMovieDetails, smoothScrollTo]
+  );
+
+  const formatRuntime = useCallback((runtime?: number) => {
+    if (!runtime) return "N/A";
+    const hours = Math.floor(runtime / 60);
+    const minutes = runtime % 60;
+    return `${hours}h ${minutes}m`;
   }, []);
 
-  const getFeaturedMovieIndex = () => {
-    return data?.results?.findIndex((movie) => movie.id === featuredMovieId) ?? -1;
-  };
+  const getFeaturedMovieIndex = useCallback(
+    () => otherMovies.findIndex((movie) => movie.id === featuredMovieId) ?? -1,
+    [otherMovies, featuredMovieId]
+  );
+
+  if (isInitialLoading) {
+    return (
+      <div className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
-    <section className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black text-white overflow-hidden flex flex-col">
-      {/* Featured Movie Background */}
-      <div className="absolute inset-0 w-full h-full">
-        {featuredMovie?.backdrop_path ? (
-          <Suspense fallback={<Loading />}>
-            <img
-              src={`https://image.tmdb.org/t/p/original${featuredMovie.backdrop_path}`}
-              alt={featuredMovie.title || "Featured Movie"}
-              className="w-full h-full object-cover max-h-screen"
-              loading="lazy"
-              style={{ borderRadius: "0" }}
-            />
-          </Suspense>
-        ) : (
-          <div className="w-full h-full bg-gray-900 flex items-center justify-center">
-            <p className="text-gray-400">No backdrop available</p>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <section className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black text-white overflow-hidden flex flex-col">
+        {/* Featured Movie Background */}
+        <Suspense
+          fallback={
+            <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+              <Loading />
+            </div>
+          }>
+          <div className="absolute inset-0 w-full h-full">
+            {featuredMovie?.backdrop_path ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w1280${featuredMovie.backdrop_path}`}
+                srcSet={`
+                  https://image.tmdb.org/t/p/w780${featuredMovie.backdrop_path} 780w,
+                  https://image.tmdb.org/t/p/w1280${featuredMovie.backdrop_path} 1280w
+                `}
+                sizes="(max-width: 1024px) 780px, 1280px"
+                alt={featuredMovie.title || "Featured Movie"}
+                className="w-full h-full object-cover max-h-screen"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <p className="text-gray-400">No backdrop available</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </Suspense>
 
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
 
-      {/* Featured Movie Content */}
-      <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
-        {(featuredMovie || isDetailsLoading) && (
-          <div className="relative w-full h-full overflow-hidden">
-            <div className="w-full h-full flex items-center justify-center">
+        {/* Featured Movie Content */}
+        <Suspense
+          fallback={
+            <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
+              <Loading />
+            </div>
+          }>
+          <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
+            {(featuredMovie || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8 text-center">
                 <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase">
-                  {featuredMovieDetails?.title ||
+                  {featuredMovieDetails?.original_title ||
+                    featuredMovieDetails?.title ||
                     featuredMovie?.title ||
                     "Unknown"}
                 </h3>
                 <p className="text-red-500 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold uppercase mt-2">
                   {`Rank: ${getFeaturedMovieIndex() + 1}`}
                 </p>
-                <p className="text-gray-300 text-sm sm:text-base md:text-lg mt-2">
-                  Trending Today
+                <p className="text-gray-200 text-sm sm:text-base md:text-lg mt-2">
+                  {featuredMovieDetails?.tagline || "No tagline available"}
                 </p>
-                <p className="text-gray-300 text-sm sm:text-base md:text-lg">
+                <p className="text-gray-200 text-sm sm:text-base md:text-lg">
                   {featuredMovieDetails?.release_date ||
                     featuredMovie?.release_date ||
                     "N/A"}{" "}
-                  • 12+ • English
+                  • {formatRuntime(featuredMovieDetails?.runtime)} •{" "}
+                  {featuredMovieDetails?.original_language?.toUpperCase() ||
+                    "N/A"}
                 </p>
-                <p className="text-gray-400 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
+                <p className="text-gray-300 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
                   {featuredMovieDetails?.overview ||
                     featuredMovie?.overview ||
                     "No overview available"}
@@ -216,131 +425,69 @@ const Display: React.FC<DisplayProps> = ({
                       </button>
                     ))}
                 </div>
-                <p className="text-gray-300 text-xs sm:text-sm mt-2">
-                  {getGenreNames(
-                    featuredMovieDetails?.genres,
-                    featuredMovie?.genre_ids
-                  )}
+                <p className="text-gray-200 text-xs sm:text-sm mt-2">
+                  {featuredMovieDetails?.genres
+                    ?.map((genre) => genre.name)
+                    .join(" | ") || "N/A"}
                 </p>
               </div>
-            </div>
+            )}
           </div>
-        )}
-      </div>
+        </Suspense>
 
-      {/* Scrollable Movie List */}
-      <div
-        className="overflow-x-scroll w-full h-1/4 sm:h-1/5 bg-gradient-to-t from-black via-black/50 to-transparent scrollbar-hide py-2 sm:py-4 z-20"
-        ref={scrollRef}>
-        <div className="flex gap-2 sm:gap-3 px-4 sm:px-6">
-          {isLoading && <Loading />}
+        {/* Scrollable Movie List */}
+        <div className="w-full h-1/4 sm:h-1/5 bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
           {isError && (
-            <p className="text-red-500 text-sm sm:text-base">
+            <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
               Error:{" "}
               {error instanceof Error ? error.message : "An error occurred"}
             </p>
           )}
-          {otherMovies.map(
-            (
-              {
-                id,
-                title,
-                release_date,
-                backdrop_path,
-                poster_path,
-                vote_average,
-              }: MovieProps,
-              index
-            ) => (
-              <div
-                className={`relative group`} // Removed filter grayscale
-                key={id}>
-                <button
-                  onClick={() => handleMovieClick(id)}
-                  className={`w-[150px] sm:w-[180px] md:w-[230px] h-[84px] sm:h-[101px] md:h-[129px] flex-none overflow-hidden shadow-md focus:outline-none rounded-md ${id === featuredMovieId ? "border-2 border-blue-500" : ""}`} // Added rounded-md and conditional blue border
-                  style={{ borderRadius: "0.375rem" }} // Ensure medium border-radius (matches rounded-md)
-                >
-                  <Suspense fallback={<Loading />}>
-                    {backdrop_path ? (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w780${backdrop_path}`}
-                        alt={title || "Movie"}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        style={{ borderRadius: "0.375rem" }} // Match parent border-radius
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-900 flex items-center justify-center rounded-md">
-                        {" "}
-                        {/* Added rounded-md to no-backdrop div */}
-                        <p className="text-gray-500 text-xs sm:text-sm">
-                          No backdrop
-                        </p>
-                      </div>
-                    )}
-                  </Suspense>
-                  <div className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md">
-                    {" "}
-                    {/* Added rounded-md to overlay */}
-                    <h3 className="text-white text-xs sm:text-sm font-semibold text-left line-clamp-1">
-                      {index + 1}. {title}
-                    </h3>
-                  </div>
-                </button>
-                {auth?.currentUser && (
-                  <div className="absolute top-1 sm:top-1.5 left-1 sm:left-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {bookmarks?.includes(id.toString()) ? (
-                      <button
-                        className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out shadow-sm"
-                        onClick={() =>
-                          removeBookmarkMutation.mutate(id.toString())
-                        }
-                        disabled={removeBookmarkMutation.isPending}
-                        aria-label={`Remove ${title || "Unknown Title"} from bookmarks`}>
-                        <DeleteIcon />
-                      </button>
-                    ) : (
-                      <button
-                        className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ease-in-out shadow-sm"
-                        onClick={() =>
-                          addBookmarkMutation.mutate({
-                            id,
-                            title,
-                            poster_path,
-                            vote_average,
-                            release_date,
-                            category,
-                          })
-                        }
-                        disabled={addBookmarkMutation.isPending || !poster_path}
-                        aria-label={`Add ${title || "Unknown Title"} to bookmarks`}>
-                        <AddIcon />
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
+          {!isError && otherMovies.length > 0 && (
+            <FixedSizeList
+              ref={listRef}
+              height={101}
+              width={window.innerWidth}
+              itemCount={otherMovies.length}
+              itemSize={190}
+              layout="horizontal"
+              className="px-4 sm:px-6">
+              {({ index, style }: ListChildComponentProps) => (
+                <div style={{ ...style, scrollSnapAlign: "start" }}>
+                  <MovieCard
+                    movie={otherMovies[index]}
+                    index={index}
+                    style={{ width: "180px", height: "101px" }}
+                    isSelected={otherMovies[index].id === featuredMovieId}
+                    onClick={handleMovieClick}
+                    bookmarks={bookmarks}
+                    category={category}
+                  />
+                </div>
+              )}
+            </FixedSizeList>
           )}
         </div>
-      </div>
 
-      {/* Scroll Buttons */}
-      <div className="absolute bottom-48 right-2 transform -translate-x-1/2 flex gap-2 z-20">
-        <button
-          onClick={scrollLeft}
-          aria-label="Scroll Left"
-          className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-          <LeftIcon />
-        </button>
-        <button
-          onClick={scrollRight}
-          aria-label="Scroll Right"
-          className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-          <RightIcon />
-        </button>
-      </div>
-    </section>
+        {/* Scroll Buttons */}
+        <div className="absolute bottom-48 right-2 transform -translate-x-1/2 flex gap-2 z-20">
+          <button
+            onClick={scrollLeft}
+            aria-label="Scroll Left"
+            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50"
+            disabled={scrollOffset === 0}>
+            <LeftIcon />
+          </button>
+          <button
+            onClick={scrollRight}
+            aria-label="Scroll Right"
+            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50"
+            disabled={scrollOffset >= (otherMovies.length - 1) * 190}>
+            <RightIcon />
+          </button>
+        </div>
+      </section>
+    </ErrorBoundary>
   );
 };
 
