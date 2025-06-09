@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#333]/50 backdrop-blur-md text-base text-gray-100 rounded-lg shadow-sm m-4 geist-regular text-center mx-auto max-w-[1100px]">
+    <footer className="bg-[#333]/50 backdrop-blur-md text-base text-gray-100 rounded-lg shadow-sm m-4 roboto-condensed-light md:geist-regular text-center mx-auto max-w-[1100px]">
       <div className="w-full p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
         {/* Left Section */}
         <div className="text-sm text-gray-200 whitespace-nowrap">

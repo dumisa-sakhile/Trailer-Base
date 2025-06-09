@@ -102,7 +102,7 @@ const MovieCard: React.FC<{
           <div
             className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
             style={{ borderRadius: "0.375rem" }}>
-            <h3 className="text-white text-sm font-semibold text-left line-clamp-1">
+            <h3 className="text-white text-sm font-semibold text-left line-clamp-1 geist-bold">
               <span className="font-bold text-3xl">{index + 1}</span> - {movie.title}
             </h3>
           </div>
@@ -358,13 +358,13 @@ const Display: React.FC<DisplayProps> = ({
           <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
             {(featuredMovie || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8 text-center">
-                <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase">
+                <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl geist-bold capitalize">
                   {featuredMovieDetails?.original_title ||
                     featuredMovieDetails?.title ||
                     featuredMovie?.title ||
                     "Unknown"}
                 </h3>
-                <p className="text-red-500 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold uppercase mt-2">
+                <p className="text-red-500 text-xl sm:text-2xl md:text-3xl lg:text-4xl geist-bold capitalize mt-2">
                   {`Rank: ${getFeaturedMovieIndex() + 1}`}
                 </p>
                 <p className="text-gray-200 text-sm sm:text-base md:text-lg mt-2">
@@ -378,7 +378,7 @@ const Display: React.FC<DisplayProps> = ({
                   {featuredMovieDetails?.original_language?.toUpperCase() ||
                     "N/A"}
                 </p>
-                <p className="text-gray-300 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
+                <p className=" text-gray-300 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
                   {featuredMovieDetails?.overview ||
                     featuredMovie?.overview ||
                     "No overview available"}
@@ -410,7 +410,7 @@ const Display: React.FC<DisplayProps> = ({
                       featuredMovie?.id?.toString() || ""
                     ) ? (
                       <button
-                        className="bg-red-600 text-white px-4 sm:px-5 py-2 sm:py-3 rounded hover:bg-red-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-red-500"
+                        className="bg-red-600 text-white px-4 sm:px-4 py-2 sm:py-3 rounded hover:bg-red-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-red-500"
                         onClick={() =>
                           removeBookmarkMutation.mutate(
                             featuredMovie?.id?.toString() || ""
