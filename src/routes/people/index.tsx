@@ -74,12 +74,12 @@ function People() {
   };
 
   return (
-    <div className="w-full mt-[80px] sm:mt-[100px] flex flex-col gap-4 bg-black text-white">
+    <div className="w-full  pt-30  flex flex-col gap-4 bg-black text-white">
       <Header />
       <title>Trailer Base - People</title>
 
       <section className="w-full flex flex-col items-center justify-center gap-4 py-4">
-        <h1 className="text-4xl sm:text-5xl text-center font-bold uppercase">
+        <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
           Trailer Base - People
         </h1>
         <p className="text-sm sm:text-base font-light text-center max-w-2xl">
@@ -166,7 +166,7 @@ function People() {
           Explore some of the most popular stars in film and television.
         </p>
         <div className="w-full">
-          <div className="flex flex-wrap justify-center gap-8 px-4">
+          <div className="flex flex-wrap justify-center gap-2 md:gap-8 px-4">
             {popularLoading || popularError ? (
               <p className="text-gray-400">
                 {popularLoading ? (
