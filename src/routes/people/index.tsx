@@ -166,7 +166,7 @@ function People() {
           Explore some of the most popular stars in film and television.
         </p>
         <div className="w-full">
-          <div className="flex flex-wrap justify-center gap-2 md:gap-8 px-4">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 px-4">
             {popularLoading || popularError ? (
               <p className="text-gray-400">
                 {popularLoading ? (
