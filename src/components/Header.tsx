@@ -96,10 +96,10 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="w-full h-auto bg-transparent flex flex-col sm:flex-row items-center px-4 sm:px-6 fixed top-0 left-0 z-50 roboto-condensed-regular">
+      <header className="w-full h-auto bg-transparent flex flex-col sm:flex-row items-center  px-4 sm:px-6 fixed top-0 left-0 z-50 roboto-condensed-regular">
         {/* Mobile: Links and Login/Logout, Search with Profile Inside */}
         <div className="sm:hidden flex flex-col w-full">
-          <nav className="flex flex-row items-center justify-between w-full mt-2">
+          <nav className="flex flex-row items-center justify-center gap-2 w-full mt-2">
             <div className="flex flex-row items-center gap-4 text-base">
               <Link
                 to="/"

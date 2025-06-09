@@ -76,7 +76,7 @@ function App() {
   });
 
   return (
-    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen">
+    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen pt-30 md:pt-0">
       <Header />
       <Display
         data={trendingData}

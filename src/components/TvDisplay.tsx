@@ -359,7 +359,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <section className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black text-white overflow-hidden flex flex-col">
+      <section className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black text-white overflow-hidden  hidden md:flex  flex-col">
         {/* Featured TV Show Background */}
         <Suspense
           fallback={
