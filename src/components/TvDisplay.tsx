@@ -105,7 +105,8 @@ const TVCard: React.FC<{
             className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
             style={{ borderRadius: "0.375rem" }}>
             <h3 className="text-white text-sm font-semibold text-left line-clamp-1">
-              {index + 1}. {tvShow.title}
+              <span className="font-bold text-3xl">{index + 1}</span> -{" "}
+              {tvShow.title}
             </h3>
           </div>
         </button>

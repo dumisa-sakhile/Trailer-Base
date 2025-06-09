@@ -103,7 +103,7 @@ const MovieCard: React.FC<{
             className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
             style={{ borderRadius: "0.375rem" }}>
             <h3 className="text-white text-sm font-semibold text-left line-clamp-1">
-              {index + 1}. {movie.title}
+              <span className="font-bold text-3xl">{index + 1}</span> - {movie.title}
             </h3>
           </div>
         </button>
@@ -157,7 +157,7 @@ const Display: React.FC<DisplayProps> = ({
   const queryClient = useQueryClient();
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
-  const [featuredMovieId, setFeaturedMovieId] = useState<number>(1233413);
+  const [featuredMovieId, setFeaturedMovieId] = useState<number | null>(null);
 
   const otherMovies = useMemo(() => data?.results || [], [data?.results]);
 
@@ -183,7 +183,7 @@ const Display: React.FC<DisplayProps> = ({
     error: detailsError,
   } = useQuery<DetailedMovieProps>({
     queryKey: ["movieDetails", featuredMovieId],
-    queryFn: () => getMovieDetails(featuredMovieId.toString()),
+    queryFn: () => getMovieDetails(featuredMovieId?.toString() || ""),
     enabled: !!featuredMovieId,
   });
 
@@ -204,6 +204,13 @@ const Display: React.FC<DisplayProps> = ({
       setIsInitialLoading(false);
     }
   }, [isLoading, isDetailsLoading, featuredMovie, featuredMovieDetails]);
+
+  // Set default featured movie to the first in the list
+  useEffect(() => {
+    if (!featuredMovieId && otherMovies.length > 0) {
+      setFeaturedMovieId(otherMovies[0].id);
+    }
+  }, [featuredMovieId, otherMovies]);
 
   // Smooth scroll animation
   const smoothScrollTo = useCallback(
@@ -284,6 +291,16 @@ const Display: React.FC<DisplayProps> = ({
     return `${hours}h ${minutes}m`;
   }, []);
 
+  const formatDate = useCallback((dateString?: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    }).format(date);
+  }, []);
+
   const getFeaturedMovieIndex = useCallback(
     () => otherMovies.findIndex((movie) => movie.id === featuredMovieId) ?? -1,
     [otherMovies, featuredMovieId]
@@ -354,8 +371,8 @@ const Display: React.FC<DisplayProps> = ({
                   {featuredMovieDetails?.tagline || "No tagline available"}
                 </p>
                 <p className="text-gray-200 text-sm sm:text-base md:text-lg">
-                  {featuredMovieDetails?.release_date ||
-                    featuredMovie?.release_date ||
+                  {formatDate(featuredMovieDetails?.release_date) ||
+                    formatDate(featuredMovie?.release_date) ||
                     "N/A"}{" "}
                   • {formatRuntime(featuredMovieDetails?.runtime)} •{" "}
                   {featuredMovieDetails?.original_language?.toUpperCase() ||
