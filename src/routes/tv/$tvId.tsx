@@ -9,7 +9,6 @@ import {
   getTVImages, // Assume this is added to @/api/tv
 } from "@/api/tv";
 import Loading from "@/components/Loading";
-import Modal from "@/components/Modal";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/config/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -44,7 +43,6 @@ const FALLBACK_POSTER =
 function TVDetails() {
   const { tvId } = Route.useLoaderData();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   
 
@@ -192,17 +190,11 @@ function TVDetails() {
     return <div>No TV show data available</div>;
   }
 
-  // Handle videos for Modal
-  const modalVideos =
-    videosLoading || videosError ? [] : (videos?.results ?? []);
+  
 
   return (
     <>
-      <Modal
-        isShowing={modalOpen}
-        hide={() => setModalOpen(false)}
-        videos={modalVideos}
-      />
+      
       {/* Background: Video or Image */}
       <BackgroundMedia
         videosLoading={videosLoading}
@@ -278,31 +270,7 @@ function TVDetails() {
   category="tv"
 />
 
-          {/* Videos collection */}
-          <button
-            className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
-            onClick={() => setModalOpen(true)}
-            aria-label="Open videos collection">
-            <svg
-              className="w-6 h-6 text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
-              viewBox="0 0 24 24">
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1"
-                d="M14 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Zm7 11-6-2V9l6-2v10Z"
-              />
-            </svg>
-            <span className="text-md roboto-condensed-light capitalize">
-              videos collection
-            </span>
-          </button>
+          
         </section>
 
         {/* First air date, rating, seasons, status */}

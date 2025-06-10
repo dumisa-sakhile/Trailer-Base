@@ -10,7 +10,6 @@ import {
   getMovieImages,
 } from "@/api/movie";
 import Loading from "@/components/Loading";
-import Modal from "@/components/Modal";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/config/firebase";
 import { doc, getDoc  } from "firebase/firestore";
@@ -20,7 +19,6 @@ import MediaCard from "@/components/MediaCard";
 import Credits from "@/components/Credit";
 import InfoSection from "@/components/InfoSection";
 import {
-  VideoIcon,
   VoteIcon,
   WebsiteIcon,
 } from "@/components/icons/Icons";
@@ -49,7 +47,6 @@ const FALLBACK_POSTER =
 function MovieDetails() {
   const { movieId } = Route.useLoaderData();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
   // Listen for auth state changes
@@ -192,17 +189,11 @@ function MovieDetails() {
     return <div>No movie data available</div>;
   }
 
-  // Handle videos for Modal
-  const modalVideos =
-    videosLoading || videosError ? [] : (videos?.results ?? []);
+ 
 
   return (
     <>
-      <Modal
-        isShowing={modalOpen}
-        hide={() => setModalOpen(false)}
-        videos={modalVideos}
-      />
+   
       {/* Background: Video or Image */}
       <BackgroundMedia
         videosLoading={videosLoading}
@@ -281,16 +272,7 @@ function MovieDetails() {
             isBookmarked={!!isBookmarked}
           />
 
-          {/* Videos collection */}
-          <button
-            className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
-            onClick={() => setModalOpen(true)}
-            aria-label="Open videos collection">
-            <VideoIcon />
-            <span className="text-md roboto-condensed-light capitalize">
-              videos collection
-            </span>
-          </button>
+         
         </section>
 
         {/* Release, rating, duration */}

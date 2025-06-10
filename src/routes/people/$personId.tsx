@@ -207,8 +207,8 @@ function PersonDetailsPage() {
             </div>
 
             {/* Biography */}
-            <div className="bg-white/10 backdrop-blur-sm text-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
-              <h2 className="text-xl font-semibold mb-4">Biography</h2>
+            <div className="bg-white/10 backdrop-blur-sm text-white p-6 rounded-lg shadow-md max-w-3xl mx-auto ">
+              <h2 className="text-xl font-semibold mb-4 ">Biography</h2>
               {person?.biography
                 ? formatBiography(person?.biography)
                 : "No biography available."}
@@ -220,7 +220,7 @@ function PersonDetailsPage() {
         {movieCastCredits.length > 0 && (
           <section className="mt-8">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-semibold text-white">
+              <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
                 Movie Credits
               </h3>
               <div className="flex gap-2">
@@ -228,7 +228,10 @@ function PersonDetailsPage() {
                   onClick={() => scrollCarousel(movieCastRef, "left")}
                   aria-label="Scroll left"
                   className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24">
                     <path
                       d="M15 19l-7-7 7-7"
                       stroke="currentColor"
@@ -241,7 +244,10 @@ function PersonDetailsPage() {
                   onClick={() => scrollCarousel(movieCastRef, "right")}
                   aria-label="Scroll right"
                   className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24">
                     <path
                       d="M9 5l7 7-7 7"
                       stroke="currentColor"
@@ -279,7 +285,9 @@ function PersonDetailsPage() {
         {tvCastCredits.length > 0 && (
           <section className="mt-8">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-semibold text-white">TV Credits</h3>
+              <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
+                TV Credits
+              </h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => scrollCarousel(tvCastRef, "left")}
