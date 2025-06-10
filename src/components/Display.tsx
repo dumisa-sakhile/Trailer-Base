@@ -103,7 +103,8 @@ const MovieCard: React.FC<{
             className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
             style={{ borderRadius: "0.375rem" }}>
             <h3 className="text-white text-sm font-semibold text-left line-clamp-1 geist-bold">
-              <span className="font-bold text-3xl">{index + 1}</span> - {movie.title}
+              <span className="font-bold text-3xl">{index + 1}</span> -{" "}
+              {movie.title}
             </h3>
           </div>
         </button>
@@ -308,7 +309,7 @@ const Display: React.FC<DisplayProps> = ({
 
   if (isInitialLoading) {
     return (
-      <div className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black flex items-center justify-center">
+      <div className="relative w-full h-screen bg-black flex items-center justify-center">
         <Loading />
       </div>
     );
@@ -316,7 +317,7 @@ const Display: React.FC<DisplayProps> = ({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <section className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black text-white overflow-hidden hidden md:flex flex-col">
+      <section className="relative w-full h-screen bg-black text-white overflow-hidden flex flex-col md:flex">
         {/* Featured Movie Background */}
         <Suspense
           fallback={
@@ -334,7 +335,7 @@ const Display: React.FC<DisplayProps> = ({
                 `}
                 sizes="(max-width: 1024px) 780px, 1280px"
                 alt={featuredMovie.title || "Featured Movie"}
-                className="w-full h-full object-cover max-h-screen"
+                className="w-full h-full object-cover"
                 loading="lazy"
               />
             ) : (
@@ -351,11 +352,11 @@ const Display: React.FC<DisplayProps> = ({
         {/* Featured Movie Content */}
         <Suspense
           fallback={
-            <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
+            <div className="relative flex-grow flex items-center justify-center z-20">
               <Loading />
             </div>
           }>
-          <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
+          <div className="relative flex-grow flex items-center justify-center z-20">
             {(featuredMovie || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8 text-center">
                 <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl geist-bold capitalize">
@@ -378,7 +379,7 @@ const Display: React.FC<DisplayProps> = ({
                   {featuredMovieDetails?.original_language?.toUpperCase() ||
                     "N/A"}
                 </p>
-                <p className=" text-gray-300 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
+                <p className="text-gray-300 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
                   {featuredMovieDetails?.overview ||
                     featuredMovie?.overview ||
                     "No overview available"}
@@ -453,7 +454,7 @@ const Display: React.FC<DisplayProps> = ({
         </Suspense>
 
         {/* Scrollable Movie List */}
-        <div className="w-full h-1/4 sm:h-1/5 bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
+        <div className="w-full h-[120px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
           {isError && (
             <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
               Error:{" "}
@@ -463,7 +464,7 @@ const Display: React.FC<DisplayProps> = ({
           {!isError && otherMovies.length > 0 && (
             <FixedSizeList
               ref={listRef}
-              height={101}
+              height={121}
               width={window.innerWidth}
               itemCount={otherMovies.length}
               itemSize={190}
@@ -487,7 +488,7 @@ const Display: React.FC<DisplayProps> = ({
         </div>
 
         {/* Scroll Buttons */}
-        <div className="absolute bottom-48 right-2 transform -translate-x-1/2 flex gap-2 z-20">
+        <div className="absolute bottom-28 right-2 flex gap-2 z-20">
           <button
             onClick={scrollLeft}
             aria-label="Scroll Left"

@@ -199,7 +199,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
     data: featuredTvDetails,
     isLoading: isDetailsLoading,
     error: detailsError,
-   
   } = useQuery<DetailedTVProps>({
     queryKey: ["tvDetails", featuredTvId],
     queryFn: async () => {
@@ -351,7 +350,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
 
   if (isInitialLoading) {
     return (
-      <div className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black flex items-center justify-center">
+      <div className="relative w-full h-screen bg-black flex items-center justify-center">
         <Loading />
       </div>
     );
@@ -359,7 +358,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <section className="relative w-full h-[calc(100vh-80px)] sm:h-screen bg-black text-white overflow-hidden  hidden md:flex  flex-col">
+      <section className="relative w-full h-screen bg-black text-white overflow-hidden hidden md:flex flex-col">
         {/* Featured TV Show Background */}
         <Suspense
           fallback={
@@ -394,11 +393,11 @@ const TvDisplay: React.FC<DisplayProps> = ({
         {/* Featured TV Show Content */}
         <Suspense
           fallback={
-            <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
+            <div className="relative w-full flex-grow flex items-center justify-center z-20">
               <Loading />
             </div>
           }>
-          <div className="relative w-full h-3/4 sm:h-4/5 flex items-center justify-center z-20">
+          <div className="relative w-full flex-grow flex items-center justify-center z-20">
             {(featuredTvShow || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8 text-center">
                 <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl geist-bold capitalize">
@@ -502,7 +501,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
         </Suspense>
 
         {/* Scrollable TV Show List */}
-        <div className="w-full h-1/4 sm:h-1/5 bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
+        <div className="w-full h-[120px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
           {isError && (
             <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
               Error:{" "}
@@ -512,7 +511,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
           {!isError && otherTVShows.length > 0 && (
             <FixedSizeList
               ref={listRef}
-              height={101}
+              height={121}
               width={window.innerWidth}
               itemCount={otherTVShows.length}
               itemSize={190}
