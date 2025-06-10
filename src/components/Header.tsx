@@ -90,8 +90,8 @@ const Header: React.FC = () => {
     setIsGenrePopupOpen((prev) => !prev);
   };
 
-  const toggleGenreType = () => {
-    setShowTVGenres((prev) => !prev);
+  const toggleGenreType = (showTV: boolean) => {
+    setShowTVGenres(showTV);
   };
 
   return (
@@ -247,50 +247,47 @@ const Header: React.FC = () => {
                 {isGenrePopupOpen && (
                   <div
                     ref={popupRef}
-                    className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 top-10 bg-[#222]/90 backdrop-blur-md text-base text-white rounded-xl lg:rounded-lg shadow-xl p-5 w-[80vw] max-w-[90vw] sm:w-[350px] max-h-[60vh] overflow-y-auto z-30 geist-light">
-                    <div className="flex gap-4 mb-6 items-center justify-center border-b border-white/20 pb-4">
-                      <button
-                        onClick={toggleGenreType}
-                        className={`px-4 py-3 text-sm flex items-center gap-2 transition focus:outline-none ${
-                          showTVGenres
-                            ? "font-bold text-white bg-white/10"
-                            : "font-light text-gray-300"
-                        }`}
-                        aria-label="Show TV Genres">
-                        Series
-                      </button>
-                      <button
-                        onClick={toggleGenreType}
-                        className={`px-4 py-3 text-sm flex items-center gap-2 transition focus:outline-none ${
-                          !showTVGenres
-                            ? "font-bold text-white bg-white/10"
-                            : "font-light text-gray-300"
-                        }`}
-                        aria-label="Show Movie Genres">
-                        Movies
-                      </button>
+                    className="absolute left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 top-10 bg-[#333]/90 backdrop-blur-sm text-md text-white rounded-xl lg:rounded-lg shadow-xl p-5 w-[80vw] max-w-[90vw] sm:w-[500px] max-h-[60vh] overflow-y-auto z-30 geist-light">
+                    <div className="flex">
+                      <div className="flex flex-col gap-2 w-1/3 pr-4 border-r border-white/10 ">
+                        <button
+                          onClick={() => toggleGenreType(false)}
+                          className={`px-2 py-2 text-sm rounded-full transition focus:outline-none ${!showTVGenres ? "bg-[#007BFF]  " : "bg-transparent text-[#A0A0C0] hover:bg-[#2A2A44]/50 hover:text-white"}`}
+                          aria-label="Show Movie Genres">
+                          Movies
+                        </button>
+                        <button
+                          onClick={() => toggleGenreType(true)}
+                          className={`px-2 py-2 text-sm rounded-full transition focus:outline-none ${showTVGenres ? "bg-[#007BFF]  " : "bg-transparent text-[#A0A0C0] hover:bg-[#2A2A44]/50 hover:text-white"}`}
+                          aria-label="Show TV Genres">
+                          Series
+                        </button>
+                      </div>
+                      <div className="w-2/3 pl-4">
+                        <div className="grid grid-cols-3 gap-2">
+                          {(showTVGenres ? tvGenres() : movieGenres()).map(
+                            (genre) => (
+                              <Link
+                                key={genre.id}
+                                to={`/${showTVGenres ? "tv" : "movie"}/$type/$typeName/$typeId`}
+                                params={{
+                                  type: "with_genres",
+                                  typeName: genre.name,
+                                  typeId: String(genre.id),
+                                }}
+                                search={{ page: 1 }}
+                                className="px-3 py-2 text-sm rounded-full text-white hover:bg-blue-600  focus:outline-none text-center"
+                                onClick={() => {
+                                  setIsGenrePopupOpen(false);
+                                }}>
+                                {genre.name}
+                              </Link>
+                            )
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-4">
-                      {(showTVGenres ? tvGenres() : movieGenres()).map(
-                        (genre) => (
-                          <Link
-                            key={genre.id}
-                            to={`/${showTVGenres ? "tv" : "movie"}/$type/$typeName/$typeId`}
-                            params={{
-                              type: "with_genres",
-                              typeName: genre.name,
-                              typeId: String(genre.id),
-                            }}
-                            search={{ page: 1 }}
-                            className="px-4 py-2 text-sm rounded-full hover:bg-white hover:text-black focus:outline-none text-white transition text-center bg-white/10"
-                            onClick={() => {
-                              setIsGenrePopupOpen(false);
-                            }}>
-                            {genre.name}
-                          </Link>
-                        )
-                      )}
-                    </div>
+                   
                   </div>
                 )}
               </div>
