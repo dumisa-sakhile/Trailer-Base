@@ -1,4 +1,3 @@
-// Removed duplicate Route definition and RouteComponent
 import { createFileRoute } from "@tanstack/react-router";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import { useQuery } from "@tanstack/react-query";
@@ -10,15 +9,18 @@ import {
   getMovieImages,
 } from "@/api/movie";
 import Loading from "@/components/Loading";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { auth, db } from "@/config/firebase";
-import { doc, getDoc  } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import CastCard from "@/components/CastCard";
 import MediaCard from "@/components/MediaCard";
 import Credits from "@/components/Credit";
 import InfoSection from "@/components/InfoSection";
 import {
+  MuteIcon,
+  ReplayIcon,
+  UnMuteIcon,
   VoteIcon,
   WebsiteIcon,
 } from "@/components/icons/Icons";
@@ -32,7 +34,6 @@ import type {
   MovieProps,
   MovieImage,
 } from "@/Types/movieInterfaces";
-// Interfaces for type safety
 
 export const Route = createFileRoute("/movie/$movieId")({
   loader: async ({ params }) => {
@@ -48,6 +49,19 @@ function MovieDetails() {
   const { movieId } = Route.useLoaderData();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [showVideo, setShowVideo] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [showReplay, setShowReplay] = useState(false);
+
+  // Handle mute toggle
+  const onToggleMute = useCallback(() => {
+    setIsMuted((prev) => !prev);
+  }, []);
+
+  // Handle replay
+  const onReplay = useCallback(() => {
+    setShowReplay(false);
+    setShowVideo(true);
+  }, []);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -114,16 +128,27 @@ function MovieDetails() {
     enabled: !!user,
   });
 
-  
-
+  // Update showReplay when video ends
+  useEffect(() => {
+    if (
+      !showVideo &&
+      !videosLoading &&
+      !videosError &&
+      videos?.results?.length
+    ) {
+      setShowReplay(true);
+    } else {
+      setShowReplay(false);
+    }
+  }, [showVideo, videosLoading, videosError, videos]);
 
   // Format runtime (e.g., 125 minutes -> "2h 5m")
-  const formatRuntime = (minutes?: number) => {
+  const formatRuntime = useCallback((minutes?: number) => {
     if (!minutes) return "N/A";
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours ? `${hours}h ` : ""}${mins ? `${mins}m` : ""}`.trim();
-  };
+  }, []);
 
   // Select background video: prefer "Extended Preview", fallback to "Trailer"
   const videoUrl = videos?.results?.find(
@@ -166,9 +191,7 @@ function MovieDetails() {
   // Select the best logo: highest vote_average
   const selectedLogo = logos?.length
     ? (() => {
-        // Filter English logos
         const englishLogos = logos?.filter((logo) => logo?.iso_639_1 === "en");
-        // Return highest vote_average English logo, or highest vote_average overall if no English logos
         const logoPool = englishLogos?.length > 0 ? englishLogos : logos;
         return logoPool?.reduce((prev, curr) =>
           prev?.vote_average > curr?.vote_average ? prev : curr
@@ -189,11 +212,8 @@ function MovieDetails() {
     return <div>No movie data available</div>;
   }
 
- 
-
   return (
     <>
-   
       {/* Background: Video or Image */}
       <BackgroundMedia
         videosLoading={videosLoading}
@@ -203,10 +223,38 @@ function MovieDetails() {
         posterPath={data?.poster_path ?? null}
         title={data?.title ?? null}
         setShowVideo={setShowVideo}
+        isMuted={isMuted}
+        showReplay={showReplay}
+        onToggleMute={onToggleMute}
+        onReplay={onReplay}
       />
 
+      {/* Control Buttons */}
+      {videoUrl && (
+        <div className="absolute bottom-14 right-4 flex gap-2 z-20 group">
+          {showVideo && (
+            <button
+              onClick={onToggleMute}
+              className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
+              aria-label={isMuted ? "Unmute video" : "Mute video"}
+              tabIndex={0}>
+              {isMuted ? <MuteIcon /> : <UnMuteIcon />}
+            </button>
+          )}
+          {showReplay && !showVideo && (
+            <button
+              onClick={onReplay}
+              className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
+              aria-label="Replay video"
+              tabIndex={0}>
+              <ReplayIcon />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Movie details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[15%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
@@ -241,15 +289,14 @@ function MovieDetails() {
           </p>
         )}
 
-        {/* Website, bookmark, videos */}
+        {/* Website, bookmark */}
         <section className="flex gap-2 flex-wrap">
-          {/* Website */}
           {data?.homepage && (
             <a
               href={data?.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-md roboto-condensed-light capitalize bg-[#333]/50 backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              className="text-md roboto-condensed-light capitalize  backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
               aria-label="Visit movie website">
               <WebsiteIcon />
               <span className="text-md roboto-condensed-light capitalize">
@@ -257,8 +304,6 @@ function MovieDetails() {
               </span>
             </a>
           )}
-
-          {/* Bookmark */}
           <BookmarkButton
             user={user}
             movieId={movieId}
@@ -271,8 +316,6 @@ function MovieDetails() {
             }}
             isBookmarked={!!isBookmarked}
           />
-
-         
         </section>
 
         {/* Release, rating, duration */}
@@ -300,7 +343,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-md roboto-condensed-light w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6 ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
+          <p className="text-white text-md roboto-condensed-light w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}

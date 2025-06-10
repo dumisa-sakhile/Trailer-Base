@@ -103,7 +103,7 @@ export default function InfoTvSection({
   return (
     <section className="flex items-center gap-2 flex-wrap px-4 max-sm:px-2">
       <button
-        className="text-white text-md max-sm:text-sm roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 max-sm:h-8 px-4 max-sm:px-3 py-6 max-sm:py-4 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+        className="text-white text-md max-sm:text-sm roboto-condensed-light capitalize  backdrop-blur-sm rounded h-10 max-sm:h-8 px-4 max-sm:px-3 py-6 max-sm:py-4 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
         aria-label={title}>
         {icons[title]}
         <span className="text-md max-sm:text-sm roboto-condensed-light capitalize">

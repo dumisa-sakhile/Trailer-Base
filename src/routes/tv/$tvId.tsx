@@ -1,15 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import BackHomeBtn from "@/components/BackHomeBtn";
-import { useQuery} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   getTVDetails,
   getTVVideos,
   getTVCredits,
   getTVRecommendations,
-  getTVImages, // Assume this is added to @/api/tv
+  getTVImages,
 } from "@/api/tv";
 import Loading from "@/components/Loading";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { auth, db } from "@/config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
@@ -18,6 +18,17 @@ import MediaCard from "@/components/MediaCard";
 import Credits from "@/components/Credit";
 import SeasonsSection from "@/components/SeasonsSection";
 import InfoTvSection from "@/components/InfoTvSection";
+import {
+  MuteIcon,
+  UnMuteIcon,
+  ReplayIcon,
+  WebsiteIcon,
+  CreatorIcon,
+  StarIcon,
+} from "@/components/icons/Icons";
+import BackgroundMedia from "@/components/BackgroundMedia";
+import TvLogoDisplay from "@/components/TvLogoDisplay";
+import TvBookmarkBtn from "@/components/TvBookmarkBtn";
 import type {
   TVDetails,
   Video,
@@ -25,10 +36,6 @@ import type {
   TVProps,
   CastCardProps,
 } from "@/Types/tvInterfaces";
-import BackgroundMedia from "@/components/BackgroundMedia";
-import TvLogoDisplay from "@/components/TvLogoDisplay";
-import { WebsiteIcon } from "@/components/icons/Icons";
-import TvBookmarkBtn from "@/components/TvBookmarkBtn";
 
 export const Route = createFileRoute("/tv/$tvId")({
   loader: async ({ params }) => {
@@ -44,7 +51,19 @@ function TVDetails() {
   const { tvId } = Route.useLoaderData();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [showVideo, setShowVideo] = useState(false);
-  
+  const [isMuted, setIsMuted] = useState(true);
+  const [showReplay, setShowReplay] = useState(false);
+
+  // Handle mute toggle
+  const onToggleMute = useCallback(() => {
+    setIsMuted((prev) => !prev);
+  }, []);
+
+  // Handle replay
+  const onReplay = useCallback(() => {
+    setShowReplay(false);
+    setShowVideo(true);
+  }, []);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -111,7 +130,20 @@ function TVDetails() {
     enabled: !!user,
   });
 
-  
+  // Update showReplay when video ends
+  useEffect(() => {
+    if (
+      !showVideo &&
+      !videosLoading &&
+      !videosError &&
+      videos?.results?.length
+    ) {
+      setShowReplay(true);
+    } else {
+      setShowReplay(false);
+    }
+  }, [showVideo, videosLoading, videosError, videos]);
+
   // Select background video: prefer "Extended Preview", fallback to "Trailer"
   const videoUrl = videos?.results?.find(
     (video) =>
@@ -167,9 +199,7 @@ function TVDetails() {
   // Select the best logo: highest vote_average
   const selectedLogo = logos?.length
     ? (() => {
-        // Filter English logos
         const englishLogos = logos.filter((logo) => logo.iso_639_1 === "en");
-        // Return highest vote_average English logo, or highest vote_average overall if no English logos
         const logoPool = englishLogos.length > 0 ? englishLogos : logos;
         return logoPool.reduce((prev, curr) =>
           prev.vote_average > curr.vote_average ? prev : curr
@@ -190,11 +220,8 @@ function TVDetails() {
     return <div>No TV show data available</div>;
   }
 
-  
-
   return (
     <>
-      
       {/* Background: Video or Image */}
       <BackgroundMedia
         videosLoading={videosLoading}
@@ -204,7 +231,33 @@ function TVDetails() {
         posterPath={data?.poster_path ?? null}
         title={data?.name}
         setShowVideo={setShowVideo}
+        isMuted={isMuted}
+        showReplay={showReplay}
+        onToggleMute={onToggleMute}
+        onReplay={onReplay}
       />
+
+      {/* Control Buttons */}
+      <div className="absolute bottom-14 right-4 flex gap-2 z-20 ">
+        {showVideo && (
+          <button
+            onClick={onToggleMute}
+            className="p-2 bg-[#333]/50 rounded-full text-white hover:bg-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-200"
+            aria-label={isMuted ? "Unmute video" : "Mute video"}
+            tabIndex={0}>
+            {isMuted ? <MuteIcon /> : <UnMuteIcon />}
+          </button>
+        )}
+        {showReplay && !showVideo && (
+          <button
+            onClick={onReplay}
+            className="p-2 bg-[#333]/50 rounded-full text-white hover:bg-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-200"
+            aria-label="Replay video"
+            tabIndex={0}>
+            <ReplayIcon />
+          </button>
+        )}
+      </div>
 
       {/* TV show details */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
@@ -240,65 +293,46 @@ function TVDetails() {
           </p>
         )}
 
-        {/* Website, bookmark, videos */}
+        {/* Website, bookmark */}
         <section className="flex gap-2 flex-wrap">
-          {/* Website */}
           {data?.homepage && (
             <a
               href={data?.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              className="text-white text-md roboto-condensed-light capitalize  backdrop-blur-sm rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
               aria-label="Visit TV show website">
-              <WebsiteIcon/>
+              <WebsiteIcon />
               <span className="text-md roboto-condensed-light capitalize">
                 website
               </span>
             </a>
           )}
-
-          {/* Bookmark */}
-         <TvBookmarkBtn
-  user={user}
-  id={data?.id ? data?.id.toString() : ""}
-  data={{
-    poster_path: data?.poster_path ?? "",
-    vote_average: data?.vote_average ?? 0,
-    release_date: data?.first_air_date ?? "",
-  }}
-  isBookmarked={!!isBookmarked}
-  category="tv"
-/>
-
-          
+          <TvBookmarkBtn
+            user={user}
+            id={data?.id ? data?.id.toString() : ""}
+            data={{
+              poster_path: data?.poster_path ?? "",
+              vote_average: data?.vote_average ?? 0,
+              release_date: data?.first_air_date ?? "",
+            }}
+            isBookmarked={!!isBookmarked}
+            category="tv"
+          />
         </section>
 
         {/* First air date, rating, seasons, status */}
-        <article className="flex items-center flex-wrap gap-4 geist-regular text-sm">
+        <article className="flex items-center flex-wrap gap-4 text-sm">
           {data?.first_air_date && (
             <p className="flex items-center gap-2">
               First Aired:{" "}
-              <span className="text-[#FACC15]">{data?.first_air_date}</span>
+              <span className="font-bold">{data?.first_air_date}</span>
             </p>
           )}
           {data?.vote_average && (
             <p className="flex items-center gap-2">
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="fas"
-                data-icon="star"
-                className="w-5 h-5"
-                role="img"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 576 512"
-                style={{ color: "#FFD43B" }}>
-                <path
-                  fill="currentColor"
-                  d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"
-                />
-              </svg>
-              <span className="text-[#FACC15]">
+              <StarIcon/>
+              <span className="font-bold">
                 {data?.vote_average.toFixed(1)}/10
               </span>
             </p>
@@ -306,19 +340,19 @@ function TVDetails() {
           {data?.number_of_seasons && (
             <p className="flex items-center gap-2">
               Seasons:{" "}
-              <span className="text-[#FACC15]">{data?.number_of_seasons}</span>
+              <span className="font-bold">{data?.number_of_seasons}</span>
             </p>
           )}
           {data?.status && (
             <p className="flex items-center gap-2">
-              Status: <span className="text-[#FACC15]">{data?.status}</span>
+              Status: <span className="font-bold">{data?.status}</span>
             </p>
           )}
         </article>
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 bg-[rgba(0,0,0,0.2)] backdrop-blur-sm rounded px-4 py-6 ring-1 ring-gray-900/50 hover:ring-gray-900/50 transition duration-300 ease-in-out transform">
+          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 backdrop-blur-sm rounded px-4 py-6 transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}
@@ -372,22 +406,7 @@ function TVDetails() {
             <button
               className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
               aria-label="Created By">
-              <svg
-                className="w-6 h-6 text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24">
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm-7 4h14v2H5v-2Z"
-                />
-              </svg>
+              <CreatorIcon/>
               <span className="text-md roboto-condensed-light capitalize">
                 created by
               </span>
