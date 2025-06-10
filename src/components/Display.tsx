@@ -317,7 +317,7 @@ const Display: React.FC<DisplayProps> = ({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <section className="relative w-full h-screen bg-black text-white overflow-hidden flex flex-col md:flex">
+      <section className="relative w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex">
         {/* Featured Movie Background */}
         <Suspense
           fallback={
