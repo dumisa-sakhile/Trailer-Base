@@ -63,7 +63,7 @@ function TypeComponent() {
         <h1 className="-mt-10 text-2xl text-left geist-bold capitalize">
           {typeName} Movies
         </h1>
-        <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
+        <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10 ">
           {isLoading && <Loading />}
           {isError && <div>Error: {error.message}</div>}
 
@@ -87,6 +87,7 @@ function TypeComponent() {
             )
           )}
         </section>
+        <br /><br /><br />
 
         {/* back & home button */}
         <BackHomeBtn />

@@ -260,7 +260,7 @@ function TVDetails() {
       </div>
 
       {/* TV show details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[15%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
@@ -449,7 +449,7 @@ function TVDetails() {
         <h1 className="text-2xl md:text-5xl text-left geist-bold">
           Recommendations
         </h1>
-        <section className="flex flex-wrap items-start justify-center gap-2 md:w-full">
+        <section className="flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10 md:w-full">
           {recommendations?.results?.length === 0 && <p>No recommendations</p>}
           {recommendationsLoading && <Loading />}
           {recommendations?.results?.map(

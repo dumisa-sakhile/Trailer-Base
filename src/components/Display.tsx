@@ -411,7 +411,7 @@ const Display: React.FC<DisplayProps> = ({
                       featuredMovie?.id?.toString() || ""
                     ) ? (
                       <button
-                        className="bg-red-600 text-white px-4 sm:px-4 py-2 sm:py-3 rounded hover:bg-red-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-red-500"
+                        className="bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-transform duration-200"
                         onClick={() =>
                           removeBookmarkMutation.mutate(
                             featuredMovie?.id?.toString() || ""
@@ -423,7 +423,7 @@ const Display: React.FC<DisplayProps> = ({
                       </button>
                     ) : (
                       <button
-                        className="bg-[#333]/50 backdrop-blur-md text-gray-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
+                        className="bg-slate-600/50 backdrop-blur-md text-gray-100 w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700/70 focus:ring-2 focus:ring-slate-500 transition-transform duration-200"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredMovie?.id || 0,
