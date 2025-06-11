@@ -61,7 +61,8 @@ const TVCard: React.FC<{
   isSelected: boolean;
   onClick: (id: number) => void;
   bookmarks?: string[];
-}> = ({ tvShow, index, style, isSelected, onClick, bookmarks }) => {
+  category: "tv";
+}> = ({ tvShow, index, style, isSelected, onClick, bookmarks, category }) => {
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
 
@@ -70,25 +71,25 @@ const TVCard: React.FC<{
       <Suspense
         fallback={
           <div
-            className="w-[180px] h-[101px] bg-gray-900 rounded-md"
+            className="w-[180px] h-[270px] bg-gray-900 rounded-md"
             style={{ borderRadius: "0.375rem" }}>
             <Loading />
           </div>
         }>
         <button
           onClick={() => onClick(tvShow.id)}
-          className={`w-[180px] h-[101px] overflow-hidden shadow-md focus:outline-none rounded-md ${
+          className={`w-[180px] h-[270px] overflow-hidden shadow-md focus:outline-none rounded-md ${
             isSelected ? "border-2 border-blue-500" : ""
           }`}
           style={{ borderRadius: "0.375rem" }}>
-          {tvShow.backdrop_path ? (
+          {tvShow.poster_path ? (
             <img
-              src={`https://image.tmdb.org/t/p/w500${tvShow.backdrop_path}`}
+              src={`https://image.tmdb.org/t/p/w342${tvShow.poster_path}`}
               srcSet={`
-                https://image.tmdb.org/t/p/w342${tvShow.backdrop_path} 342w,
-                https://image.tmdb.org/t/p/w500${tvShow.backdrop_path} 500w
+                https://image.tmdb.org/t/p/w185${tvShow.poster_path} 185w,
+                https://image.tmdb.org/t/p/w342${tvShow.poster_path} 342w
               `}
-              sizes="(max-width: 640px) 342px, 500px"
+              sizes="(max-width: 640px) 185px, 342px"
               alt={tvShow.title || "TV Show"}
               className="w-full h-full object-cover rounded-md"
               loading="lazy"
@@ -98,7 +99,7 @@ const TVCard: React.FC<{
             <div
               className="w-full h-full bg-gray-900 flex items-center justify-center rounded-md"
               style={{ borderRadius: "0.375rem" }}>
-              <p className="text-gray-500 text-sm">No backdrop</p>
+              <p className="text-gray-500 text-sm">No poster</p>
             </div>
           )}
           <div
@@ -108,6 +109,18 @@ const TVCard: React.FC<{
               <span className="font-bold text-3xl">{index + 1}</span> -{" "}
               {tvShow.title}
             </h3>
+            <p className="text-gray-300 text-xs text-left">
+              {tvShow.release_date
+                ? new Intl.DateTimeFormat("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  }).format(new Date(tvShow.release_date))
+                : ""}
+            </p>
+            <p className="text-yellow-400 text-xs text-left">
+              ★ {tvShow.vote_average.toFixed(1)}/10
+            </p>
           </div>
         </button>
         {auth?.currentUser && (
@@ -132,7 +145,7 @@ const TVCard: React.FC<{
                     poster_path: tvShow.poster_path,
                     vote_average: tvShow.vote_average,
                     release_date: tvShow.release_date,
-                    category: "tv",
+                    category,
                   })
                 }
                 disabled={addBookmarkMutation.isPending || !tvShow.poster_path}
@@ -162,22 +175,17 @@ const TvDisplay: React.FC<DisplayProps> = ({
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
 
-  const otherTVShows = useMemo(() => {
-    const results = data?.results || [];
-    return results;
-  }, [data?.results]);
+  const otherTVShows = useMemo(() => data?.results || [], [data?.results]);
 
-  // Set initial featuredTvId
   useEffect(() => {
     if (otherTVShows.length > 0 && featuredTvId === null) {
       const newId = otherTVShows[0].id;
-      if (newId && Number.isInteger(newId) && newId > 0) {
+      if (Number.isInteger(newId) && newId > 0) {
         setFeaturedTvId(newId);
       }
     }
   }, [otherTVShows, featuredTvId]);
 
-  // Fetch bookmark IDs
   const { data: bookmarks } = useQuery<string[]>({
     queryKey: ["bookmarks", auth.currentUser?.uid],
     queryFn: async () => {
@@ -194,7 +202,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
     enabled: !!auth.currentUser,
   });
 
-  // Fetch featured TV show details
   const {
     data: featuredTvDetails,
     isLoading: isDetailsLoading,
@@ -202,9 +209,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
   } = useQuery<DetailedTVProps>({
     queryKey: ["tvDetails", featuredTvId],
     queryFn: async () => {
-      if (!featuredTvId) {
-        throw new Error("Invalid TV show ID");
-      }
+      if (!featuredTvId) throw new Error("Invalid TV show ID");
       return await getTVDetails(featuredTvId.toString());
     },
     enabled:
@@ -212,14 +217,13 @@ const TvDisplay: React.FC<DisplayProps> = ({
     retry: 1,
   });
 
-  const featuredTvShow = useMemo(() => {
-    const found =
+  const featuredTvShow = useMemo(
+    () =>
       otherTVShows.find((tv) => tv.id === featuredTvId) ||
-      (otherTVShows.length ? otherTVShows[0] : null);
-    return found;
-  }, [otherTVShows, featuredTvId]);
+      (otherTVShows.length ? otherTVShows[0] : null),
+    [otherTVShows, featuredTvId]
+  );
 
-  // Handle initial loading state
   useEffect(() => {
     if (
       !isLoading &&
@@ -230,7 +234,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
     }
   }, [isLoading, isDetailsLoading, featuredTvShow, featuredTvDetails]);
 
-  // Smooth scroll animation
   const smoothScrollTo = useCallback(
     (targetOffset: number, duration: number) => {
       const startOffset = scrollOffset;
@@ -239,7 +242,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
       const animateScroll = (currentTime: number) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const ease = progress * (2 - progress); // Ease-in-out
+        const ease = progress * (2 - progress);
         const newOffset = startOffset + (targetOffset - startOffset) * ease;
 
         if (listRef.current) {
@@ -257,7 +260,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
     [scrollOffset]
   );
 
-  // Scroll left
   const scrollLeft = useCallback(() => {
     if (listRef.current) {
       const currentIndex = Math.round(scrollOffset / 190);
@@ -267,7 +269,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
     }
   }, [scrollOffset, smoothScrollTo]);
 
-  // Scroll right
   const scrollRight = useCallback(() => {
     if (listRef.current) {
       const currentIndex = Math.round(scrollOffset / 190);
@@ -278,12 +279,9 @@ const TvDisplay: React.FC<DisplayProps> = ({
     }
   }, [scrollOffset, otherTVShows.length, smoothScrollTo]);
 
-  // Prefetch TV details
   const prefetchTvDetails = useCallback(
     (id: number) => {
-      if (!Number.isInteger(id) || id <= 0) {
-        return;
-      }
+      if (!Number.isInteger(id) || id <= 0) return;
       queryClient.prefetchQuery({
         queryKey: ["tvDetails", id],
         queryFn: () => getTVDetails(id.toString()),
@@ -292,47 +290,46 @@ const TvDisplay: React.FC<DisplayProps> = ({
     [queryClient]
   );
 
-  // Handle TV card click
   const handleTvClick = useMemo(
     () =>
       debounce((id: number) => {
-        if (!Number.isInteger(id) || id <= 0) {
-          return;
-        }
+        if (!Number.isInteger(id) || id <= 0) return;
         setFeaturedTvId(id);
         const currentIndex = otherTVShows.findIndex((tv) => tv.id === id);
         if (currentIndex >= 0) {
           [currentIndex - 1, currentIndex + 1]
             .filter((i) => i >= 0 && i < otherTVShows.length)
             .forEach((i) => prefetchTvDetails(otherTVShows[i].id));
-          const newOffset = currentIndex * 190;
+          const visibleItems = Math.floor(window.innerWidth / 190);
+          const maxOffset = Math.max(
+            0,
+            (otherTVShows.length - visibleItems) * 190
+          );
+          const newOffset = Math.min(currentIndex * 190, maxOffset);
           smoothScrollTo(newOffset, 500);
         }
       }, 300),
     [otherTVShows, prefetchTvDetails, smoothScrollTo]
   );
 
-  // Format runtime for TV shows
   const formatRuntime = useCallback((runtime?: number[]) => {
     if (!runtime || runtime.length === 0 || runtime[0] <= 0) return "";
     return `${runtime[0]}m`;
   }, []);
 
-  // Format date for display
   const formatDate = useCallback((date?: string) => {
     if (!date) return "";
     try {
-      return new Date(date).toLocaleDateString("en-US", {
+      return new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
-      });
+      }).format(new Date(date));
     } catch {
       return "";
     }
   }, []);
 
-  // Format language for display
   const formatLanguage = useCallback((lang?: string) => {
     if (!lang) return "";
     return (
@@ -342,7 +339,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
     );
   }, []);
 
-  // Get featured TV show index
   const getFeaturedTvIndex = useCallback(
     () => otherTVShows.findIndex((tv) => tv.id === featuredTvId) ?? -1,
     [otherTVShows, featuredTvId]
@@ -358,7 +354,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <section className="relative w-full h-screen bg-black text-white overflow-hidden hidden md:flex flex-col">
+      <section className="relative w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex">
         {/* Featured TV Show Background */}
         <Suspense
           fallback={
@@ -376,7 +372,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                 `}
                 sizes="(max-width: 1024px) 780px, 1280px"
                 alt={featuredTvShow.title || "Featured TV Show"}
-                className="w-full h-full object-cover max-h-screen"
+                className="w-full h-full object-cover"
                 loading="lazy"
               />
             ) : (
@@ -393,13 +389,13 @@ const TvDisplay: React.FC<DisplayProps> = ({
         {/* Featured TV Show Content */}
         <Suspense
           fallback={
-            <div className="relative w-full flex-grow flex items-center justify-center z-20">
+            <div className="relative flex-grow flex items-center justify-center z-20">
               <Loading />
             </div>
           }>
-          <div className="relative w-full flex-grow flex items-center justify-center z-20">
+          <div className="relative flex-grow flex items-center justify-start z-20">
             {(featuredTvShow || isDetailsLoading) && (
-              <div className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8 text-center">
+              <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
                 <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl geist-bold capitalize">
                   {featuredTvDetails?.name ||
                     featuredTvShow?.title ||
@@ -456,7 +452,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                       featuredTvShow?.id?.toString() || ""
                     ) ? (
                       <button
-                        className="bg-red-600 text-white px-4 sm:px-5 py-2 sm:py-3 rounded hover:bg-red-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-red-500"
+                        className="bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-transform duration-200"
                         onClick={() =>
                           removeBookmarkMutation.mutate(
                             featuredTvShow?.id?.toString() || ""
@@ -468,7 +464,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                       </button>
                     ) : (
                       <button
-                        className="bg-[#333]/50 backdrop-blur-md text-gray-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
+                        className="bg-slate-600/50 backdrop-blur-md text-gray-100 w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700/70 focus:ring-2 focus:ring-slate-500 transition-transform duration-200"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredTvShow?.id || 0,
@@ -501,7 +497,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
         </Suspense>
 
         {/* Scrollable TV Show List */}
-        <div className="w-full h-[120px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
+        <div className="w-full h-[290px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
           {isError && (
             <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
               Error:{" "}
@@ -511,7 +507,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
           {!isError && otherTVShows.length > 0 && (
             <FixedSizeList
               ref={listRef}
-              height={121}
+              height={291}
               width={window.innerWidth}
               itemCount={otherTVShows.length}
               itemSize={190}
@@ -522,10 +518,11 @@ const TvDisplay: React.FC<DisplayProps> = ({
                   <TVCard
                     tvShow={otherTVShows[index]}
                     index={index}
-                    style={{ width: "180px", height: "101px" }}
+                    style={{ width: "180px", height: "270px" }}
                     isSelected={otherTVShows[index].id === featuredTvId}
                     onClick={handleTvClick}
                     bookmarks={bookmarks}
+                    category={category}
                   />
                 </div>
               )}
@@ -534,7 +531,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
         </div>
 
         {/* Scroll Buttons */}
-        <div className="absolute bottom-48 right-2 transform -translate-x-1/2 flex gap-2 z-20">
+        <div className="absolute bottom-78 right-2 flex gap-2 z-20">
           <button
             onClick={scrollLeft}
             aria-label="Scroll Left"
@@ -546,7 +543,10 @@ const TvDisplay: React.FC<DisplayProps> = ({
             onClick={scrollRight}
             aria-label="Scroll Right"
             className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50"
-            disabled={scrollOffset >= (otherTVShows.length - 1) * 190}>
+            disabled={
+              scrollOffset >=
+              (otherTVShows.length - Math.floor(window.innerWidth / 190)) * 190
+            }>
             <RightIcon />
           </button>
         </div>

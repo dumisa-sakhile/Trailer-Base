@@ -68,25 +68,25 @@ const MovieCard: React.FC<{
       <Suspense
         fallback={
           <div
-            className="w-[180px] h-[101px] bg-gray-900 rounded-md"
+            className="w-[180px] h-[270px] bg-gray-900 rounded-md"
             style={{ borderRadius: "0.375rem" }}>
             <Loading />
           </div>
         }>
         <button
           onClick={() => onClick(movie.id)}
-          className={`w-[180px] h-[101px] overflow-hidden shadow-md focus:outline-none rounded-md ${
+          className={`w-[180px] h-[270px] overflow-hidden shadow-md focus:outline-none rounded-md ${
             isSelected ? "border-2 border-blue-500" : ""
           }`}
           style={{ borderRadius: "0.375rem" }}>
-          {movie.backdrop_path ? (
+          {movie.poster_path ? (
             <img
-              src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+              src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
               srcSet={`
-                https://image.tmdb.org/t/p/w342${movie.backdrop_path} 342w,
-                https://image.tmdb.org/t/p/w500${movie.backdrop_path} 500w
+                https://image.tmdb.org/t/p/w185${movie.poster_path} 185w,
+                https://image.tmdb.org/t/p/w342${movie.poster_path} 342w
               `}
-              sizes="(max-width: 640px) 342px, 500px"
+              sizes="(max-width: 640px) 185px, 342px"
               alt={movie.title || "Movie"}
               className="w-full h-full object-cover rounded-md"
               loading="lazy"
@@ -96,7 +96,7 @@ const MovieCard: React.FC<{
             <div
               className="w-full h-full bg-gray-900 flex items-center justify-center rounded-md"
               style={{ borderRadius: "0.375rem" }}>
-              <p className="text-gray-500 text-sm">No backdrop</p>
+              <p className="text-gray-500 text-sm">No poster</p>
             </div>
           )}
           <div
@@ -106,6 +106,18 @@ const MovieCard: React.FC<{
               <span className="font-bold text-3xl">{index + 1}</span> -{" "}
               {movie.title}
             </h3>
+            <p className="text-gray-300 text-xs text-left">
+              {movie.release_date
+                ? new Intl.DateTimeFormat("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  }).format(new Date(movie.release_date))
+                : null}
+            </p>
+            <p className="text-yellow-400 text-xs text-left">
+              ★ {movie.vote_average.toFixed(1)}/10
+            </p>
           </div>
         </button>
         {auth?.currentUser && (
@@ -195,7 +207,6 @@ const Display: React.FC<DisplayProps> = ({
     [otherMovies, featuredMovieId, data?.results]
   );
 
-  // Handle initial loading state
   useEffect(() => {
     if (
       !isLoading &&
@@ -206,14 +217,12 @@ const Display: React.FC<DisplayProps> = ({
     }
   }, [isLoading, isDetailsLoading, featuredMovie, featuredMovieDetails]);
 
-  // Set default featured movie to the first in the list
   useEffect(() => {
     if (!featuredMovieId && otherMovies.length > 0) {
       setFeaturedMovieId(otherMovies[0].id);
     }
   }, [featuredMovieId, otherMovies]);
 
-  // Smooth scroll animation
   const smoothScrollTo = useCallback(
     (targetOffset: number, duration: number) => {
       const startOffset = scrollOffset;
@@ -222,7 +231,7 @@ const Display: React.FC<DisplayProps> = ({
       const animateScroll = (currentTime: number) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const ease = progress * (2 - progress); // Ease-in-out
+        const ease = progress * (2 - progress);
         const newOffset = startOffset + (targetOffset - startOffset) * ease;
 
         if (listRef.current) {
@@ -245,7 +254,7 @@ const Display: React.FC<DisplayProps> = ({
       const currentIndex = Math.round(scrollOffset / 190);
       const newIndex = Math.max(currentIndex - 1, 0);
       const newOffset = newIndex * 190;
-      smoothScrollTo(newOffset, 500); // 500ms duration
+      smoothScrollTo(newOffset, 500);
     }
   }, [scrollOffset, smoothScrollTo]);
 
@@ -255,7 +264,7 @@ const Display: React.FC<DisplayProps> = ({
       const maxIndex = otherMovies.length - 1;
       const newIndex = Math.min(currentIndex + 1, maxIndex);
       const newOffset = newIndex * 190;
-      smoothScrollTo(newOffset, 500); // 500ms duration
+      smoothScrollTo(newOffset, 500);
     }
   }, [scrollOffset, otherMovies.length, smoothScrollTo]);
 
@@ -278,22 +287,27 @@ const Display: React.FC<DisplayProps> = ({
           [currentIndex - 1, currentIndex + 1]
             .filter((i) => i >= 0 && i < otherMovies.length)
             .forEach((i) => prefetchMovieDetails(otherMovies[i].id));
-          const newOffset = currentIndex * 190;
-          smoothScrollTo(newOffset, 500); // 500ms duration
+          const visibleItems = Math.floor(window.innerWidth / 190);
+          const maxOffset = Math.max(
+            0,
+            (otherMovies.length - visibleItems) * 190
+          );
+          const newOffset = Math.min(currentIndex * 190, maxOffset);
+          smoothScrollTo(newOffset, 500);
         }
       }, 300),
     [otherMovies, prefetchMovieDetails, smoothScrollTo]
   );
 
   const formatRuntime = useCallback((runtime?: number) => {
-    if (!runtime) return "N/A";
+    if (!runtime) return null;
     const hours = Math.floor(runtime / 60);
     const minutes = runtime % 60;
     return `${hours}h ${minutes}m`;
   }, []);
 
   const formatDate = useCallback((dateString?: string) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return null;
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -356,9 +370,9 @@ const Display: React.FC<DisplayProps> = ({
               <Loading />
             </div>
           }>
-          <div className="relative flex-grow flex items-center justify-center z-20">
+          <div className="relative flex-grow flex items-center justify-start z-20">
             {(featuredMovie || isDetailsLoading) && (
-              <div className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8 text-center">
+              <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
                 <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl geist-bold capitalize">
                   {featuredMovieDetails?.original_title ||
                     featuredMovieDetails?.title ||
@@ -374,10 +388,10 @@ const Display: React.FC<DisplayProps> = ({
                 <p className="text-gray-200 text-sm sm:text-base md:text-lg">
                   {formatDate(featuredMovieDetails?.release_date) ||
                     formatDate(featuredMovie?.release_date) ||
-                    "N/A"}{" "}
+                    null}{" "}
                   • {formatRuntime(featuredMovieDetails?.runtime)} •{" "}
                   {featuredMovieDetails?.original_language?.toUpperCase() ||
-                    "N/A"}
+                    null}
                 </p>
                 <p className="text-gray-300 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
                   {featuredMovieDetails?.overview ||
@@ -446,7 +460,7 @@ const Display: React.FC<DisplayProps> = ({
                 <p className="text-gray-200 text-xs sm:text-sm mt-2">
                   {featuredMovieDetails?.genres
                     ?.map((genre) => genre.name)
-                    .join(" | ") || "N/A"}
+                    .join(" | ") || null}
                 </p>
               </div>
             )}
@@ -454,7 +468,7 @@ const Display: React.FC<DisplayProps> = ({
         </Suspense>
 
         {/* Scrollable Movie List */}
-        <div className="w-full h-[120px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
+        <div className="w-full h-[290px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
           {isError && (
             <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
               Error:{" "}
@@ -464,7 +478,7 @@ const Display: React.FC<DisplayProps> = ({
           {!isError && otherMovies.length > 0 && (
             <FixedSizeList
               ref={listRef}
-              height={121}
+              height={291}
               width={window.innerWidth}
               itemCount={otherMovies.length}
               itemSize={190}
@@ -475,7 +489,7 @@ const Display: React.FC<DisplayProps> = ({
                   <MovieCard
                     movie={otherMovies[index]}
                     index={index}
-                    style={{ width: "180px", height: "101px" }}
+                    style={{ width: "180px", height: "270px" }}
                     isSelected={otherMovies[index].id === featuredMovieId}
                     onClick={handleMovieClick}
                     bookmarks={bookmarks}
@@ -488,7 +502,7 @@ const Display: React.FC<DisplayProps> = ({
         </div>
 
         {/* Scroll Buttons */}
-        <div className="absolute bottom-28 right-2 flex gap-2 z-20">
+        <div className="absolute bottom-78 right-2 flex gap-2 z-20">
           <button
             onClick={scrollLeft}
             aria-label="Scroll Left"
