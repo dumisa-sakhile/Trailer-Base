@@ -63,7 +63,7 @@ const TvBookmarkBtn: React.FC<TvBookmarkBtnProps> = ({
       onClick={handleBookmark}
       disabled={bookmarkMutation.isPending}
       aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-      className="text-white text-md  capitalize  backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95">
+      className="text-white text-md  capitalize  backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
       {bookmarkMutation.isPending ? (
         <span className="loading loading-spinner loading-sm"></span>
       ) : (

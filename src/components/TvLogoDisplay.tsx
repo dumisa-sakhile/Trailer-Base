@@ -22,10 +22,10 @@ const TvLogoDisplay: React.FC<TvLogoDisplayProps> = ({
   return (
     <>
       {logosLoading ? (
-        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 animate-pulse rounded"></div>
+        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  animate-pulse rounded"></div>
       ) : logosError ? (
-        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
-          <p className="text-white text-sm md:text-base geist-regular text-center px-2">
+        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  rounded flex items-center justify-center">
+          <p className="text-white text-lg  font-bold text-center px-2">
             {title}
           </p>
         </div>
@@ -36,7 +36,7 @@ const TvLogoDisplay: React.FC<TvLogoDisplayProps> = ({
           className="w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
         />
       ) : (
-        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
+        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  rounded flex items-center justify-center">
           <p className="text-white text-sm md:text-base geist-regular text-center px-2">
             {title}
           </p>

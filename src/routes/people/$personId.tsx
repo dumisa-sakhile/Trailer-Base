@@ -5,6 +5,7 @@ import BackHomeBtn from "@/components/BackHomeBtn";
 import MediaCard from "@/components/MediaCard";
 import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
+import { Suspense } from "react";
 
 export const Route = createFileRoute("/people/$personId")({
   loader: async ({ params }) => {
@@ -111,15 +112,20 @@ function PersonDetailsPage() {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Profile Image */}
           <div className="flex-shrink-0 mx-auto md:mx-0 group">
-            <img
-              src={
-                person?.profile_path
-                  ? `https://image.tmdb.org/t/p/w500/${person?.profile_path}`
-                  : FALLBACK_POSTER
-              }
-              alt={person?.name || "Profile Image"}
-              className="w-64 h-auto rounded-2xl md:rounded-lg shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
-            />
+            <Suspense
+              fallback={
+                <div className="w-64 h-96 bg-[#333] rounded-2xl animate-pulse shadow-lg" />
+              }>
+              <img
+                src={
+                  person?.profile_path
+                    ? `https://image.tmdb.org/t/p/w500/${person?.profile_path}`
+                    : FALLBACK_POSTER
+                }
+                alt={person?.name || "Profile Image"}
+                className="w-64 h-auto rounded-2xl cursor-move shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+              />
+            </Suspense>
           </div>
 
           {/* Details */}
@@ -164,12 +170,18 @@ function PersonDetailsPage() {
                   })}
                 </span>
               )}
-              {person?.gender && (
-                <span className="button-style">
-                  <span className="font-semibold">Gender:</span>
-                  {person?.gender === 1 ? "Female" : "Male"}
-                </span>
-              )}
+              {person?.gender !== undefined &&
+                person?.gender !== null &&
+                person?.gender !== 0 && (
+                  <span className="button-style">
+                    <span className="font-semibold">Gender: </span>
+                    {person.gender === 1
+                      ? "Female"
+                      : person.gender === 2
+                        ? "Male"
+                        : "Other"}
+                  </span>
+                )}
               {person?.popularity && (
                 <span className="button-style">
                   <span className="font-semibold">Popularity:</span>
@@ -222,7 +234,7 @@ function PersonDetailsPage() {
                   <MediaCard
                     id={credit?.id}
                     title={credit?.title}
-                    release_date={credit?.release_date || "N/A"}
+                    release_date={credit?.release_date || null}
                     poster_path={credit?.poster_path}
                     vote_average={credit?.vote_average}
                     type="movie"
@@ -250,7 +262,7 @@ function PersonDetailsPage() {
                   <MediaCard
                     id={credit?.id}
                     title={credit?.name || credit?.title}
-                    release_date={credit?.first_air_date || "N/A"}
+                    release_date={credit?.first_air_date || null}
                     poster_path={credit?.poster_path}
                     vote_average={credit?.vote_average}
                     type="tv"
@@ -267,7 +279,7 @@ function PersonDetailsPage() {
         )}
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

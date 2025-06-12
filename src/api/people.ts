@@ -31,16 +31,6 @@ export const getTrendingPeople = async (period: string, page: number) => {
   return response.data;
 };
 
-export const searchPeople = async (page: number, searchQuery: string) => {
-  const response = await tmdbApi.get(`search/person?`, {
-    params: {
-      page: `${page}`,
-      query: `${searchQuery}`,
-    },
-  });
-  return response.data;
-};
-
 export const getPersonCredits = async (
   personId: string | number
 ) => {

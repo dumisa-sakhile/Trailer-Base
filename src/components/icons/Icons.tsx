@@ -239,8 +239,8 @@ const CreatorIcon = () => (
 const ReplayIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
+    width="20"
+    height="20"
     fill="currentColor"
     className="bi bi-arrow-counterclockwise"
     viewBox="0 0 16 16">
@@ -255,8 +255,8 @@ const ReplayIcon = () => (
 const MuteIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
+    width="20"
+    height="20"
     fill="currentColor"
     className="bi bi-volume-mute-fill"
     viewBox="0 0 16 16">
@@ -267,8 +267,8 @@ const MuteIcon = () => (
 const UnMuteIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
+    width="20"
+    height="20"
     fill="currentColor"
     className="bi bi-volume-up-fill"
     viewBox="0 0 16 16">

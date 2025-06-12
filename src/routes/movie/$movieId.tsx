@@ -236,7 +236,7 @@ function MovieDetails() {
           {showVideo && (
             <button
               onClick={onToggleMute}
-              className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10 "
+              className="text-md  capitalize backdrop-blur-md bg-black text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10 "
               aria-label={isMuted ? "Unmute video" : "Mute video"}
               tabIndex={0}>
               {isMuted ? <MuteIcon /> : <UnMuteIcon />}
@@ -258,19 +258,20 @@ function MovieDetails() {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
-        {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
-          <div className="hidden md:flex relative md:static">
-            <img
-              src={
-                data?.poster_path
-                  ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
-                  : FALLBACK_POSTER
-              }
-              alt={data?.title || "Movie Poster"}
-              className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
-            />
-          </div>
-        )}
+        {(videosLoading || !videoUrl || !showVideo ) &&
+          data?.poster_path && (
+            <div className="hidden md:flex relative md:static">
+              <img
+                src={
+                  data?.poster_path
+                    ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
+                    : FALLBACK_POSTER
+                }
+                alt={data?.title || "Movie Poster"}
+                className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+              />
+            </div>
+          )}
 
         {/* Poster image: Show on mobile as a result of the video hidden by default */}
         {data?.poster_path && (
@@ -339,9 +340,7 @@ function MovieDetails() {
               rel="noopener noreferrer"
               className="button-style">
               <WebsiteIcon />
-              <span className="text-md  capitalize">
-                website
-              </span>
+              <span className="text-md  capitalize">website</span>
             </a>
           )}
           <BookmarkButton

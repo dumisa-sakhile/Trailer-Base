@@ -100,7 +100,7 @@ const Search = () => {
             release_date: "",
             vote_average: 0,
             type: "person",
-            url: person?.id ? `/person/${person.id}` : "#",
+            url: person?.id ? `/people/${person.id}` : "#",
           })) || []
       );
     }
