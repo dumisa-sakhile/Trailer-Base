@@ -4,7 +4,6 @@ import { getPersonDetails, getPersonCredits } from "@/api/people";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import MediaCard from "@/components/MediaCard";
 import Loading from "@/components/Loading";
-import { useRef } from "react";
 
 export const Route = createFileRoute("/people/$personId")({
   loader: async ({ params }) => {
@@ -57,28 +56,6 @@ function PersonDetailsPage() {
           new Date(a.first_air_date).getTime()
       ) || [];
 
-  // Carousel refs
-  const movieCastRef = useRef<HTMLDivElement>(
-    null
-  ) as React.RefObject<HTMLDivElement>;
-  const tvCastRef = useRef<HTMLDivElement>(
-    null
-  ) as React.RefObject<HTMLDivElement>;
-
-  // Carousel scroll handler
-  const scrollCarousel = (
-    ref: React.RefObject<HTMLDivElement>,
-    dir: "left" | "right"
-  ) => {
-    if (ref.current) {
-      const scrollAmount = 300; // Matches MediaCard width
-      ref.current.scrollBy({
-        left: dir === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
   if (isPersonLoading || isCreditsLoading) {
     return <Loading />;
   }
@@ -103,7 +80,9 @@ function PersonDetailsPage() {
   const formatBiography = (biography: string) => {
     const paragraphs = biography?.split("\n");
     return paragraphs.map((para, index) => (
-      <p key={index} className="mb-4">
+      <p
+        key={index}
+        className="mb-4 text-gray-100 text-md roboto-condensed-light">
         {para}
       </p>
     ));
@@ -111,7 +90,7 @@ function PersonDetailsPage() {
 
   return (
     <div className="relative w-full min-h-screen bg-black">
-      {/* Background Profile Image */}
+      {/* Background Profile Image (Commented Out) */}
       {/* {person?.profile_path && (
         <img
           alt={person?.name}
@@ -130,7 +109,7 @@ function PersonDetailsPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row gap-8">
           {/* Profile Image */}
-          <div className="flex-shrink-0 mx-auto md:mx-0">
+          <div className="flex-shrink-0 mx-auto md:mx-0 group">
             <img
               src={
                 person?.profile_path
@@ -138,13 +117,13 @@ function PersonDetailsPage() {
                   : FALLBACK_POSTER
               }
               alt={person?.name || "Profile Image"}
-              className="w-64 h-auto scale-75 md:scale-100 rounded-full md:rounded-lg shadow-lg filter "
+              className="w-64 h-auto rounded-2xl md:rounded-lg shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
             />
           </div>
 
           {/* Details */}
           <div className="flex flex-col gap-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
+            <h1 className="text-3xl md:text-4xl font-bold text-white roboto-condensed-light">
               {person?.name}
             </h1>
 
@@ -155,7 +134,7 @@ function PersonDetailsPage() {
                   href={person?.homepage}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-white/20 transition-transform transform hover:scale-95"
+                  className="button-style"
                   aria-label="Visit website">
                   <svg
                     className="w-5 h-5"
@@ -175,102 +154,77 @@ function PersonDetailsPage() {
                 </a>
               )}
               {person?.birthday && (
-                <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full">
+                <span className="button-style">
                   <span className="font-semibold">Born:</span>
-                  {new Date(person?.birthday).toLocaleDateString()}
+                  {new Date(person?.birthday).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </span>
               )}
               {person?.gender && (
-                <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full">
+                <span className="button-style">
                   <span className="font-semibold">Gender:</span>
                   {person?.gender === 1 ? "Female" : "Male"}
                 </span>
               )}
               {person?.popularity && (
-                <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full">
+                <span className="button-style">
                   <span className="font-semibold">Popularity:</span>
                   {person?.popularity.toFixed(2)}%
                 </span>
               )}
               {person?.place_of_birth && (
-                <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full">
+                <span className="button-style">
                   <span className="font-semibold">Born in:</span>
                   {person?.place_of_birth}
                 </span>
               )}
               {person?.deathday && (
-                <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full">
+                <span className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 py-4 flex items-center gap-2 hover:grayscale-50 transition duration-200 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
                   <span className="font-semibold">Died:</span>
-                  {new Date(person?.deathday).toLocaleDateString()}
+                  {new Date(person?.deathday).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </span>
               )}
             </div>
 
             {/* Biography */}
-            <div className="bg-white/10 backdrop-blur-sm text-white p-6 rounded-lg shadow-md max-w-3xl mx-auto ">
-              <h2 className="text-xl font-semibold mb-4 ">Biography</h2>
-              {person?.biography
-                ? formatBiography(person?.biography)
-                : "No biography available."}
+            <div className=" backdrop-blur-md text-white p-6 rounded-lg shadow-lg ring-1 ring-white/10 max-w-3xl mx-auto transition-all duration-300 hover:shadow-xl">
+              <h2 className="text-xl font-semibold mb-4 text-white roboto-condensed-light">
+                Biography
+              </h2>
+              {person?.biography ? (
+                formatBiography(person?.biography)
+              ) : (
+                <p className="text-gray-100 text-md roboto-condensed-light">
+                  No biography available.
+                </p>
+              )}
             </div>
           </div>
         </div>
 
         {/* Movie Credits */}
         {movieCastCredits.length > 0 && (
-          <section className="mt-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
-                Movie Credits
-              </h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => scrollCarousel(movieCastRef, "left")}
-                  aria-label="Scroll left"
-                  className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg
-                    className="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24">
-                    <path
-                      d="M15 19l-7-7 7-7"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => scrollCarousel(movieCastRef, "right")}
-                  aria-label="Scroll right"
-                  className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg
-                    className="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24">
-                    <path
-                      d="M9 5l7 7-7 7"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div
-              ref={movieCastRef}
-              className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth"
-              style={{ WebkitOverflowScrolling: "touch" }}>
-              {movieCastCredits?.map((credit: any) => (
-                <div key={credit?.credit_id} className="snap-start">
+          <section className="mt-6">
+            <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight ">
+              Movies
+            </h3>
+            <div className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
+              {movieCastCredits.map((credit: any) => (
+                <div key={credit?.credit_id}>
                   <MediaCard
                     id={credit?.id}
                     title={credit?.title}
                     release_date={credit?.release_date || "N/A"}
                     poster_path={credit?.poster_path}
                     vote_average={credit?.vote_average}
-                    type={credit?.media_type}
+                    type="movie"
                   />
                 </div>
               ))}
@@ -278,68 +232,41 @@ function PersonDetailsPage() {
           </section>
         )}
         {movieCastCredits.length === 0 && (
-          <p className="text-white text-lg">No movie cast credits available.</p>
+          <p className="text-white text-md roboto-condensed-light mt-4">
+            No movie cast credits available.
+          </p>
         )}
 
         {/* TV Credits */}
         {tvCastCredits.length > 0 && (
-          <section className="mt-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
-                TV Credits
-              </h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => scrollCarousel(tvCastRef, "left")}
-                  aria-label="Scroll left"
-                  className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
-                    <path
-                      d="M15 19l-7-7 7-7"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => scrollCarousel(tvCastRef, "right")}
-                  aria-label="Scroll right"
-                  className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
-                    <path
-                      d="M9 5l7 7-7 7"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div
-              ref={tvCastRef}
-              className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth"
-              style={{ WebkitOverflowScrolling: "touch" }}>
-              {tvCastCredits?.map((credit: any) => (
-                <div key={credit?.credit_id} className="snap-start">
+          <section className="mt-6">
+            <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight">
+              TV Shows
+            </h3>
+            <div className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
+              {tvCastCredits.map((credit: any) => (
+                <div key={credit?.credit_id}>
                   <MediaCard
                     id={credit?.id}
                     title={credit?.name || credit?.title}
                     release_date={credit?.first_air_date || "N/A"}
                     poster_path={credit?.poster_path}
                     vote_average={credit?.vote_average}
-                    type={credit?.media_type}
+                    type="tv"
                   />
                 </div>
               ))}
             </div>
           </section>
         )}
-        {tvCastCredits?.length === 0 && (
-          <p className="text-white text-lg">No TV cast credits available.</p>
+        {tvCastCredits.length === 0 && (
+          <p className="text-white text-md roboto-condensed-light mt-4">
+            No TV show cast credits available.
+          </p>
         )}
       </div>
     </div>
   );
 }
+
+export default PersonDetailsPage;

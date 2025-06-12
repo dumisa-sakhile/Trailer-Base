@@ -239,7 +239,7 @@ function TVDetails() {
       />
 
       {/* Control Buttons */}
-      <div className="absolute bottom-24 right-4 flex gap-2 z-20 group">
+      <div className="absolute bottom-24 right-4 hidden md:flex gap-2 z-20 group">
         {showVideo && (
           <button
             onClick={onToggleMute}
