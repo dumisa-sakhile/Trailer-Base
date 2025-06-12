@@ -113,7 +113,7 @@ const MovieCard: React.FC<{
                     day: "2-digit",
                     year: "numeric",
                   }).format(new Date(movie.release_date))
-                : null}
+                : ""}
             </p>
             <p className="text-yellow-400 text-xs text-left">
               ★ {movie.vote_average.toFixed(1)}/10
@@ -197,14 +197,18 @@ const Display: React.FC<DisplayProps> = ({
   } = useQuery<DetailedMovieProps>({
     queryKey: ["movieDetails", featuredMovieId],
     queryFn: () => getMovieDetails(featuredMovieId?.toString() || ""),
-    enabled: !!featuredMovieId,
+    enabled:
+      !!featuredMovieId &&
+      Number.isInteger(featuredMovieId) &&
+      featuredMovieId > 0,
+    retry: 1,
   });
 
   const featuredMovie = useMemo(
     () =>
       otherMovies.find((movie) => movie.id === featuredMovieId) ||
-      (data?.results?.length ? data.results[0] : null),
-    [otherMovies, featuredMovieId, data?.results]
+      (otherMovies.length ? otherMovies[0] : null),
+    [otherMovies, featuredMovieId]
   );
 
   useEffect(() => {
@@ -219,7 +223,10 @@ const Display: React.FC<DisplayProps> = ({
 
   useEffect(() => {
     if (!featuredMovieId && otherMovies.length > 0) {
-      setFeaturedMovieId(otherMovies[0].id);
+      const newId = otherMovies[0].id;
+      if (Number.isInteger(newId) && newId > 0) {
+        setFeaturedMovieId(newId);
+      }
     }
   }, [featuredMovieId, otherMovies]);
 
@@ -250,26 +257,40 @@ const Display: React.FC<DisplayProps> = ({
   );
 
   const scrollLeft = useCallback(() => {
-    if (listRef.current) {
-      const currentIndex = Math.round(scrollOffset / 190);
-      const newIndex = Math.max(currentIndex - 1, 0);
-      const newOffset = newIndex * 190;
-      smoothScrollTo(newOffset, 500);
+    if (listRef.current && otherMovies.length > 1) {
+      const visibleItems = Math.floor(window.innerWidth / 190);
+      const maxOffset = Math.max(0, (otherMovies.length - visibleItems) * 190);
+      if (scrollOffset === 0) {
+        // At start, scroll to end
+        smoothScrollTo(maxOffset, 500);
+      } else {
+        const currentIndex = Math.round(scrollOffset / 190);
+        const newIndex = Math.max(currentIndex - 1, 0);
+        const newOffset = newIndex * 190;
+        smoothScrollTo(newOffset, 500);
+      }
     }
-  }, [scrollOffset, smoothScrollTo]);
+  }, [scrollOffset, otherMovies.length, smoothScrollTo]);
 
   const scrollRight = useCallback(() => {
-    if (listRef.current) {
-      const currentIndex = Math.round(scrollOffset / 190);
-      const maxIndex = otherMovies.length - 1;
-      const newIndex = Math.min(currentIndex + 1, maxIndex);
-      const newOffset = newIndex * 190;
-      smoothScrollTo(newOffset, 500);
+    if (listRef.current && otherMovies.length > 1) {
+      const visibleItems = Math.floor(window.innerWidth / 190);
+      const maxOffset = Math.max(0, (otherMovies.length - visibleItems) * 190);
+      if (scrollOffset >= maxOffset) {
+        // At end, scroll to start
+        smoothScrollTo(0, 500);
+      } else {
+        const currentIndex = Math.round(scrollOffset / 190);
+        const newIndex = Math.min(currentIndex + 1, otherMovies.length - 1);
+        const newOffset = newIndex * 190;
+        smoothScrollTo(newOffset, 500);
+      }
     }
   }, [scrollOffset, otherMovies.length, smoothScrollTo]);
 
   const prefetchMovieDetails = useCallback(
     (id: number) => {
+      if (!Number.isInteger(id) || id <= 0) return;
       queryClient.prefetchQuery({
         queryKey: ["movieDetails", id],
         queryFn: () => getMovieDetails(id.toString()),
@@ -281,6 +302,7 @@ const Display: React.FC<DisplayProps> = ({
   const handleMovieClick = useMemo(
     () =>
       debounce((id: number) => {
+        if (!Number.isInteger(id) || id <= 0) return;
         setFeaturedMovieId(id);
         const currentIndex = otherMovies.findIndex((m) => m.id === id);
         if (currentIndex >= 0) {
@@ -300,20 +322,32 @@ const Display: React.FC<DisplayProps> = ({
   );
 
   const formatRuntime = useCallback((runtime?: number) => {
-    if (!runtime) return null;
+    if (!runtime) return "";
     const hours = Math.floor(runtime / 60);
     const minutes = runtime % 60;
     return `${hours}h ${minutes}m`;
   }, []);
 
   const formatDate = useCallback((dateString?: string) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    }).format(date);
+    if (!dateString) return "";
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(new Date(dateString));
+    } catch {
+      return "";
+    }
+  }, []);
+
+  const formatLanguage = useCallback((lang?: string) => {
+    if (!lang) return "";
+    return (
+      new Intl.DisplayNames(["en"], { type: "language" })
+        .of(lang)
+        ?.toUpperCase() || ""
+    );
   }, []);
 
   const getFeaturedMovieIndex = useCallback(
@@ -382,16 +416,22 @@ const Display: React.FC<DisplayProps> = ({
                 <p className="text-red-500 text-xl sm:text-2xl md:text-3xl lg:text-4xl geist-bold capitalize mt-2">
                   {`Rank: ${getFeaturedMovieIndex() + 1}`}
                 </p>
-                <p className="text-gray-200 text-sm sm:text-base md:text-lg mt-2">
-                  {featuredMovieDetails?.tagline || "No tagline available"}
-                </p>
+                {featuredMovieDetails?.tagline && (
+                  <p className="text-gray-200 text-sm sm:text-base md:text-lg mt-2">
+                    {featuredMovieDetails.tagline}
+                  </p>
+                )}
                 <p className="text-gray-200 text-sm sm:text-base md:text-lg">
-                  {formatDate(featuredMovieDetails?.release_date) ||
-                    formatDate(featuredMovie?.release_date) ||
-                    null}{" "}
-                  • {formatRuntime(featuredMovieDetails?.runtime)} •{" "}
-                  {featuredMovieDetails?.original_language?.toUpperCase() ||
-                    null}
+                  {[
+                    formatDate(
+                      featuredMovieDetails?.release_date ||
+                        featuredMovie?.release_date
+                    ),
+                    formatRuntime(featuredMovieDetails?.runtime),
+                    formatLanguage(featuredMovieDetails?.original_language),
+                  ]
+                    .filter(Boolean)
+                    .join(" • ")}
                 </p>
                 <p className="text-gray-300 text-sm sm:text-base max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
                   {featuredMovieDetails?.overview ||
@@ -400,7 +440,10 @@ const Display: React.FC<DisplayProps> = ({
                 </p>
                 {detailsError && (
                   <p className="text-red-500 text-sm mt-2">
-                    Failed to load details
+                    Failed to load details:{" "}
+                    {detailsError instanceof Error
+                      ? detailsError.message
+                      : "Unknown error"}
                   </p>
                 )}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
@@ -457,11 +500,13 @@ const Display: React.FC<DisplayProps> = ({
                       </button>
                     ))}
                 </div>
-                <p className="text-gray-200 text-xs sm:text-sm mt-2">
-                  {featuredMovieDetails?.genres
-                    ?.map((genre) => genre.name)
-                    .join(" | ") || null}
-                </p>
+                {featuredMovieDetails?.genres?.length && (
+                  <p className="text-gray-200 text-xs sm:text-sm mt-2">
+                    {featuredMovieDetails.genres
+                      .map((genre) => genre.name)
+                      .join(" | ")}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -506,15 +551,13 @@ const Display: React.FC<DisplayProps> = ({
           <button
             onClick={scrollLeft}
             aria-label="Scroll Left"
-            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50"
-            disabled={scrollOffset === 0}>
+            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
             <LeftIcon />
           </button>
           <button
             onClick={scrollRight}
             aria-label="Scroll Right"
-            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50"
-            disabled={scrollOffset >= (otherMovies.length - 1) * 190}>
+            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
             <RightIcon />
           </button>
         </div>
