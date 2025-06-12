@@ -68,6 +68,7 @@ const Header: React.FC = () => {
     try {
       await signOut(auth);
       setUser(null);
+      toast.success("Successfully signed out!");
       navigate({ to: "/auth" });
     } catch (error: unknown) {
       if (error instanceof Error) {

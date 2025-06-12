@@ -21,6 +21,7 @@ function RouteComponent() {
   const [isValidName, setIsValidName] = useState<boolean>(false);
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLinkSent, setIsLinkSent] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,6 +63,21 @@ function RouteComponent() {
     setError(null);
   };
 
+  const getEmailProviderUrl = (email: string): string => {
+    const domain = email.split("@")[1]?.toLowerCase();
+    switch (domain) {
+      case "gmail.com":
+        return "https://mail.google.com";
+      case "outlook.com":
+      case "hotmail.com":
+        return "https://outlook.live.com";
+      case "yahoo.com":
+        return "https://mail.yahoo.com";
+      default:
+        return "mailto:";
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -75,11 +91,16 @@ function RouteComponent() {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("emailForSignIn", email);
       window.localStorage.setItem("nameForSignIn", name);
-      setIsLoading(false);
+      setName("");
+      setEmail("");
+      setIsValidName(false);
+      setIsValidEmail(false);
+      setIsLinkSent(true);
       toast.success("Sign-up link sent! Check your email for confirmation.");
     } catch (err: any) {
       setError(err.message);
       toast.error(err.message);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -104,10 +125,11 @@ function RouteComponent() {
       navigate({
         to: "/",
         search: { page: 1, period: "day" },
-      }); // Redirect to home
+      });
     } catch (err: any) {
       setError(err.message);
       toast.error(err.message);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -121,71 +143,92 @@ function RouteComponent() {
             Create an account on Trailer Base
           </h2>
 
-          {/* Error Message */}
-          {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
-
-          {/* Google Sign-In Button */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5] disabled:opacity-50">
-            <img
-              src="https://www.google.com/favicon.ico"
-              alt="Google Icon"
-              className="w-5 h-5 mr-2"
-            />
-            Sign up with Google
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center my-4">
-            <div className="flex-grow border-t border-white/10"></div>
-            <span className="mx-4 text-white">or</span>
-            <div className="flex-grow border-t border-white/10"></div>
-          </div>
-
-          {/* Sign Up Form */}
-          <form onSubmit={handleSignUp}>
-            <div className="mb-4">
-              <label className="block text-sm mb-2" htmlFor="name">
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                placeholder="Enter your name"
-                value={name}
-                onChange={handleNameChange}
-                className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
-                required
-              />
+          {error && (
+            <div className="mb-4 text-red-500 text-sm" aria-live="assertive">
+              {error}
             </div>
+          )}
 
-            <div className="mb-4">
-              <label className="block text-sm mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={handleEmailChange}
-                className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
-                required
-              />
+          {isLinkSent ? (
+            <div className="mb-4 text-center">
+              <div className="mb-4 text-green-500 text-sm" aria-live="polite">
+                Sign-up link sent! Please check your email to complete
+                registration.
+              </div>
+              <a
+                href={getEmailProviderUrl(
+                  window.localStorage.getItem("emailForSignIn") || ""
+                )}
+                
+                rel="noopener noreferrer"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg disabled:opacity-50 inline-block">
+                Open Email
+              </a>
             </div>
+          ) : (
+            <>
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5] disabled:opacity-50"
+                aria-label="Sign up with Google">
+                <img
+                  src="https://www.google.com/favicon.ico"
+                  alt="Google Icon"
+                  className="w-5 h-5 mr-2"
+                />
+                Sign up with Google
+              </button>
 
-            {/* Sign Up Button */}
-            <button
-              type="submit"
-              disabled={isLoading || !isValidName || !isValidEmail}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg mb-4 disabled:opacity-50">
-              {isLoading ? "Creating..." : "Sign Up"}
-            </button>
-          </form>
+              <div className="flex items-center my-4">
+                <div className="flex-grow border-t border-white/10"></div>
+                <span className="mx-4 text-white">or</span>
+                <div className="flex-grow border-t border-white/10"></div>
+              </div>
 
-          {/* Login Link */}
+              <form onSubmit={handleSignUp}>
+                <div className="mb-4">
+                  <label className="block text-sm mb-2" htmlFor="name">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={handleNameChange}
+                    className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
+                    required
+                    aria-invalid={!isValidName}
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm mb-2" htmlFor="email">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
+                    required
+                    aria-invalid={!isValidEmail}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading || !isValidName || !isValidEmail}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg mb-4 disabled:opacity-50">
+                  {isLoading ? "Sending..." : "Sign Up"}
+                </button>
+              </form>
+            </>
+          )}
+
           <p className="text-sm text-center">
             Already have an account?{" "}
             <Link

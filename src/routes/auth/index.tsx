@@ -99,6 +99,21 @@ function RouteComponent() {
     setError(null);
   };
 
+  const getEmailProviderUrl = (email: string): string => {
+    const domain = email.split("@")[1]?.toLowerCase();
+    switch (domain) {
+      case "gmail.com":
+        return "https://mail.google.com";
+      case "outlook.com":
+      case "hotmail.com":
+        return "https://outlook.live.com";
+      case "yahoo.com":
+        return "https://mail.yahoo.com";
+      default:
+        return "mailto:";
+    }
+  };
+
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -173,8 +188,18 @@ function RouteComponent() {
           )}
 
           {isLinkSent ? (
-            <div className="mb-4 text-green-500 text-sm" aria-live="polite">
-              Magic link sent! Please check your email to sign in.
+            <div className="mb-4 text-center">
+              <div className="mb-4 text-green-500 text-sm" aria-live="polite">
+                Magic link sent! Please check your email to sign in.
+              </div>
+              <a
+                href={getEmailProviderUrl(
+                  window.localStorage.getItem("emailForSignIn") || ""
+                )}
+                rel="noopener noreferrer"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg disabled:opacity-50 inline-block">
+                Open Email
+              </a>
             </div>
           ) : (
             <>
