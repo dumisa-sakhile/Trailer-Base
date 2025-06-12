@@ -4,6 +4,7 @@ import { getPersonDetails, getPersonCredits } from "@/api/people";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import MediaCard from "@/components/MediaCard";
 import Loading from "@/components/Loading";
+import Footer from "@/components/Footer";
 
 export const Route = createFileRoute("/people/$personId")({
   loader: async ({ params }) => {
@@ -123,7 +124,7 @@ function PersonDetailsPage() {
 
           {/* Details */}
           <div className="flex flex-col gap-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-white roboto-condensed-light">
+            <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight">
               {person?.name}
             </h1>
 
@@ -265,6 +266,8 @@ function PersonDetailsPage() {
           </p>
         )}
       </div>
+
+      <Footer/>
     </div>
   );
 }
