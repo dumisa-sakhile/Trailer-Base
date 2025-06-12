@@ -160,7 +160,7 @@ function Profile() {
                 <button
                   key={type}
                   onClick={() => setFilter(type as "all" | "movie" | "tv")}
-                  className={`flex items-center gap-2 px-6 py-4 rounded-lg bg-[#333]/50 backdrop-blur-md  transition-colors duration-200 ease-in-out hover:scale-105 ${
+                  className={`flex items-center gap-2 px-6 py-2 text-sm font-medium rounded-lg bg-[#333]/50 backdrop-blur-md  transition-colors duration-200 ease-in-out hover:scale-105 ${
                     filter === type ? "bg-white text-black" : "text-gray-100"
                   }`}
                   aria-pressed={filter === type}

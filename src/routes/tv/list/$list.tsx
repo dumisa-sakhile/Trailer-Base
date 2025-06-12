@@ -52,7 +52,7 @@ function List() {
     <>
       <HeadContent />
       <div className="fixed top-0 left-0 w-full h-full pt-[15%] md:pt-[5%] md:p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto">
-        <h1 className="-mt-10 text-2xl text-left geist-bold capitalize">
+        <h1 className="-mt-10 text-2xl text-left font-bold capitalize">
           {list.replace(/_/g, " ").charAt(0).toUpperCase() +
             list.replace(/_/g, " ").slice(1)}{" "}
           TV Shows

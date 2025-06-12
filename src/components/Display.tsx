@@ -68,7 +68,7 @@ const MovieCard: React.FC<{
       <Suspense
         fallback={
           <div
-            className="w-[180px] h-[270px] bg-gray-900 rounded-md"
+            className="w-[180px] h-[270px]  rounded-md"
             style={{ borderRadius: "0.375rem" }}>
             <Loading />
           </div>
@@ -94,7 +94,7 @@ const MovieCard: React.FC<{
             />
           ) : (
             <div
-              className="w-full h-full bg-gray-900 flex items-center justify-center rounded-md"
+              className="w-full h-full  flex items-center justify-center rounded-md"
               style={{ borderRadius: "0.375rem" }}>
               <p className="text-gray-500 text-sm">No poster</p>
             </div>
@@ -369,7 +369,7 @@ const Display: React.FC<DisplayProps> = ({
         {/* Featured Movie Background */}
         <Suspense
           fallback={
-            <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+            <div className="absolute inset-0  flex items-center justify-center">
               <Loading />
             </div>
           }>
@@ -387,7 +387,7 @@ const Display: React.FC<DisplayProps> = ({
                 loading="lazy"
               />
             ) : (
-              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+              <div className="w-full h-full  flex items-center justify-center">
                 <p className="text-gray-400">No backdrop available</p>
               </div>
             )}
@@ -407,7 +407,7 @@ const Display: React.FC<DisplayProps> = ({
           <div className="relative flex-grow flex items-center justify-start z-20">
             {(featuredMovie || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
-                <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold capitalize">
+                <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold capitalize hidden lg:block">
                   {featuredMovieDetails?.original_title ||
                     featuredMovieDetails?.title ||
                     featuredMovie?.title ||
