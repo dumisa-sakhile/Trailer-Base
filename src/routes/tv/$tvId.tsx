@@ -25,6 +25,7 @@ import {
   WebsiteIcon,
   CreatorIcon,
   StarIcon,
+  YouTubeIcon,
 } from "@/components/icons/Icons";
 import BackgroundMedia from "@/components/BackgroundMedia";
 import TvLogoDisplay from "@/components/TvLogoDisplay";
@@ -238,11 +239,11 @@ function TVDetails() {
       />
 
       {/* Control Buttons */}
-      <div className="absolute bottom-14 right-4 flex gap-2 z-20 ">
+      <div className="absolute bottom-24 right-4 flex gap-2 z-20 group">
         {showVideo && (
           <button
             onClick={onToggleMute}
-            className="p-2 bg-[#333]/50 rounded-full text-white hover:bg-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-200"
+            className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
             aria-label={isMuted ? "Unmute video" : "Mute video"}
             tabIndex={0}>
             {isMuted ? <MuteIcon /> : <UnMuteIcon />}
@@ -251,7 +252,7 @@ function TVDetails() {
         {showReplay && !showVideo && (
           <button
             onClick={onReplay}
-            className="p-2 bg-[#333]/50 rounded-full text-white hover:bg-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-200"
+            className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
             aria-label="Replay video"
             tabIndex={0}>
             <ReplayIcon />
@@ -260,11 +261,11 @@ function TVDetails() {
       </div>
 
       {/* TV show details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 pb-10">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
-          <div className="relative md:static">
+          <div className="hidden md:flex relative md:static group">
             <img
               src={
                 data?.poster_path
@@ -272,7 +273,22 @@ function TVDetails() {
                   : FALLBACK_POSTER
               }
               alt={data?.name || "TV Show Poster"}
-              className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
+              className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+            />
+          </div>
+        )}
+
+        {/* Poster image: Show on mobile by default */}
+        {data?.poster_path && (
+          <div className="md:hidden relative md:static group">
+            <img
+              src={
+                data?.poster_path
+                  ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
+                  : FALLBACK_POSTER
+              }
+              alt={data?.name || "TV Show Poster"}
+              className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
             />
           </div>
         )}
@@ -288,19 +304,47 @@ function TVDetails() {
 
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-white text-md geist-regular w-full md:w-1/2 lg:w-1/3">
+          <p className="text-white text-lg w-full md:w-1/2 lg:w-1/3">
             {data?.tagline}
           </p>
         )}
 
-        {/* Website, bookmark */}
+        {/* Website, bookmark, metadata */}
         <section className="flex gap-2 flex-wrap">
+          {data?.first_air_date && (
+            <span className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+              {new Date(data.first_air_date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          )}
+          {data?.vote_average && (
+            <p className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+              <StarIcon />
+              <span className="font-bold">
+                {data?.vote_average.toFixed(1)}/10
+              </span>
+            </p>
+          )}
+          {data?.number_of_seasons && (
+            <p className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+              Seasons:{" "}
+              <span className="font-bold">{data?.number_of_seasons}</span>
+            </p>
+          )}
+          {data?.status && (
+            <p className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+              Status: <span className="font-bold">{data?.status}</span>
+            </p>
+          )}
           {data?.homepage && (
             <a
               href={data?.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white text-md roboto-condensed-light capitalize  backdrop-blur-sm rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Visit TV show website">
               <WebsiteIcon />
               <span className="text-md roboto-condensed-light capitalize">
@@ -318,41 +362,23 @@ function TVDetails() {
             }}
             isBookmarked={!!isBookmarked}
             category="tv"
+      
           />
+          {videoUrl && (
+            <a
+              href={videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+              <YouTubeIcon />
+              YouTube
+            </a>
+          )}
         </section>
-
-        {/* First air date, rating, seasons, status */}
-        <article className="flex items-center flex-wrap gap-4 text-sm">
-          {data?.first_air_date && (
-            <p className="flex items-center gap-2">
-              First Aired:{" "}
-              <span className="font-bold">{data?.first_air_date}</span>
-            </p>
-          )}
-          {data?.vote_average && (
-            <p className="flex items-center gap-2">
-              <StarIcon/>
-              <span className="font-bold">
-                {data?.vote_average.toFixed(1)}/10
-              </span>
-            </p>
-          )}
-          {data?.number_of_seasons && (
-            <p className="flex items-center gap-2">
-              Seasons:{" "}
-              <span className="font-bold">{data?.number_of_seasons}</span>
-            </p>
-          )}
-          {data?.status && (
-            <p className="flex items-center gap-2">
-              Status: <span className="font-bold">{data?.status}</span>
-            </p>
-          )}
-        </article>
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-md roboto-condensed-regular w-full md:w-1/2 lg:w-1/2 backdrop-blur-sm rounded px-4 py-6 transition duration-300 ease-in-out transform">
+          <p className="text-white text-lg roboto-condensed-light w-full md:w-1/2 lg:w-1/2 backdrop-blur-sm rounded px-4 py-6 transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}
@@ -367,6 +393,7 @@ function TVDetails() {
               })
             )}
             typeKey="with_original_language"
+           
           />
         )}
 
@@ -375,6 +402,7 @@ function TVDetails() {
             title="Genre"
             items={data?.genres?.map(({ name, id }) => ({ id, name }))}
             typeKey="with_genres"
+           
           />
         )}
 
@@ -386,6 +414,7 @@ function TVDetails() {
               name,
             }))}
             typeKey="with_companies"
+           
           />
         )}
 
@@ -397,21 +426,22 @@ function TVDetails() {
               name,
             }))}
             typeKey="with_origin_country"
+           
           />
         )}
 
         {/* Created by section */}
         {data?.created_by?.length > 0 && (
           <section className="flex items-center gap-2 flex-wrap">
-            <button
-              className="text-white text-md roboto-condensed-light capitalize bg-[rgba(39,39,39,0.5)] backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
+            <span
+              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Created By">
-              <CreatorIcon/>
+              <CreatorIcon />
               <span className="text-md roboto-condensed-light capitalize">
                 created by
               </span>
-            </button>{" "}
-            |{" "}
+            </span>
+            |
             {data?.created_by?.map(({ name, id }) => (
               <Link
                 key={id}
@@ -446,11 +476,13 @@ function TVDetails() {
         )}
 
         {/* Recommendations section */}
-        <h1 className="text-2xl md:text-5xl text-left geist-bold">
+        <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight">
           Recommendations
         </h1>
-        <section className="flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10 md:w-full">
-          {recommendations?.results?.length === 0 && <p>No recommendations</p>}
+        <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
+          {recommendations?.results?.length === 0 && (
+            <p>No recommendations available</p>
+          )}
           {recommendationsLoading && <Loading />}
           {recommendations?.results?.map(
             ({ id, name, first_air_date, poster_path, vote_average }) => (

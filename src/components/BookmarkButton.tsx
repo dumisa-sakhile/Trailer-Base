@@ -63,16 +63,15 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     <button
       onClick={handleBookmark}
       disabled={bookmarkMutation.isPending}
-      aria-label={isBookmarked ? 'Remove Bookmark' : 'Add Bookmark'}
-      className="text-white text-md roboto-condensed-light capitalize backdrop-blur-sm rounded h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
-    >
+      aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+      className="button-style">
       {bookmarkMutation.isPending ? (
         <span className="loading loading-spinner loading-sm"></span>
       ) : (
         <>
           <BookmarkIcon isBookmarked={!!isBookmarked} />
           <span className="text-md roboto-condensed-light capitalize">
-            {isBookmarked ? 'Remove Bookmark' : 'Bookmark'}
+            {isBookmarked ? "Remove" : "Bookmark"}
           </span>
         </>
       )}

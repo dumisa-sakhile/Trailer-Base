@@ -23,6 +23,7 @@ import {
   UnMuteIcon,
   VoteIcon,
   WebsiteIcon,
+  YouTubeIcon,
 } from "@/components/icons/Icons";
 import BookmarkButton from "@/components/BookmarkButton";
 import LogoDisplay from "@/components/LogoDisplay";
@@ -231,11 +232,11 @@ function MovieDetails() {
 
       {/* Control Buttons */}
       {videoUrl && (
-        <div className="absolute bottom-14 right-4 flex gap-2 z-20 group">
+        <div className="absolute bottom-24 right-4 flex gap-2 z-20 group">
           {showVideo && (
             <button
               onClick={onToggleMute}
-              className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
+              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10 "
               aria-label={isMuted ? "Unmute video" : "Mute video"}
               tabIndex={0}>
               {isMuted ? <MuteIcon /> : <UnMuteIcon />}
@@ -244,7 +245,7 @@ function MovieDetails() {
           {showReplay && !showVideo && (
             <button
               onClick={onReplay}
-              className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
+              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Replay video"
               tabIndex={0}>
               <ReplayIcon />
@@ -258,7 +259,7 @@ function MovieDetails() {
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
-          <div className="relative md:static">
+          <div className="hidden md:flex relative md:static">
             <img
               src={
                 data?.poster_path
@@ -266,7 +267,22 @@ function MovieDetails() {
                   : FALLBACK_POSTER
               }
               alt={data?.title || "Movie Poster"}
-              className="w-[250px] object-cover rounded relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static"
+              className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+            />
+          </div>
+        )}
+
+        {/* Poster image: Show on mobile as a result of the video hidden by default */}
+        {data?.poster_path && (
+          <div className="md:hidden relative md:static group">
+            <img
+              src={
+                data?.poster_path
+                  ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
+                  : FALLBACK_POSTER
+              }
+              alt={data?.title || "Movie Poster"}
+              className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
             />
           </div>
         )}
@@ -284,20 +300,44 @@ function MovieDetails() {
 
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-white text-md geist-regular w-full md:w-1/2 lg:w-1/3">
+          <p className="text-white text-lg  w-full md:w-1/2 lg:w-1/3">
             {data?.tagline}
           </p>
         )}
 
         {/* Website, bookmark */}
         <section className="flex gap-2 flex-wrap">
+          {data?.release_date && (
+            <span className="button-style">
+              {new Date(data.release_date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          )}
+          {data?.vote_average && (
+            <p className="flex items-center gap-2 button-style">
+              <VoteIcon />
+              <span className="font-bold">
+                {data?.vote_average?.toFixed(1)}/10
+              </span>
+            </p>
+          )}
+
+          {data?.runtime && (
+            <p className="button-style">
+              Duration:{" "}
+              <span className="font-bold">{formatRuntime(data?.runtime)}</span>
+            </p>
+          )}
+
           {data?.homepage && (
             <a
               href={data?.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-md roboto-condensed-light capitalize  backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95"
-              aria-label="Visit movie website">
+              className="button-style">
               <WebsiteIcon />
               <span className="text-md roboto-condensed-light capitalize">
                 website
@@ -316,34 +356,19 @@ function MovieDetails() {
             }}
             isBookmarked={!!isBookmarked}
           />
-        </section>
 
-        {/* Release, rating, duration */}
-        <article className="flex items-center flex-wrap gap-4 geist-regular text-sm">
-          {data?.release_date && (
-            <p className="flex items-center gap-2">
-              Released: <span className="font-bold">{data?.release_date}</span>
-            </p>
+          {/* YouTube link */}
+          {videoUrl && (
+            <a href={videoUrl || ""} target="_blank" className="button-style">
+              <YouTubeIcon />
+              YouTube
+            </a>
           )}
-          {data?.vote_average && (
-            <p className="flex items-center gap-2">
-              <VoteIcon />
-              <span className="font-bold">
-                {data?.vote_average?.toFixed(1)}/10
-              </span>
-            </p>
-          )}
-          {data?.runtime && (
-            <p className="flex items-center gap-2">
-              Duration:{" "}
-              <span className="font-bold">{formatRuntime(data?.runtime)}</span>
-            </p>
-          )}
-        </article>
+        </section>
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-md roboto-condensed-light w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
+          <p className="text-white text-lg roboto-condensed-light w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}
@@ -391,6 +416,8 @@ function MovieDetails() {
           />
         )}
 
+        <br />
+
         {/* Cast section */}
         <Credits creditsLoading={creditsLoading}>
           {credits?.cast?.map((cast) => (
@@ -406,7 +433,7 @@ function MovieDetails() {
         </Credits>
 
         {/* Recommendations section */}
-        <h1 className="text-2xl md:text-5xl text-left geist-bold">
+        <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight ">
           Recommendations
         </h1>
         <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
@@ -428,6 +455,7 @@ function MovieDetails() {
             )
           )}
         </section>
+
         <br />
         <br />
         <br />

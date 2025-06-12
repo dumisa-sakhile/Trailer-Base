@@ -47,7 +47,7 @@ const BackgroundMedia: React.FC<BackgroundMediaProps> = React.memo(
     return (
       <>
         {videosLoading ? (
-          <div className="fixed inset-0 -z-10 flex items-center justify-center bg-black/50">
+          <div className="hidden fixed inset-0 -z-10 md:flex items-center justify-center bg-black/50">
             <div className="w-12 h-12 border-4 border-t-gray-100 border-gray-500 rounded-full animate-spin" />
           </div>
         ) : showVideo && videoUrl ? (

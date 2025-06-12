@@ -30,7 +30,7 @@ export default function SeasonsSection({ seasons }: SeasonsSectionProps) {
 
   return (
     <section className="flex flex-col gap-6 relative">
-      <h2 className="text-2xl md:text-3xl max-sm:text-xl text-white geist-bold px-4">
+      <h2 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight ">
         Seasons
       </h2>
       <div className="relative">

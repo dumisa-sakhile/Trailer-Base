@@ -22,9 +22,9 @@ const LogoDisplay: React.FC<LogoDisplayProps> = ({
   return (
     <>
       {logosLoading ? (
-        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 animate-pulse rounded"></div>
+        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  animate-pulse rounded"></div>
       ) : logosError ? (
-        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
+        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  rounded flex items-center justify-center">
           <p className="text-white text-sm md:text-base geist-regular text-center px-2">
             {title}
           </p>
@@ -33,7 +33,7 @@ const LogoDisplay: React.FC<LogoDisplayProps> = ({
         <img
           src={`https://image.tmdb.org/t/p/w500/${selectedLogo.file_path}`}
           alt={`${title} Logo`}
-          className="w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
+          className="hidden md:flex w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
         />
       ) : (
         <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">

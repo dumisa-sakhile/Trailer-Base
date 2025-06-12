@@ -90,6 +90,33 @@
   }
 }
 
+@layer components {
+  .button-style {
+    font-size: 1rem;
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 300;
+    text-transform: capitalize;
+    backdrop-filter: blur(12px);
+    color: #f3f4f6;
+    border-radius: 9999px;
+    height: 2.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease-in-out;
+    transform: scale(1);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+  }
+  .button-style:hover {
+    filter: grayscale(50%);
+    transform: scale(0.95);
+  }
+}
+
 body{
   font-family: "Roboto Condensed", sans-serif;
     font-optical-sizing: auto;

@@ -11,12 +11,7 @@ const BackHomeBtn = () => {
         onClick={() => history.back()}
         aria-label="Go back to previous page"
         className="
-          flex items-center gap-2 px-4 py-4 rounded-lg
-          bg-[#333]/50 backdrop-blur-md text-gray-100
-          transition-colors duration-200 ease-in-out
-           hover:scale-105
-          
-          font-semibold text-sm select-none
+          button-style
         ">
         <svg
           className="w-6 h-6 flex-shrink-0 drop-shadow-md"
@@ -43,12 +38,7 @@ const BackHomeBtn = () => {
         }
         aria-label="Go to homepage"
         className="
-          flex items-center gap-2 px-4 py-4 rounded-lg
-          bg-[#333]/50 backdrop-blur-md text-gray-100
-          transition-colors duration-200 ease-in-out
-           hover:scale-105
-          
-          font-semibold text-sm select-none
+          button-style
         ">
         <svg
           xmlns="http://www.w3.org/2000/svg"

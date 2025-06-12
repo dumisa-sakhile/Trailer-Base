@@ -26,7 +26,9 @@ const Credits: React.FC<CreditsProps> = ({
 
   return (
     <div className="relative">
-      <h1 className="text-2xl md:text-5xl text-left geist-bold">The Cast</h1>
+      <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight ">
+        The Cast
+      </h1>
       <button
         onClick={scrollLeft}
         className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-[#131313] hover:bg-[#333] p-2">
