@@ -243,7 +243,7 @@ function TVDetails() {
         {showVideo && (
           <button
             onClick={onToggleMute}
-            className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
+            className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
             aria-label={isMuted ? "Unmute video" : "Mute video"}
             tabIndex={0}>
             {isMuted ? <MuteIcon /> : <UnMuteIcon />}
@@ -252,7 +252,7 @@ function TVDetails() {
         {showReplay && !showVideo && (
           <button
             onClick={onReplay}
-            className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
+            className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
             aria-label="Replay video"
             tabIndex={0}>
             <ReplayIcon />
@@ -312,7 +312,7 @@ function TVDetails() {
         {/* Website, bookmark, metadata */}
         <section className="flex gap-2 flex-wrap">
           {data?.first_air_date && (
-            <span className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+            <span className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
               {new Date(data.first_air_date).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -321,7 +321,7 @@ function TVDetails() {
             </span>
           )}
           {data?.vote_average && (
-            <p className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+            <p className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
               <StarIcon />
               <span className="font-bold">
                 {data?.vote_average.toFixed(1)}/10
@@ -329,13 +329,13 @@ function TVDetails() {
             </p>
           )}
           {data?.number_of_seasons && (
-            <p className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+            <p className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
               Seasons:{" "}
               <span className="font-bold">{data?.number_of_seasons}</span>
             </p>
           )}
           {data?.status && (
-            <p className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+            <p className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
               Status: <span className="font-bold">{data?.status}</span>
             </p>
           )}
@@ -344,10 +344,10 @@ function TVDetails() {
               href={data?.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
+              className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Visit TV show website">
               <WebsiteIcon />
-              <span className="text-md roboto-condensed-light capitalize">
+              <span className="text-md  capitalize">
                 website
               </span>
             </a>
@@ -369,7 +369,7 @@ function TVDetails() {
               href={videoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+              className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
               <YouTubeIcon />
               YouTube
             </a>
@@ -378,7 +378,7 @@ function TVDetails() {
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-lg roboto-condensed-light w-full md:w-1/2 lg:w-1/2 backdrop-blur-sm rounded px-4 py-6 transition duration-300 ease-in-out transform">
+          <p className="text-white text-lg  w-full md:w-1/2 lg:w-1/2 backdrop-blur-sm rounded px-4 py-6 transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}
@@ -434,10 +434,10 @@ function TVDetails() {
         {data?.created_by?.length > 0 && (
           <section className="flex items-center gap-2 flex-wrap">
             <span
-              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
+              className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Created By">
               <CreatorIcon />
-              <span className="text-md roboto-condensed-light capitalize">
+              <span className="text-md  capitalize">
                 created by
               </span>
             </span>

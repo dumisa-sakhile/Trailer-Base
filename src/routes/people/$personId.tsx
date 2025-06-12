@@ -83,7 +83,7 @@ function PersonDetailsPage() {
     return paragraphs.map((para, index) => (
       <p
         key={index}
-        className="mb-4 text-gray-100 text-md roboto-condensed-light">
+        className="mb-4 text-gray-100 text-md ">
         {para}
       </p>
     ));
@@ -183,7 +183,7 @@ function PersonDetailsPage() {
                 </span>
               )}
               {person?.deathday && (
-                <span className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 py-4 flex items-center gap-2 hover:grayscale-50 transition duration-200 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+                <span className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 py-4 flex items-center gap-2 hover:grayscale-50 transition duration-200 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
                   <span className="font-semibold">Died:</span>
                   {new Date(person?.deathday).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -196,13 +196,13 @@ function PersonDetailsPage() {
 
             {/* Biography */}
             <div className=" backdrop-blur-md text-white p-6 rounded-lg shadow-lg ring-1 ring-white/10 max-w-3xl mx-auto transition-all duration-300 hover:shadow-xl">
-              <h2 className="text-xl font-semibold mb-4 text-white roboto-condensed-light">
+              <h2 className="text-xl font-semibold mb-4 text-white ">
                 Biography
               </h2>
               {person?.biography ? (
                 formatBiography(person?.biography)
               ) : (
-                <p className="text-gray-100 text-md roboto-condensed-light">
+                <p className="text-gray-100 text-md ">
                   No biography available.
                 </p>
               )}
@@ -233,7 +233,7 @@ function PersonDetailsPage() {
           </section>
         )}
         {movieCastCredits.length === 0 && (
-          <p className="text-white text-md roboto-condensed-light mt-4">
+          <p className="text-white text-md  mt-4">
             No movie cast credits available.
           </p>
         )}
@@ -261,7 +261,7 @@ function PersonDetailsPage() {
           </section>
         )}
         {tvCastCredits.length === 0 && (
-          <p className="text-white text-md roboto-condensed-light mt-4">
+          <p className="text-white text-md  mt-4">
             No TV show cast credits available.
           </p>
         )}

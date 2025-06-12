@@ -6,6 +6,7 @@ import { searchTV } from "@/api/tv";
 import { searchPerson } from "@/api/people";
 import { useState } from "react";
 import { useSearchContext } from "@/context/searchContext";
+import { SearchIcon } from "./icons/Icons";
 
 interface SearchCardProps {
   title: string;
@@ -63,43 +64,43 @@ const Search = () => {
     if (pageType === "movies") {
       return (
         movieData?.results
-          ?.filter((movie: any) => movie?.poster_path) // Filter out items without poster_path
+          ?.filter((movie: any) => movie?.poster_path)
           .map((movie: any) => ({
-            id: movie?.id?.toString() ?? "", // Fallback to empty string if id is missing
-            title: movie?.title ?? "Unknown Title", // Fallback for missing title
-            poster_path: movie?.poster_path, // Already filtered, so guaranteed
-            release_date: movie?.release_date ?? "", // Fallback to empty string
-            vote_average: movie?.vote_average ?? 0, // Fallback to 0
+            id: movie?.id?.toString() ?? "",
+            title: movie?.title ?? "Unknown Title",
+            poster_path: movie?.poster_path,
+            release_date: movie?.release_date ?? "",
+            vote_average: movie?.vote_average ?? 0,
             type: "movie",
-            url: movie?.id ? `/movie/${movie.id}` : "#", // Fallback to non-clickable URL
+            url: movie?.id ? `/movie/${movie.id}` : "#",
           })) || []
       );
     } else if (pageType === "tv") {
       return (
         tvData?.results
-          ?.filter((tv: any) => tv?.poster_path) // Filter out items without poster_path
+          ?.filter((tv: any) => tv?.poster_path)
           .map((tv: any) => ({
-            id: tv?.id?.toString() ?? "", // Fallback to empty string
-            title: tv?.name ?? "Unknown Title", // Fallback for missing name
-            poster_path: tv?.poster_path, // Already filtered, so guaranteed
-            release_date: tv?.first_air_date ?? "", // Fallback to empty string
-            vote_average: tv?.vote_average ?? 0, // Fallback to 0
+            id: tv?.id?.toString() ?? "",
+            title: tv?.name ?? "Unknown Title",
+            poster_path: tv?.poster_path,
+            release_date: tv?.first_air_date ?? "",
+            vote_average: tv?.vote_average ?? 0,
             type: "tv",
-            url: tv?.id ? `/tv/${tv.id}` : "#", // Fallback to non-clickable URL
+            url: tv?.id ? `/tv/${tv.id}` : "#",
           })) || []
       );
     } else if (pageType === "people") {
       return (
         personData?.results
-          ?.filter((person: any) => person?.profile_path) // Filter out items without profile_path
+          ?.filter((person: any) => person?.profile_path)
           .map((person: any) => ({
-            id: person?.id?.toString() ?? "", // Fallback to empty string
-            title: person?.name ?? "Unknown Person", // Fallback for missing name
-            poster_path: person?.profile_path, // Already filtered, so guaranteed
-            release_date: "", // Always empty for people
-            vote_average: 0, // Always 0 for people
+            id: person?.id?.toString() ?? "",
+            title: person?.name ?? "Unknown Person",
+            poster_path: person?.profile_path,
+            release_date: "",
+            vote_average: 0,
             type: "person",
-            url: person?.id ? `/person/${person.id}` : "#", // Fallback to non-clickable URL
+            url: person?.id ? `/person/${person.id}` : "#",
           })) || []
       );
     }
@@ -137,67 +138,72 @@ const Search = () => {
   // Modal content
   const modalContent = (
     <section
-      className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-md overflow-hidden transition-opacity duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#333]/50 backdrop-blur-sm overflow-hidden transition-all duration-500 ease-out cursor-pointer"
       onClick={() => setStatus(false)}>
       <div
-        className="relative bg-[rgba(20,20,20,0.9)] backdrop-blur-lg md:rounded-xl w-full h-full md:w-[800px] md:h-[700px] max-w-[90vw] max-h-[90vh] overflow-auto text-gray-200 shadow-2xl ring-1 ring-gray-800/50"
+        className="relative bg-[#333] md:rounded-2xl w-full h-full md:w-[700px] md:h-[750px] max-w-[95vw] max-h-[95vh] overflow-auto text-gray-100 shadow-2xl transform transition-all duration-300 ease-out cursor-default"
         onClick={(e) => e.stopPropagation()}>
-        <nav className="w-full flex items-center p-4">
-          <input
-            type="search"
-            name="search"
-            autoFocus
-            id="search-input"
-            placeholder={`Search for ${resultTypeLabel.toLowerCase()}, e.g., ${
-              pageType === "movies"
-                ? "The Godfather"
-                : pageType === "tv"
-                  ? "Breaking Bad"
-                  : "Robert Downey Jr."
-            }`}
-            className="w-full p-4 bg-[rgba(30,30,30,0.8)] rounded-lg text-gray-200 text-lg placeholder:text-gray-400 placeholder:font-light font-sans outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out shadow-inner"
-            autoComplete="off"
-            onChange={(e) => setSearch(e.target.value)}
-            value={search}
-          />
+        <nav className="w-full flex items-center p-4 md:p-6 border-b border-blue-900/20">
+          <div className="relative w-full">
+            <input
+              type="search"
+              name="search"
+              autoFocus
+              id="search-input"
+              placeholder={`Search ${resultTypeLabel.toLowerCase()}, e.g., ${
+                pageType === "movies"
+                  ? "Inception"
+                  : pageType === "tv"
+                    ? "Stranger Things"
+                    : "Leonardo DiCaprio"
+              }`}
+              className="w-full p-4 pl-12 bg-white/10 rounded-xl text-gray-100 bricolage-grotesque-regular text-lg placeholder:text-gray-300 placeholder:host-grotesk-light outline-none focus:ring-2 focus:ring-white/20 transition-all duration-300 ease-in-out shadow-inner ring-1 ring-white/10"
+              autoComplete="off"
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+            />
+            <span className="absolute left-4 top-1/2 transform -translate-y-1/2">
+              <SearchIcon fill="white" />
+            </span>
+          </div>
         </nav>
-        <main className="p-6">
-          <div className="flex flex-col gap-6">
+        <main className="p-6 md:p-8">
+          <div className="flex flex-col gap-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white tracking-wide">
-                {resultTypeLabel} Search Results
+              <h2 className="bricolage-grotesque-bold text-sm text-white tracking-tight">
+                {resultTypeLabel} Results
               </h2>
               <button
-                className="px-4 py-2 bg-[rgba(50,50,50,0.7)] rounded-lg text-gray-200 font-medium hover:bg-blue-500 hover:text-black transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md"
+                className="md:hidden button-style bg-white hover:bg-gray-200 text-black bricolage-grotesque-regular px-6 py-6 rounded-full text-sm md:text-base shadow-lg"
                 onClick={() => setStatus(false)}>
                 Close
               </button>
             </div>
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+            <section className="flex flex-wrap gap-4 md:gap-6 justify-center items-center">
               {isLoading && (
-                <p className="text-gray-400 text-center col-span-full animate-pulse">
+                <p className="host-grotesk-light text-gray-400 text-center col-span-full animate-pulse text-lg">
                   Loading...
                 </p>
               )}
               {isError && (
-                <p className="text-red-400 text-center col-span-full">
+                <p className="host-grotesk-regular text-red-400 text-center col-span-full text-lg">
                   Error: {errorMessage}
                 </p>
               )}
-              {results.length === 0 && search.length > 0 && (
-                <p className="text-gray-400 text-center col-span-full">
+              {!isLoading && results.length === 0 && search.length > 0 && (
+                <p className="host-grotesk-light text-gray-400 text-center col-span-full text-lg">
                   No {resultTypeLabel.toLowerCase()} found
                 </p>
               )}
               {search.length === 0 && (
-                <p className="text-gray-400 text-center col-span-full">
+                <p className="host-grotesk-light text-gray-400 text-center col-span-full text-lg">
                   Search for your favorite {resultTypeLabel.toLowerCase()}...
                 </p>
               )}
               {results.map((item: SearchCardProps) => (
                 <div
                   key={`${item.type}-${item.id}`}
-                  className="transform hover:scale-102 transition-transform duration-300">
+                  className="relative group transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-900/20">
                   <SearchCard
                     title={item.title}
                     poster_path={item.poster_path}
@@ -207,6 +213,7 @@ const Search = () => {
                     url={item.url}
                     id={item.id}
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg pointer-events-none" />
                 </div>
               ))}
             </section>
@@ -216,7 +223,6 @@ const Search = () => {
     </section>
   );
 
-  // Only render if status is true
   if (!status) return null;
 
   return createPortal(modalContent, document.getElementById("modal-root")!);

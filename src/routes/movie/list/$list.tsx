@@ -115,7 +115,7 @@ function List() {
                 <span className="max-sm:hidden">Previous</span>
                 <span className="sm:hidden">Prev</span>
               </Link>
-              <span className="text-gray-100 font-semibold text-base max-sm:text-xs roboto-condensed-light px-4 max-sm:px-2 select-none">
+              <span className="text-gray-100 font-semibold text-base max-sm:text-xs  px-4 max-sm:px-2 select-none">
                 {page?.toLocaleString()} <span className="opacity-60">/</span>{" "}
                 {data?.total_pages?.toLocaleString() ?? "?"}
               </span>

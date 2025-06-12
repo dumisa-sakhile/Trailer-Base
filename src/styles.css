@@ -1,99 +1,38 @@
-@import "https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap";
+@import "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap";
 
 @import "tailwindcss";
 
-
-@layer utilities{
-
-  .roboto-condensed-light {
-    font-family: "Roboto Condensed", sans-serif;
+@layer utilities {
+  .bricolage-grotesque-light {
+    font-family: "Bricolage Grotesque", sans-serif;
     font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
+    font-variation-settings: "wdth" 100;
   }
   
-  .roboto-condensed-regular {
-    font-family: "Roboto Condensed", sans-serif;
+  .bricolage-grotesque-regular {
+    font-family: "Bricolage Grotesque", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
+    font-variation-settings: "wdth" 100;
   }
   
-  .roboto-condensed-bold {
-    font-family: "Roboto Condensed", sans-serif;
+  .bricolage-grotesque-bold {
+    font-family: "Bricolage Grotesque", sans-serif;
     font-optical-sizing: auto;
     font-weight: 700;
     font-style: normal;
+    font-variation-settings: "wdth" 100;
   }
 
-  .geist-thin {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 100;
-    font-style: normal;
-  }
-  
-  .geist-extra-light {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 200;
-    font-style: normal;
-  }
-  
-  .geist-light {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-  }
-  
-  .geist-regular {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-  }
-  
-  .geist-medium {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
-  }
-  
-  .geist-semi-bold {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-style: normal;
-  }
-  
-  .geist-bold {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-  }
-  
-  .geist-extra-bold {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 800;
-    font-style: normal;
-  }
-  
-  .geist-black {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 900;
-    font-style: normal;
-  }
 }
 
 @layer components {
   .button-style {
     font-size: 1rem;
-    font-family: "Roboto Condensed", sans-serif;
+    font-family: "Bricolage Grotesque", sans-serif;
     font-weight: 300;
     text-transform: capitalize;
     backdrop-filter: blur(12px);
@@ -117,26 +56,27 @@
   }
 }
 
-body{
-  font-family: "Roboto Condensed", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
+body {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
   font-size: 1rem;
   background: #000;
   color: #ffffff;
 }
 
-button{
+button {
   border-radius: 30px;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-button:focus{
+button:focus {
   outline: none;
 }
 
-a:hover{
+a:hover {
   transition: all 0.3s ease-in-out;
 }
 
@@ -178,19 +118,14 @@ input[type="search"]:focus::-webkit-search-cancel-button {
   background: #ddd; /* scrollbar thumb hover color */
 }
 
-.pink{
-  color: #FB3AA2;
-  transition: all 0.3s ease-in-out;
+
+.stack {
+  background: inherit;
 }
 
-.stack{
-background: inherit;
-}
-
-.stack:nth-child(even){
+.stack:nth-child(even) {
   transform: rotate(3deg);
 }
-.stack:nth-child(odd){
+.stack:nth-child(odd) {
   transform: rotate(-3deg);
 }
-

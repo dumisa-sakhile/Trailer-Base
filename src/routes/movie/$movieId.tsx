@@ -236,7 +236,7 @@ function MovieDetails() {
           {showVideo && (
             <button
               onClick={onToggleMute}
-              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10 "
+              className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10 "
               aria-label={isMuted ? "Unmute video" : "Mute video"}
               tabIndex={0}>
               {isMuted ? <MuteIcon /> : <UnMuteIcon />}
@@ -245,7 +245,7 @@ function MovieDetails() {
           {showReplay && !showVideo && (
             <button
               onClick={onReplay}
-              className="text-md roboto-condensed-light capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
+              className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Replay video"
               tabIndex={0}>
               <ReplayIcon />
@@ -339,7 +339,7 @@ function MovieDetails() {
               rel="noopener noreferrer"
               className="button-style">
               <WebsiteIcon />
-              <span className="text-md roboto-condensed-light capitalize">
+              <span className="text-md  capitalize">
                 website
               </span>
             </a>
@@ -368,7 +368,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-lg roboto-condensed-light w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
+          <p className="text-white text-lg  w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}

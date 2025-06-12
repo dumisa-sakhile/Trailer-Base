@@ -109,7 +109,7 @@ const TVCard: React.FC<{
             className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
             style={{ borderRadius: "0.375rem" }}
           >
-            <h3 className="text-white text-sm font-semibold text-left line-clamp-1 geist-bold">
+            <h3 className="text-white text-sm  text-left line-clamp-1 font-bold">
               <span className="font-bold text-3xl">{index + 1}</span> - {tvShow.title}
             </h3>
             <p className="text-gray-300 text-xs text-left">
@@ -396,10 +396,10 @@ const TvDisplay: React.FC<DisplayProps> = ({
           <div className="relative flex-grow flex items-center justify-start z-20">
             {(featuredTvShow || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
-                <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl geist-bold capitalize">
+                <h3 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold capitalize">
                   {featuredTvDetails?.name || featuredTvShow?.title || "Unknown"}
                 </h3>
-                <p className="text-red-500 text-xl sm:text-2xl md:text-3xl lg:text-4xl geist-bold capitalize mt-2">
+                <p className="text-red-500 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold capitalize mt-2">
                   {`Rank: ${getFeaturedTvIndex() + 1}`}
                 </p>
                 {featuredTvDetails?.tagline && (

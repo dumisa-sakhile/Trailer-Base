@@ -29,7 +29,7 @@ const CastCard: React.FC<CastCardProps> = ({
       alt={name}
       className="w-20 h-20 rounded-full object-cover mb-2"
     />
-    <h3 className="text-white text-sm roboto-condensed-light capitalize">
+    <h3 className="text-white text-sm  capitalize">
       {name}
     </h3>
     <p className="text-gray-400 text-xs">{character}</p>

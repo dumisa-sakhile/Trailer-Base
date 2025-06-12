@@ -90,7 +90,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
                 <Link
                   to="/tv/$tvId"
                   params={{ tvId: id.toString() }}
-                  className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden geist-light hover:ring-1 hover:ring-[#333333] hover:rotate-3">
+                  className="w-[300px] flex-none h-[450px] rounded-lg shadow-md flex items-center justify-center relative group hover:scale-95 transition-transform duration-300 ease-in-out overflow-hidden  hover:ring-1 hover:ring-[#333333] hover:rotate-3">
                   <img
                     src={`https://image.tmdb.org/t/p/w440_and_h660_face${poster_path}`}
                     alt={title}
@@ -101,7 +101,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
                       {vote_average.toFixed(1)}/10
                     </p>
                     <p className="text-gray-300 text-sm">{first_air_date}</p>
-                    <h3 className="text-white text-lg roboto-condensed-bold">
+                    <h3 className="text-white text-lg font-bold">
                       {title}
                     </h3>
                   </div>
@@ -110,7 +110,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
                   <>
                     {bookmarks?.includes(id.toString()) ? (
                       <button
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-[#222222] text-gray-200 text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-[#333333] transition-opacity duration-300"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-[#222222] text-gray-200 text-sm  px-3 py-1 rounded-full hover:bg-[#333333] transition-opacity duration-300"
                         onClick={() =>
                           removeBookmarkMutation.mutate(id.toString())
                         }
@@ -120,7 +120,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
                       </button>
                     ) : (
                       <button
-                        className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-[#222222] text-gray-200 text-sm roboto-condensed-light px-3 py-1 rounded-full hover:bg-[#333333] transition-opacity duration-300"
+                        className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 bg-[#222222] text-gray-200 text-sm  px-3 py-1 rounded-full hover:bg-[#333333] transition-opacity duration-300"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id,
@@ -192,7 +192,7 @@ const TvDisplayCard: React.FC<DisplayProps> = ({
         <Link
           to={listLink}
           params={{ list }}
-          className="text-gray-200 hover:text-white font-semibold text-lg roboto-condensed-bold px-4 py-2 rounded-md bg-[#222222] hover:bg-[#333333] transition-all duration-300">
+          className="text-gray-200 hover:text-white  text-lg font-bold px-4 py-2 rounded-md bg-[#222222] hover:bg-[#333333] transition-all duration-300">
           {listName}
         </Link>
       </div>

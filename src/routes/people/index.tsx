@@ -91,26 +91,26 @@ function People() {
 
       {/* Period Buttons */}
       <section className="flex items-center justify-center gap-2 py-2">
-        <button
-          onClick={() => setPeriod("day")}
-          className={`bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ${
-            period === "day"
-              ? "bg-blue-900/20 opacity-80"
-              : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105"
-          } ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50`}
-          aria-label="View daily trending people">
-          Day
-        </button>
-        <button
-          onClick={() => setPeriod("week")}
-          className={`bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ${
-            period === "week"
-              ? "bg-blue-900/20 opacity-80"
-              : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105"
-          } ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50`}
-          aria-label="View weekly trending people">
-          Week
-        </button>
+       <button
+  onClick={() => setPeriod("day")}
+  className={`button-style ${
+    period === "day"
+      ? ""
+      : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105"
+  } ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50`}
+  aria-label="View daily trending people">
+  Day
+</button>
+<button
+  onClick={() => setPeriod("week")}
+  className={`button-style ${
+    period === "week"
+      ? ""
+      : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105"
+  } ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50`}
+  aria-label="View weekly trending people">
+  Week
+</button>
       </section>
 
       {/* Trending People Carousel */}
