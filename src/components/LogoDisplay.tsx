@@ -36,8 +36,8 @@ const LogoDisplay: React.FC<LogoDisplayProps> = ({
           className="hidden md:flex w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
         />
       ) : (
-        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px] bg-gray-500/50 rounded flex items-center justify-center">
-          <p className="text-white text-sm md:text-base geist-regular text-center px-2">
+        <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  rounded flex items-center justify-center">
+          <p className="text-white text-2xl  md:text-base font-bold text-center px-2">
             {title}
           </p>
         </div>

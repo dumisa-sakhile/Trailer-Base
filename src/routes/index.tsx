@@ -2,9 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import Header from "@/components/Header";
 import { getTrendingMovies, getList } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import MediaList from "@/components/MediaList"; // Adjust import path as needed
+import MediaList from "@/components/MediaList";
 import Display from "@/components/Display";
 import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
+import InfoSection from "@/components/InfoSection";
+import movieGenres from "@/data/movieGenres";
 
 interface pageProps {
   page: number;
@@ -75,58 +78,128 @@ function App() {
     staleTime: 60 * 60 * 1000,
   });
 
+  // Animation variants for staggered entrance
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
   return (
     <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen pt-30 md:pt-0">
-      <Header />
-      <Display
-        data={trendingData}
-        isLoading={isTrendingLoading}
-        isError={isTrendingError}
-        error={trendingError}
-        category="movie"
-      />
-      <section className=" rounded-md flex flex-col items-center justify-center gap-6 md:px-12 lg:w-[90%] lg:mx-auto">
-        <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
-          Explore Movies
-        </h1>
-        <p className="text-gray-300 font-medium text-center max-w-md">
-          Discover the best in movies, curated for you.
-        </p>
-      </section>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}>
+        <Header />
+      </motion.div>
+      <motion.div
+        variants={itemVariants}
+        className="hidden md:block"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}>
+        <Display
+          data={trendingData}
+          isLoading={isTrendingLoading}
+          isError={isTrendingError}
+          error={trendingError}
+          category="movie"
+        />
+      </motion.div>
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}
+        className="rounded-md flex flex-col items-center justify-center gap-6 md:px-12 lg:w-[90%] lg:mx-auto">
+        <motion.h1
+          variants={itemVariants}
+          className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
+          Explore Movies by Genre
+        </motion.h1>
+        <motion.p
+          variants={itemVariants}
+          className="text-gray-300 font-medium text-center max-w-md">
+          Select a genre to explore movies in that genre
+        </motion.p>
+        <InfoSection
+                    title="Genre"
+                    items={movieGenres().map(({ name, id }) => ({ name, id }))}
+                    typeKey="with_genres"
+                  />
+      </motion.section>
+<br /><br />
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}>
+        <MediaList
+          mediaType="movie"
+          list="popular"
+          title="Popular Movies"
+          data={popularMovieData}
+          isLoading={isPopularMovieLoading}
+          isError={isPopularMovieError}
+          error={popularMovieError}
+        />
+      </motion.div>
+      <br />
+      <br />
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}>
+        <MediaList
+          mediaType="movie"
+          list="top_rated"
+          title="Top Rated Movies"
+          data={topRatedMovieData}
+          isLoading={isTopRatedMovieLoading}
+          isError={isTopRatedMovieError}
+          error={topRatedMovieError}
+        />
+      </motion.div>
+      <br />
+      <br />
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}>
+        <MediaList
+          mediaType="movie"
+          list="upcoming"
+          title="Upcoming Movies"
+          data={upcomingMovieData}
+          isLoading={isUpcomingMovieLoading}
+          isError={isUpcomingMovieError}
+          error={upcomingMovieError}
+        />
+      </motion.div>
 
-      <MediaList
-        mediaType="movie"
-        list="popular"
-        title="Popular Movies"
-        data={popularMovieData}
-        isLoading={isPopularMovieLoading}
-        isError={isPopularMovieError}
-        error={popularMovieError}
-      />
-      <br />
-      <br />
-      <MediaList
-        mediaType="movie"
-        list="top_rated"
-        title="Top Rated Movies"
-        data={topRatedMovieData}
-        isLoading={isTopRatedMovieLoading}
-        isError={isTopRatedMovieError}
-        error={topRatedMovieError}
-      />
-      <br />
-      <br />
-      <MediaList
-        mediaType="movie"
-        list="upcoming"
-        title="Upcoming Movies"
-        data={upcomingMovieData}
-        isLoading={isUpcomingMovieLoading}
-        isError={isUpcomingMovieError}
-        error={upcomingMovieError}
-      />
-
-      <Footer />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.8 }}>
+        <Footer />
+      </motion.div>
     </div>
   );
 }

@@ -6,6 +6,9 @@ import MediaCard from "@/components/MediaCard";
 import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
+import { motion } from "framer-motion";
+import Atropos from "atropos/react";
+import "atropos/atropos.css";
 
 export const Route = createFileRoute("/people/$personId")({
   loader: async ({ params }) => {
@@ -58,86 +61,147 @@ function PersonDetailsPage() {
           new Date(a.first_air_date).getTime()
       ) || [];
 
+  // Animation variants for staggered entrance
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
   if (isPersonLoading || isCreditsLoading) {
-    return <Loading />;
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}>
+          <Loading />
+        </motion.div>
+      </div>
+    );
   }
 
   if (personError || creditsError) {
     return (
       <div className="flex justify-center items-center h-screen bg-black text-white">
-        Error loading data: {(personError || creditsError)?.message}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible">
+          <motion.p
+            variants={itemVariants}
+            className="text-red-500 text-center">
+            Error loading data: {(personError || creditsError)?.message}
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
 
   if (!person) {
     return (
-      <div className="text-white text-center mt-10">
-        No person data available
+      <div className="flex justify-center items-center h-screen bg-black text-white">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible">
+          <motion.p variants={itemVariants} className="text-center">
+            No person data available
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
 
   // Function to format biography text with line breaks
   const formatBiography = (biography: string) => {
-    const paragraphs = biography?.split("\n");
-    return paragraphs.map((para, index) => (
-      <p
+    const paragraphs = biography?.split("\n") || [];
+    return paragraphs.map((para: string, index: number) => (
+      <motion.p
         key={index}
-        className="mb-4 text-gray-100 text-md ">
+        variants={itemVariants}
+        className="mb-4 text-gray-100 text-md">
         {para}
-      </p>
+      </motion.p>
     ));
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-black">
-      {/* Background Profile Image (Commented Out) */}
-      {/* {person?.profile_path && (
-        <img
-          alt={person?.name}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover fixed opacity-20 block lg:hidden"
-          src={`https://image.tmdb.org/t/p/original/${person?.profile_path}`}
-        />
-      )} */}
-
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="relative w-full min-h-screen bg-black">
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col gap-8">
-        <BackHomeBtn />
+        <motion.div variants={itemVariants}>
+          <BackHomeBtn />
+        </motion.div>
         <title>Trailer Base - Person Details</title>
 
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row gap-8">
+        <motion.div
+          variants={containerVariants}
+          className="flex flex-col md:flex-row gap-8">
           {/* Profile Image */}
           <div className="flex-shrink-0 mx-auto md:mx-0 group">
             <Suspense
               fallback={
                 <div className="w-64 h-96 bg-[#333] rounded-2xl animate-pulse shadow-lg" />
               }>
-              <img
-                src={
-                  person?.profile_path
-                    ? `https://image.tmdb.org/t/p/w500/${person?.profile_path}`
-                    : FALLBACK_POSTER
-                }
-                alt={person?.name || "Profile Image"}
-                className="w-64 h-auto rounded-2xl cursor-move shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
-              />
+              <Atropos
+                className="w-64 h-auto rounded-2xl overflow-hidden"
+                activeOffset={30}
+                shadow={false}
+                highlight={false}
+                rotateTouch="scroll-y"
+                rotateXMax={15}
+                rotateYMax={15}>
+                <img
+                  data-atropos-offset="-5"
+                  src={
+                    person?.profile_path
+                      ? `https://image.tmdb.org/t/p/w500/${person?.profile_path}`
+                      : FALLBACK_POSTER
+                  }
+                  alt={person?.name || "Profile Image"}
+                  className="w-64 h-auto rounded-2xl cursor-move shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+                />
+              </Atropos>
             </Suspense>
           </div>
 
           {/* Details */}
-          <div className="flex flex-col gap-6">
-            <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight">
+          <motion.div
+            variants={containerVariants}
+            className="flex flex-col gap-6">
+            <motion.h1
+              variants={itemVariants}
+              className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-white">
               {person?.name}
-            </h1>
+            </motion.h1>
 
             {/* Metadata */}
-            <div className="flex flex-wrap gap-3">
+            <motion.div
+              variants={containerVariants}
+              className="flex flex-wrap gap-3">
               {person?.homepage && (
-                <a
+                <motion.a
+                  variants={itemVariants}
                   href={person?.homepage}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -158,79 +222,94 @@ function PersonDetailsPage() {
                     />
                   </svg>
                   <span>Website</span>
-                </a>
+                </motion.a>
               )}
               {person?.birthday && (
-                <span className="button-style">
+                <motion.span variants={itemVariants} className="button-style">
                   <span className="font-semibold">Born:</span>
                   {new Date(person?.birthday).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   })}
-                </span>
+                </motion.span>
               )}
               {person?.gender !== undefined &&
                 person?.gender !== null &&
                 person?.gender !== 0 && (
-                  <span className="button-style">
+                  <motion.span variants={itemVariants} className="button-style">
                     <span className="font-semibold">Gender: </span>
                     {person.gender === 1
                       ? "Female"
                       : person.gender === 2
                         ? "Male"
                         : "Other"}
-                  </span>
+                  </motion.span>
                 )}
               {person?.popularity && (
-                <span className="button-style">
+                <motion.span variants={itemVariants} className="button-style">
                   <span className="font-semibold">Popularity:</span>
                   {person?.popularity.toFixed(2)}%
-                </span>
+                </motion.span>
               )}
               {person?.place_of_birth && (
-                <span className="button-style">
+                <motion.span variants={itemVariants} className="button-style">
                   <span className="font-semibold">Born in:</span>
                   {person?.place_of_birth}
-                </span>
+                </motion.span>
               )}
               {person?.deathday && (
-                <span className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 py-4 flex items-center gap-2 hover:grayscale-50 transition duration-200 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
+                <motion.span
+                  variants={itemVariants}
+                  className="text-md capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 py-4 flex items-center gap-2 hover:grayscale-50 transition duration-200 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
                   <span className="font-semibold">Died:</span>
                   {new Date(person?.deathday).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   })}
-                </span>
+                </motion.span>
               )}
-            </div>
+            </motion.div>
 
             {/* Biography */}
-            <div className=" backdrop-blur-md text-white p-6 rounded-lg shadow-lg ring-1 ring-white/10 max-w-3xl mx-auto transition-all duration-300 hover:shadow-xl">
-              <h2 className="text-xl font-semibold mb-4 text-white ">
+            <motion.div
+              variants={containerVariants}
+              className="backdrop-blur-md text-white p-6 rounded-lg shadow-lg ring-1 ring-white/10 max-w-3xl mx-auto transition-all duration-300 hover:shadow-xl">
+              <motion.h2
+                variants={itemVariants}
+                className="text-xl font-semibold mb-4 text-white">
                 Biography
-              </h2>
+              </motion.h2>
               {person?.biography ? (
                 formatBiography(person?.biography)
               ) : (
-                <p className="text-gray-100 text-md ">
+                <motion.p
+                  variants={itemVariants}
+                  className="text-gray-100 text-md">
                   No biography available.
-                </p>
+                </motion.p>
               )}
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* Movie Credits */}
         {movieCastCredits.length > 0 && (
-          <section className="mt-6">
-            <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight ">
+          <motion.section variants={containerVariants} className="mt-6">
+            <motion.h3
+              variants={itemVariants}
+              className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-white">
               Movies
-            </h3>
-            <div className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
-              {movieCastCredits.map((credit: any) => (
-                <div key={credit?.credit_id}>
+            </motion.h3>
+            <motion.div
+              variants={containerVariants}
+              className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
+              {movieCastCredits.map((credit: any, index: number) => (
+                <motion.div
+                  key={credit?.credit_id}
+                  variants={itemVariants}
+                  transition={{ delay: index * 0.05 }}>
                   <MediaCard
                     id={credit?.id}
                     title={credit?.title}
@@ -239,26 +318,33 @@ function PersonDetailsPage() {
                     vote_average={credit?.vote_average}
                     type="movie"
                   />
-                </div>
+                </motion.div>
               ))}
-            </div>
-          </section>
+            </motion.div>
+          </motion.section>
         )}
         {movieCastCredits.length === 0 && (
-          <p className="text-white text-md  mt-4">
+          <motion.p variants={itemVariants} className="text-white text-md mt-4">
             No movie cast credits available.
-          </p>
+          </motion.p>
         )}
 
         {/* TV Credits */}
         {tvCastCredits.length > 0 && (
-          <section className="mt-6">
-            <h3 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight">
+          <motion.section variants={containerVariants} className="mt-6">
+            <motion.h3
+              variants={itemVariants}
+              className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-white">
               TV Shows
-            </h3>
-            <div className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
-              {tvCastCredits.map((credit: any) => (
-                <div key={credit?.credit_id}>
+            </motion.h3>
+            <motion.div
+              variants={containerVariants}
+              className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
+              {tvCastCredits.map((credit: any, index: number) => (
+                <motion.div
+                  key={credit?.credit_id}
+                  variants={itemVariants}
+                  transition={{ delay: index * 0.05 }}>
                   <MediaCard
                     id={credit?.id}
                     title={credit?.name || credit?.title}
@@ -267,20 +353,25 @@ function PersonDetailsPage() {
                     vote_average={credit?.vote_average}
                     type="tv"
                   />
-                </div>
+                </motion.div>
               ))}
-            </div>
-          </section>
+            </motion.div>
+          </motion.section>
         )}
         {tvCastCredits.length === 0 && (
-          <p className="text-white text-md  mt-4">
+          <motion.p variants={itemVariants} className="text-white text-md mt-4">
             No TV show cast credits available.
-          </p>
+          </motion.p>
         )}
       </div>
 
-      <Footer />
-    </div>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible">
+        <Footer />
+      </motion.div>
+    </motion.div>
   );
 }
 

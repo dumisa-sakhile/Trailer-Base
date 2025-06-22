@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { auth, db } from "../../config/firebase"; // Import db here
+import { auth, db } from "../../config/firebase";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; // Import Firestore methods
+import { doc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/auth/verify")({
   component: VerifyMagicLink,
@@ -27,31 +28,25 @@ function VerifyMagicLink() {
 
       let email = window.localStorage.getItem("emailForSignIn");
       if (!email) {
-        // If email is not in localStorage, prompt the user to enter it
         setIsLoading(false);
         return;
       }
 
       try {
-        // Complete the sign-in with email link
         await signInWithEmailLink(auth, email, window.location.href);
         window.localStorage.removeItem("emailForSignIn");
 
-        // Get the current user from Firebase Auth
         const user = auth.currentUser;
         if (user) {
-          // Retrieve the name stored during sign-up or fallback to "Anonymous"
           const name =
             window.localStorage.getItem("nameForSignIn") || "Anonymous";
 
-          // Write user data to Firestore 'users' collection
           await setDoc(doc(db, "users", user.uid), {
             name,
             email: user.email,
             createdAt: new Date().toISOString(),
           });
 
-          // Clean up name from localStorage
           window.localStorage.removeItem("nameForSignIn");
         }
 
@@ -59,7 +54,7 @@ function VerifyMagicLink() {
         navigate({
           to: "/",
           search: { page: 1, period: "day" },
-        }); // Redirect to home or another route
+        });
       } catch (err: any) {
         setError(err.message);
         toast.error(err.message);
@@ -83,7 +78,6 @@ function VerifyMagicLink() {
       await signInWithEmailLink(auth, manualEmail, window.location.href);
       window.localStorage.removeItem("emailForSignIn");
 
-      // Get the current user
       const user = auth.currentUser;
       if (user) {
         const name =
@@ -110,16 +104,51 @@ function VerifyMagicLink() {
     }
   };
 
+  // Animation variants for staggered entrance
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
   return (
-    <section className="w-full h-lvh flex items-center justify-center bg-black text-white">
-      <div className="bg-[#222222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6">Verifying Your Sign-In</h2>
+    <motion.section
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="w-full h-lvh flex items-center justify-center bg-black text-white">
+      <motion.div
+        variants={containerVariants}
+        className="bg-[#222222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-md">
+        <motion.h2 variants={itemVariants} className="text-2xl font-bold mb-6">
+          Verifying Your Sign-In
+        </motion.h2>
         {isLoading ? (
-          <div>Verifying your sign-in link...</div>
+          <motion.div variants={itemVariants}>
+            Verifying your sign-in link...
+          </motion.div>
         ) : error ? (
           <>
-            <div className="text-red-500 text-sm mb-4">{error}</div>
-            <div className="mb-4">
+            <motion.div
+              variants={itemVariants}
+              className="text-red-500 text-sm mb-4">
+              {error}
+            </motion.div>
+            <motion.div variants={itemVariants} className="mb-4">
               <label className="block text-sm mb-2" htmlFor="email">
                 Enter your email to continue
               </label>
@@ -131,18 +160,21 @@ function VerifyMagicLink() {
                 onChange={(e) => setManualEmail(e.target.value)}
                 className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
               />
-            </div>
-            <button
+            </motion.div>
+            <motion.button
+              variants={itemVariants}
               onClick={handleManualSignIn}
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg disabled:opacity-50">
               {isLoading ? "Verifying..." : "Verify Email"}
-            </button>
+            </motion.button>
           </>
         ) : (
-          <div>Sign-in successful! Redirecting...</div>
+          <motion.div variants={itemVariants}>
+            Sign-in successful! Redirecting...
+          </motion.div>
         )}
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }

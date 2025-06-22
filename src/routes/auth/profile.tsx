@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import Loading from "@/components/Loading";
 import MediaCard from "@/components/MediaCard";
 import EditProfileForm from "@/components/EditProfileForm";
@@ -100,23 +101,66 @@ function Profile() {
     return userData?.gender === "female" ? female : male;
   };
 
+  // Animation variants for staggered entrance
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: 20 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: "easeOut" },
+    },
+  };
+
   if (!user) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
-        <p className="text-white text-xl font-light">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full min-h-screen flex items-center justify-center bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
+        <motion.p
+          variants={itemVariants}
+          className="text-white text-xl font-light">
           Please log in to view your profile
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     );
   }
 
   if (error) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
-        <p className="text-red-400 text-xl font-light">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full min-h-screen flex items-center justify-center bg-[rgba(10,10,10,0.9)] backdrop-blur-sm">
+        <motion.p
+          variants={itemVariants}
+          className="text-red-400 text-xl font-light">
           Error loading bookmarks: {error?.message}
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     );
   }
 
@@ -124,81 +168,132 @@ function Profile() {
     <>
       <title>Trailer Base - Profile</title>
 
-      <div className="w-full min-h-screen flex flex-col gap-6 py-4 px-6 mx-auto max-w-6xl  text-gray-200">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full min-h-screen flex flex-col gap-6 py-4 px-6 mx-auto max-w-6xl text-gray-200">
+        <motion.h1
+          variants={itemVariants}
+          className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
           Profile
-        </h1>
+        </motion.h1>
 
-        <section className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <aside className="flex items-center gap-6 flex-col md:flex-row">
-            <img
+        <motion.section
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.2 }}
+          className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <motion.aside
+            variants={itemVariants}
+            className="flex items-center gap-6 flex-col md:flex-row">
+            <motion.img
+              variants={itemVariants}
               src={getFallbackImage()}
               alt="Profile"
               className="w-32 h-32 rounded-full object-cover border-2 border-[rgba(255,255,255,0.2)] shadow-lg"
             />
-            <h3 className="text-md sm:text-lg font-light text-white">
+            <motion.h3
+              variants={itemVariants}
+              className="text-md sm:text-lg font-light text-white">
               {user?.displayName ||
                 userData?.username ||
                 "Anonymous, please set a username!"}
-            </h3>
-          </aside>
-          <button
-            onClick={() => setModalOpen(true)}
-            className="bg-[#333]/50 backdrop-blur-md text-white font-semibold text-sm px-5 py-3 rounded-full hover:scale-105 transition-all shadow-md">
-            Edit Profile
-          </button>
-        </section>
-        <div className="border-t border-white/10"></div>
+            </motion.h3>
+          </motion.aside>
+          <motion.div variants={itemVariants} className="flex gap-4">
+            <motion.button
+              variants={itemVariants}
+              onClick={() => setModalOpen(true)}
+              className="bg-[#333]/50 backdrop-blur-md text-white font-semibold text-sm px-5 py-3 rounded-full hover:scale-105 transition-all shadow-md">
+              Edit Profile
+            </motion.button>
+            <motion.button
+              variants={itemVariants}
+              onClick={() => {
+                window.location.href = "/auth/";
+              }}
+              className="bg-red-600 text-white font-semibold text-sm px-5 py-3 rounded-full hover:scale-105 transition-all shadow-md">
+              Sign Out
+            </motion.button>
+          </motion.div>
+        </motion.section>
+        <motion.div
+          variants={itemVariants}
+          className="border-t border-white/10"></motion.div>
 
-        <section className="mt-6">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white">
+        <motion.section
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.2 }}
+          className="mt-6">
+          <motion.div
+            variants={containerVariants}
+            className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+            <motion.h2
+              variants={itemVariants}
+              className="text-2xl sm:text-3xl font-bold text-white">
               Your Bookmarks
-            </h2>
-            <div className="flex gap-2">
+            </motion.h2>
+            <motion.div variants={containerVariants} className="flex gap-2">
               {["all", "movie", "tv"].map((type) => (
-                <button
+                <motion.button
                   key={type}
+                  variants={itemVariants}
                   onClick={() => setFilter(type as "all" | "movie" | "tv")}
-                  className={`flex items-center gap-2 px-6 py-2 text-sm font-medium rounded-lg bg-[#333]/50 backdrop-blur-md  transition-colors duration-200 ease-in-out hover:scale-105 ${
+                  className={`flex items-center gap-2 px-6 py-2 text-sm font-medium rounded-lg bg-[#333]/50 backdrop-blur-md transition-colors duration-200 ease-in-out hover:scale-105 ${
                     filter === type ? "bg-white text-black" : "text-gray-100"
                   }`}
                   aria-pressed={filter === type}
-                  aria-label={`Show ${type === "all" ? "All" : type === "movie" ? "Movies" : "TV"} bookmarks`}
+                  aria-label={`Show ${
+                    type === "all" ? "All" : type === "movie" ? "Movies" : "TV"
+                  } bookmarks`}
                   role="button">
                   {type === "all" ? "All" : type === "movie" ? "Movies" : "TV"}
-                </button>
+                </motion.button>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           {isLoading ? (
-            <Loading />
+            <motion.div variants={itemVariants}>
+              <Loading />
+            </motion.div>
           ) : filteredBookmarks?.length === 0 ? (
-            <p className="text-gray-300 text-lg font-light p-4">
+            <motion.p
+              variants={itemVariants}
+              className="text-gray-300 text-lg font-light p-4">
               No bookmarks yet. Add some movies or TV shows to your bookmarks!
-            </p>
+            </motion.p>
           ) : (
-            
             <div className="w-full absolute left-0 flex flex-wrap gap-2 md:gap-6 justify-center mt-10">
               {filteredBookmarks
-                 ?.filter(
+                ?.filter(
                   (bookmark) => bookmark && bookmark.id && bookmark.title
                 )
-                .map((bookmark) => (
-                  <MediaCard
+                .map((bookmark, index) => (
+                  <motion.div
                     key={`${bookmark.category}-${bookmark.id}`}
-                    id={bookmark.id}
-                    title={bookmark.title}
-                    release_date={bookmark.release_date}
-                    poster_path={bookmark.poster_path}
-                    vote_average={bookmark.vote_average}
-                    type={bookmark.category}
-                  />
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.9 }}
+                    transition={{ delay: index * 0.05 }}>
+                    <MediaCard
+                      id={bookmark.id}
+                      title={bookmark.title}
+                      release_date={bookmark.release_date}
+                      poster_path={bookmark.poster_path}
+                      vote_average={bookmark.vote_average}
+                      type={bookmark.category}
+                    />
+                  </motion.div>
                 ))}
             </div>
           )}
-        </section>
-      </div>
+        </motion.section>
+      </motion.div>
 
       <EditProfileForm
         isShowing={modalOpen}

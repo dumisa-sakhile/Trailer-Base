@@ -5,8 +5,8 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { db } from "@/config/firebase";
+import { motion } from "framer-motion";
 
-// Interface for user data in Firestore
 interface UserData {
   username?: string;
   gender?: string;
@@ -94,13 +94,43 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
     profileMutation.mutate({ username: newUsername, gender });
   };
 
+  // Animation variants for staggered entrance
+  const containerVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.2,
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: "easeOut" },
+    },
+  };
+
   if (!isShowing) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div className="relative w-full max-w-md bg-[#1C1C1E] text-white rounded-2xl shadow-xl p-6 md:p-8 animate-slide-up">
-        {/* Close Button */}
-        <button
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+      <motion.div
+        variants={containerVariants}
+        className="relative w-full max-w-md bg-[#1C1C1E] text-white rounded-2xl shadow-xl p-6 md:p-8">
+        <motion.button
+          variants={itemVariants}
           onClick={hide}
           className="absolute top-4 right-4 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 rounded-full"
           aria-label="Close">
@@ -116,32 +146,39 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-        </button>
+        </motion.button>
 
-        {/* Heading */}
-        <div className="text-center">
-          <h2 className="text-2xl max-sm:text-xl font-semibold mb-2">
+        <motion.div variants={containerVariants} className="text-center">
+          <motion.h2
+            variants={itemVariants}
+            className="text-2xl max-sm:text-xl font-semibold mb-2">
             Enter your
             <br />
             profile details
-          </h2>
-          <p className="text-sm text-gray-400 mb-6">
+          </motion.h2>
+          <motion.p
+            variants={itemVariants}
+            className="text-sm text-gray-400 mb-6">
             Please fill in your username and gender to complete your profile.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
-        {/* Error */}
         {error && (
-          <div className="text-red-300 text-sm font-medium mb-5 p-3 rounded-md bg-[rgba(255,75,75,0.15)] backdrop-blur-sm border border-[rgba(255,75,75,0.25)] text-center">
+          <motion.div
+            variants={itemVariants}
+            className="text-red-300 text-sm font-medium mb-5 p-3 rounded-md bg-[rgba(255,75,75,0.15)] backdrop-blur-sm border border-[rgba(255,75,75,0.25)] text-center">
             {error}
-          </div>
+          </motion.div>
         )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Username */}
-            <div>
+        <motion.form
+          variants={containerVariants}
+          onSubmit={handleSubmit}
+          className="space-y-5">
+          <motion.div
+            variants={containerVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <motion.div variants={itemVariants}>
               <label
                 htmlFor="username"
                 className="text-sm text-gray-300 block mb-1">
@@ -156,10 +193,9 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 className="w-full rounded-lg bg-[#2A2A2D] text-white px-4 py-3 placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
                 required
               />
-            </div>
+            </motion.div>
 
-            {/* Gender */}
-            <div>
+            <motion.div variants={itemVariants}>
               <label
                 htmlFor="gender"
                 className="text-sm text-gray-300 block mb-1">
@@ -176,27 +212,30 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-4">
-            <button
+          <motion.div
+            variants={containerVariants}
+            className="flex justify-end gap-3 pt-4">
+            <motion.button
+              variants={itemVariants}
               type="submit"
               disabled={profileMutation.isPending}
               className="bg-white text-black font-semibold px-5 py-2 rounded-full hover:opacity-90 transition-all">
               {profileMutation.isPending ? "Updating..." : "Done"}
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              variants={itemVariants}
               type="button"
               onClick={hide}
               className="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-full transition">
               Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            </motion.button>
+          </motion.div>
+        </motion.form>
+      </motion.div>
+    </motion.div>
   );
 };
 

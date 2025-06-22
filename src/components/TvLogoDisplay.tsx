@@ -25,7 +25,7 @@ const TvLogoDisplay: React.FC<TvLogoDisplayProps> = ({
         <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  animate-pulse rounded"></div>
       ) : logosError ? (
         <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  rounded flex items-center justify-center">
-          <p className="text-white text-lg  font-bold text-center px-2">
+          <p className="text-white text-2xl  md:text-base font-bold text-center px-2">
             {title}
           </p>
         </div>

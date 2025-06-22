@@ -1,12 +1,14 @@
 import React, { useRef } from "react";
 import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import MediaCard from "./MediaCard"; // Adjust import path as needed
 import Loading from "@/components/Loading"; // Adjust import path as needed
 import { LeftIcon, RightIcon } from "./icons/Icons";
 
 interface MediaProps {
   id: number;
-  title: string;
+  title?: string; // Optional for TV
+  name?: string; // Optional for TV
   release_date?: string; // Optional for movies, first_air_date for TV
   first_air_date?: string; // Optional for TV
   poster_path: string;
@@ -46,6 +48,11 @@ const MediaList: React.FC<MediaListProps> = ({
     }
   };
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <section className="w-full flex flex-col items-start justify-center gap-4 ">
       <div className="w-full flex items-center justify-between px-4">
@@ -61,7 +68,7 @@ const MediaList: React.FC<MediaListProps> = ({
           </button>
         </Link>
       </div>
-      <div className="h-4" /> 
+      <div className="h-4" />
       {isLoading && (
         <div className="w-full text-center">
           <Loading />
@@ -77,29 +84,38 @@ const MediaList: React.FC<MediaListProps> = ({
           onClick={scrollLeft}
           aria-label="Scroll Left"
           className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 z-10">
-          <LeftIcon/>
+          <LeftIcon />
         </button>
-        <div
+        <motion.div
           ref={scrollRef}
-          className="w-full flex overflow-x-scroll scrollbar-hide items-start gap-2 lg:gap-8 lg:px-10">
+          className="w-full flex overflow-x-scroll scrollbar-hide items-start gap-2 lg:gap-8 lg:px-10"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+          }}>
           {data?.results?.map((item: MediaProps) => (
-            <div key={item.id}>
+            <motion.div
+              key={item.id}
+              variants={cardVariants}
+              className="cursor-pointer">
               <MediaCard
                 id={item.id}
-                title={item.title}
+                title={item.title || item.name || "Untitled"} // Use name for TV
                 release_date={item.release_date || item.first_air_date || ""}
                 poster_path={item.poster_path}
                 vote_average={item.vote_average}
                 type={mediaType}
               />
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
         <button
           onClick={scrollRight}
           aria-label="Scroll Right"
           className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 z-10">
-           <RightIcon/>
+          <RightIcon />
         </button>
       </div>
     </section>
