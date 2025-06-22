@@ -30,6 +30,7 @@
 
 ## Prerequisites
 - Node.js (v16+)
+- React 19
 - TMDB API key
 - Firebase project with Authentication and Firestore
 - Modern web browser
@@ -106,8 +107,6 @@ Trailer-Base/
 
 Ensure TypeScript/React best practices, Tailwind consistency, and no hardcoded keys.
 
-## License
-MIT License. See [LICENSE](LICENSE).
 
 ## Contact
 - GitHub: [dumisa-sakhile](https://github.com/dumisa-sakhile)
