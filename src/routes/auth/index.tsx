@@ -11,7 +11,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/auth/")({
@@ -37,7 +37,6 @@ function Auth() {
           to: "/",
           search: { page: 1, period: "day" },
         });
-        toast.info("You are already signed in!");
       }
     });
     return () => unsubscribe();

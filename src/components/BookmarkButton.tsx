@@ -2,7 +2,7 @@
 import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 import { BookmarkIcon } from '@/components/icons/Icons';
 import { db } from '@/config/firebase';
 

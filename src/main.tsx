@@ -10,7 +10,7 @@ import { SearchProvider } from './context/searchContext.tsx';
 import EscKeyHandler from './components/EscKeyHandler.tsx';
 import NotFound from './components/NotFound.tsx';
 import Loading from './components/Loading.tsx';
-import { Toaster } from 'sonner';
+import { Toaster } from 'react-hot-toast';
 import { injectSpeedInsights } from "@vercel/speed-insights";
 import { inject } from "@vercel/analytics";
 
@@ -57,7 +57,7 @@ if (rootElement && !rootElement.innerHTML) {
         <SearchProvider>
           <EscKeyHandler />
           <RouterProvider router={router} />
-          <Toaster/>
+          <Toaster position='bottom-right'/>
         </SearchProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

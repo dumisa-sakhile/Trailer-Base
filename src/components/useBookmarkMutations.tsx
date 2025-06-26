@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, auth } from "@/config/firebase";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 export interface Bookmark {
   id: number;

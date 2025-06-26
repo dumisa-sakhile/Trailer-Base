@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { auth, db } from "../../config/firebase";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/auth/verify")({

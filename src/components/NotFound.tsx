@@ -1,6 +1,11 @@
+import toast from "react-hot-toast";
 import LinkTo from "./LinkTo";
 
 const NotFound = () => {
+  toast.error("Page not found", {
+    duration: 3000,
+    position: "bottom-right",
+  });
   return (
     <>
       <title>Trailer Base - 404</title>

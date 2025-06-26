@@ -6,8 +6,6 @@ import MediaList from "@/components/MediaList";
 import Display from "@/components/Display";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
-import InfoSection from "@/components/InfoSection";
-import movieGenres from "@/data/movieGenres";
 
 interface pageProps {
   page: number;
@@ -130,20 +128,15 @@ function App() {
         <motion.h1
           variants={itemVariants}
           className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
-          Explore Movies by Genre
+        Discover Movies
         </motion.h1>
         <motion.p
           variants={itemVariants}
           className="text-gray-300 font-medium text-center max-w-md">
-          Select a genre to explore movies in that genre
-        </motion.p>
-        <InfoSection
-                    title="Genre"
-                    items={movieGenres().map(({ name, id }) => ({ name, id }))}
-                    typeKey="with_genres"
-                  />
+        Find the latest and most popular movies on Trailer Base. </motion.p>
+        
       </motion.section>
-<br /><br />
+<br />
       <motion.div
         variants={containerVariants}
         initial="hidden"

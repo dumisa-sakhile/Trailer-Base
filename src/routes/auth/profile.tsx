@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -211,8 +211,9 @@ function Profile() {
             </motion.button>
             <motion.button
               variants={itemVariants}
-              onClick={() => {
-                window.location.href = "/auth/";
+              onClick={async () => {
+                await auth.signOut();
+                Navigate({ to: "/auth" });
               }}
               className="bg-red-600 text-white font-semibold text-sm px-5 py-3 rounded-full hover:scale-105 transition-all shadow-md">
               Sign Out

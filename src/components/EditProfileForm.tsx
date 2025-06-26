@@ -3,7 +3,7 @@ import { updateProfile } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { db } from "@/config/firebase";
 import { motion } from "framer-motion";
 

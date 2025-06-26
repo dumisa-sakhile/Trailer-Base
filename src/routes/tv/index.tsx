@@ -6,8 +6,6 @@ import TvDisplay from "@/components/TvDisplay";
 import MediaList from "@/components/MediaList";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
-import tvGenres from "@/data/tvGenres";
-import InfoSection from "@/components/InfoSection";
 
 interface PageProps {
   page: number;
@@ -147,21 +145,17 @@ function App() {
         <motion.h1
           variants={itemVariants}
           className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
-          Explore TV Shows by Genre
+          Explore TV Shows
         </motion.h1>
         <motion.p
           variants={itemVariants}
           className="text-gray-300 font-medium text-center max-w-md">
-          Select a genre to explore TV shows in that genre
+          Discover a wide range of TV shows, from popular series to critically acclaimed dramas.
         </motion.p>
-        <InfoSection
-          title="Genre"
-          items={tvGenres().map(({ name, id }) => ({ name, id }))}
-          typeKey="with_genres"
-        />
+        
       </motion.section>
       <br />
-      <br />
+      
 
       <motion.div
         variants={containerVariants}
