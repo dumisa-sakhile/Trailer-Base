@@ -101,7 +101,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 z-[9999] w-full backdrop-blur bg-black border-b border-white/10">
+    <header className="fixed top-0 z-[9999] w-full backdrop-blur bg-black md:border-b md:border-white/10">
       {/* Mobile Nav */}
       <div className="sm:hidden flex flex-col w-full px-4 py-2">
         <div className="flex items-center justify-between mb-2">
