@@ -73,7 +73,7 @@ const Search = () => {
           item?.release_date ?? item?.first_air_date ?? "Unknown Date",
         vote_average: item?.vote_average ?? 0,
         type: pageType,
-        url: `/${pageType}/${item?.id ?? "#"}`,
+        url: `/${pageType === "movies" ? "movie" : pageType}/${item?.id ?? "#"}`, // Fix URL construction
       }));
   })();
 
