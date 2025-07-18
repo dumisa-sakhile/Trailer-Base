@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Header from "@/components/Header";
 import { getTrendingMovies, getList } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import MediaList from "@/components/MediaList";
@@ -103,7 +102,6 @@ function App() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}>
-        <Header />
       </motion.div>
       <motion.div
         variants={itemVariants}

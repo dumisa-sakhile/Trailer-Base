@@ -13,6 +13,13 @@ tmdbApi.interceptors.request.use((config) => {
   return config;
 });
 
+export const discoverMovies = async () => {
+  const response = await tmdbApi.get(
+    `discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`
+  );
+  return response.data;
+};
+
 export const getTrendingMovies = async (period: string, page: number) => {
   const response = await tmdbApi.get(`/trending/movie/${period}`, {
     params: {

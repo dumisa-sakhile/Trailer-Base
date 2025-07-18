@@ -61,7 +61,7 @@
    ```bash
    npm run dev
    ```
-   Open `http://localhost:5173`.
+   Open `http://localhost:3000`.
 
 ## Usage
 - **Home**: View featured content and trailers.

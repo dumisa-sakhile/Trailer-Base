@@ -1,4 +1,4 @@
-@import "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap";
+@import "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap";
 
 @import "tailwindcss";
 
@@ -27,56 +27,65 @@
     font-variation-settings: "width" 100;
   }
 
-  .poppins-thin {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-thin {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 100;
     font-style: normal;
   }
 
-  .poppins-extralight {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-extralight {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 200;
     font-style: normal;
   }
 
-  .poppins-light {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-light {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 300;
     font-style: normal;
   }
 
-  .poppins-regular {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-regular {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
   }
 
-  .poppins-medium {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-medium {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
   }
 
-  .poppins-semibold {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-semibold {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
   }
 
-  .poppins-bold {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-bold {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 700;
     font-style: normal;
   }
 
-  .poppins-extrabold {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-extrabold {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 800;
     font-style: normal;
   }
 
-  .poppins-black {
-    font-family: "Poppins", sans-serif;
+  .roboto-condensed-black {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 900;
     font-style: normal;
   }
@@ -181,4 +190,3 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 .stack:nth-child(odd) {
   transform: rotate(-3deg);
 }
-

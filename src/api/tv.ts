@@ -13,6 +13,13 @@ tmdbApi.interceptors.request.use((config) => {
   return config;
 });
 
+export const discoverTV = async () => {
+  const response = await tmdbApi.get(
+    `discover/tv?include_adult=false&include_null_first_air_dates=false&language=en-US&page=1&sort_by=popularity.desc`
+  );
+  return response.data;
+};
+
 export const getTrendingTV = async (period: string, page: number) => {
   const response = await tmdbApi.get(`/trending/tv/${period}`, {
     params: {

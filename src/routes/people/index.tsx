@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getTrendingPeople, getPopularPeople } from "@/api/people";
-import Header from "@/components/Header";
 import { useSearchContext } from "@/context/searchContext";
 import { useEffect, useRef, useState } from "react";
 import CastCard from "@/components/PeopleCastCard";
@@ -144,12 +143,11 @@ function People() {
   };
 
   return (
-    <div className="w-full pt-24 md:pt-16 flex flex-col gap-4 bg-black text-white">
+    <div className="w-full pt-24 md:pt-16 flex flex-col gap-4 bg-gradient-to-br from-gray-950 to-black text-white">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}>
-        <Header />
       </motion.div>
       <title>Trailer Base - People</title>
 
