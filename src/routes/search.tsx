@@ -1,4 +1,3 @@
-// src/routes/search.tsx
 import {
   createFileRoute,
   Link,
@@ -29,8 +28,6 @@ export const Route = createFileRoute("/search")({
     query: search.query || "",
     type: search.type || "movies",
     page: search.page ? parseInt(search.page) : 1,
-    // REMOVED: genreId is not a search parameter for /search route
-    // genreId: search.genreId ? parseInt(search.genreId) : undefined,
   }),
   component: Search,
 });
@@ -59,7 +56,6 @@ interface Genre {
 }
 
 function Search() {
-  // REMOVED genreId from useSearch destructuring as it's not expected for /search route
   const navigate = useNavigate();
   const { query, page, type } = useSearch({ from: "/search" });
 
@@ -97,7 +93,6 @@ function Search() {
     };
   }, [isSearchTypeDropdownOpen]);
 
-  // REMOVED genreId from queryKey as it's not relevant for /search route's state
   const queryOptions = {
     queryKey: ["search", query, page, type],
     enabled: !!query,
@@ -124,7 +119,6 @@ function Search() {
   const discoverMoviesQuery = useQuery({
     queryKey: ["discoverMovies"],
     queryFn: () => discoverMovies(),
-    // MODIFIED enabled condition: !genreId removed
     enabled: !query && type === "movies",
     staleTime: 1000 * 60 * 60,
   });
@@ -132,7 +126,6 @@ function Search() {
   const discoverTvQuery = useQuery({
     queryKey: ["discoverTv"],
     queryFn: () => discoverTV(),
-    // MODIFIED enabled condition: !genreId removed
     enabled: !query && type === "tv",
     staleTime: 1000 * 60 * 60,
   });
@@ -140,7 +133,6 @@ function Search() {
   const trendingPeopleQuery = useQuery({
     queryKey: ["trendingPeople"],
     queryFn: () => getTrendingPeople("day", 1),
-    // MODIFIED enabled condition: !genreId removed
     enabled: !query && type === "people",
     staleTime: 1000 * 60 * 60,
   });
@@ -194,7 +186,6 @@ function Search() {
   })();
 
   const discoverData: SearchCardUnifiedProps[] = (() => {
-    // MODIFIED: !genreId check removed from here, as it's not a param for /search route
     if (!query) {
       let rawData: any[] | undefined;
       let itemType: "movie" | "tv" | "person";
@@ -292,7 +283,6 @@ function Search() {
       if (inputValue !== query) {
         navigate({
           to: "/search",
-          // MODIFIED search params: genreId is no longer passed as it's not a /search param
           search: { query: inputValue, type, page: 1 },
         });
       }
@@ -310,7 +300,6 @@ function Search() {
   const handleCategoryChange = (newType: "movies" | "tv" | "people") => {
     navigate({
       to: "/search",
-      // MODIFIED search params: genreId is no longer passed as it's not a /search param
       search: { query: "", type: newType, page: 1 },
     });
     setIsSearchTypeDropdownOpen(false);
@@ -378,7 +367,7 @@ function Search() {
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-gray-950 to-black text-white flex flex-col">
-      <header className="p-4 sm:p-8 flex flex-col gap-4 sm:gap-8 z-10 shadow-lg">
+      <header className="py-4 md:p-8 flex flex-col gap-4 sm:gap-8 z-10 shadow-lg">
         <h2 className="text-3xl text-white text-center font-bold">
           Discover Your Next Favorite
         </h2>
@@ -444,49 +433,44 @@ function Search() {
                                  rounded-2xl
                                  border border-gray-700/50
                                  shadow-2xl
-                                 z-30 flex flex-col overflow-hidden
-                                 "
+                                 z-30 flex flex-col overflow-hidden"
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}>
-                    <div className="px-4 pt-3 pb-2 border-b border-gray-700/50">
-                      <h5 className="text-gray-400 text-xs font-semibold">
-                        Content Type
-                      </h5>
-                    </div>
+                    
                     <div className="p-2 flex-grow">
                       <button
                         onClick={() => handleCategoryChange("movies")}
                         className={`w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-gray-300
-                                         hover:bg-blue-900/20 hover:text-blue-300
-                                         rounded-md transition-colors text-sm sm:text-base ${
-                                           type === "movies"
-                                             ? "bg-blue-800/30 text-blue-300 font-medium"
-                                             : ""
-                                         }`}>
+                                     hover:bg-blue-900/20 hover:text-blue-300
+                                     rounded-md transition-colors text-sm sm:text-base ${
+                                       type === "movies"
+                                         ? "bg-blue-800/30 text-blue-300 font-medium"
+                                         : ""
+                                     }`}>
                         Movies
                       </button>
                       <button
                         onClick={() => handleCategoryChange("tv")}
                         className={`w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-gray-300
-                                         hover:bg-blue-900/20 hover:text-blue-300
-                                         rounded-md transition-colors text-sm sm:text-base ${
-                                           type === "tv"
-                                             ? "bg-blue-800/30 text-blue-300 font-medium"
-                                             : ""
-                                         }`}>
+                                     hover:bg-blue-900/20 hover:text-blue-300
+                                     rounded-md transition-colors text-sm sm:text-base ${
+                                       type === "tv"
+                                         ? "bg-blue-800/30 text-blue-300 font-medium"
+                                         : ""
+                                     }`}>
                         TV Shows
                       </button>
                       <button
                         onClick={() => handleCategoryChange("people")}
                         className={`w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-gray-300
-                                         hover:bg-blue-900/20 hover:text-blue-300
-                                         rounded-md transition-colors text-sm ${
-                                           type === "people"
-                                             ? "bg-blue-800/30 text-blue-300 font-medium"
-                                             : ""
-                                         }`}>
+                                     hover:bg-blue-900/20 hover:text-blue-300
+                                     rounded-md transition-colors text-sm ${
+                                       type === "people"
+                                         ? "bg-blue-800/30 text-blue-300 font-medium"
+                                         : ""
+                                     }`}>
                         People
                       </button>
                     </div>
@@ -504,7 +488,6 @@ function Search() {
             }}
             className="hidden sm:flex items-center justify-between gap-1 sm:gap-2 px-4 sm:px-5 py-2 sm:py-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-sm sm:text-base text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
             aria-label="Open genre selection modal">
-            {/* MODIFIED: Label will no longer try to show active genre from /search route's params */}
             <span>Browse Genres</span>
             <ChevronDown size={16} />
           </button>
@@ -517,11 +500,9 @@ function Search() {
             {query
               ? `Results for "${query}" in ${label}`
               : `Browse Popular ${label}`}
-            {/* REMOVED: Genre display here as genreId is not a param for /search route */}
-            {/* {genreId && ` (Genre: ${ (type === "movies" ? movieGenresList : tvGenresList).find( (g) => g.id === genreId )?.name })`} */}
           </h3>
 
-          <section className="flex flex-wrap justify-start gap-4 sm:gap-6">
+          <section className="flex flex-wrap items-center justify-center gap-3 md:gap-6 lg:gap-8">
             {isLoading && <LoadingAnimation />}
 
             {isError && (
@@ -563,7 +544,6 @@ function Search() {
               </motion.div>
             )}
 
-            {/* MODIFIED: !genreId check removed from here, as it's not a param for /search route */}
             {!query && (
               <motion.div
                 className="w-full text-center py-6 px-4 max-w-full mx-auto"
@@ -582,9 +562,7 @@ function Search() {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className="text-lg sm:text-xl font-medium
-                               text-white
-                               mb-6 tracking-tight">
+                  className="text-lg sm:text-xl font-medium text-white mb-6 tracking-tight">
                   {getHeadingText()}
                 </motion.h4>
 
@@ -601,14 +579,13 @@ function Search() {
                     </p>
                   </motion.div>
                 ) : discoverData.length > 0 ? (
-                  <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+                  <div className="flex flex-wrap items-start justify-center gap-3 md:gap-6 lg:gap-8">
                     {discoverData.map((item, index: number) => (
                       <motion.div
                         key={`${item.type}-discover-${item.id}-${index}`}
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: 0.05 * index }}
-                        className="flex-shrink-0">
+                        transition={{ duration: 0.3, delay: 0.05 * index }}>
                         {item.type === "person" ? (
                           <PersonSearchCard
                             id={item.id}
@@ -630,7 +607,7 @@ function Search() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-gray-500 text-sm mt-4">
+                  <div className="w-full text-gray-500 text-sm mt-4 text-center">
                     No popular content available for this category.
                   </div>
                 )}
@@ -643,7 +620,6 @@ function Search() {
               results.map((item, index: number) => (
                 <motion.div
                   key={`${item.type}-${item.id}-${index}`}
-                  className="flex-shrink-0"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
@@ -681,7 +657,7 @@ function Search() {
             transition={{ duration: 0.2 }}
             onClick={() => setIsGenreModalOpen(false)}>
             <motion.div
-              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-700/50 shadow-2xl max-w-[384px]  max-h-[80vh] flex flex-col"
+              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-700/50 shadow-2xl max-w-[384px] max-h-[80vh] flex flex-col"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
@@ -735,13 +711,7 @@ function Search() {
                           typeId: String(genre.id),
                         }}
                         search={{ page: 1 }}
-                        className={`block py-2 px-2 rounded-md text-sm text-center transition-colors ${
-                          // MODIFIED: No longer checking genreId here as it's not part of /search route's params
-                          // genreId === genre.id
-                          //   ? "bg-blue-600 text-white font-medium"
-                          //   : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                          "text-gray-300 hover:bg-gray-700 hover:text-white" // Default style
-                        }`}
+                        className={`block py-2 px-2 rounded-md text-sm text-center transition-colors text-gray-300 hover:bg-gray-700 hover:text-white`}
                         onClick={() => setIsGenreModalOpen(false)}>
                         {genre.name}
                       </Link>

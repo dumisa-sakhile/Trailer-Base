@@ -97,7 +97,7 @@ function App() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen pt-30 md:pt-0">
+    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen ">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -105,7 +105,7 @@ function App() {
       </motion.div>
       <motion.div
         variants={itemVariants}
-        className="hidden md:block"
+        className="relative hidden md:block"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: false, amount: 0.2 }}>

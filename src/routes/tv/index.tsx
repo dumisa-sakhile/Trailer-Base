@@ -114,7 +114,7 @@ function App() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen pt-30 md:pt-0">
+    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen ">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

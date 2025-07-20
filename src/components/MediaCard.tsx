@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useBookmarkMutations } from "./useBookmarkMutations";
 import { AddIcon, DeleteIcon, StarIcon } from "./icons/Icons";
 
-
 interface MediaCardProps {
   id?: number;
   title?: string;
@@ -46,7 +45,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
   });
 
   return (
-    <div className="relative group w-[260px] h-[390px] max-sm:w-[150px] max-sm:h-[240px]">
+    <div className="relative group w-[260px] h-[390px] max-sm:w-[120px] max-sm:h-[180px]">
       <Link
         to={type === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
         params={
@@ -74,15 +73,15 @@ const MediaCard: React.FC<MediaCardProps> = ({
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 max-sm:p-2">
           <div className="flex items-center gap-2">
-<StarIcon/>
-            <span className="text-xs font-semibold text-[#FACC15]">
+            <StarIcon />
+            <span className="text-xs font-semibold text-[#FACC15] max-sm:text-[9px]">
               {vote_average?.toFixed(1) ?? "N/A"}/10
             </span>
           </div>
-          <p className="text-xs text-gray-400 max-sm:text-[10px]">
+          <p className="text-xs text-gray-400 max-sm:text-[9px]">
             {release_date ?? "N/A"}
           </p>
-          <h3 className="text-base font-bold text-white line-clamp-2 max-sm:text-sm roboto-condensed-bold">
+          <h3 className="text-base font-bold text-white line-clamp-2 max-sm:text-[11px] roboto-condensed-bold">
             {title ?? "Untitled"}
           </h3>
         </div>
@@ -91,17 +90,17 @@ const MediaCard: React.FC<MediaCardProps> = ({
         <>
           {isBookmarked ? (
             <button
-              className="absolute top-3 left-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              className="absolute top-3 left-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md max-sm:p-1.5 max-sm:top-2 max-sm:left-2"
               onClick={() =>
                 removeBookmarkMutation?.mutate(id?.toString() ?? "")
               }
               disabled={removeBookmarkMutation?.isPending}
               aria-label={`Remove ${title ?? "media item"} from bookmarks`}>
-              <DeleteIcon/>
+              <DeleteIcon />
             </button>
           ) : (
             <button
-              className="absolute top-3 left-3 p-2 bg-black rounded-full text-white hover:bg-white hover:text-black focus:ring-2 focus:ring-[#FACC15]/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              className="absolute top-3 left-3 p-2 bg-black rounded-full text-white hover:bg-white hover:text-black focus:ring-2 focus:ring-[#FACC15]/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md max-sm:p-1.5 max-sm:top-2 max-sm:left-2"
               onClick={() =>
                 addBookmarkMutation?.mutate({
                   id: id ?? 0,
@@ -114,7 +113,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               }
               disabled={addBookmarkMutation?.isPending}
               aria-label={`Add ${title ?? "media item"} to bookmarks`}>
-              <AddIcon/>
+              <AddIcon />
             </button>
           )}
         </>

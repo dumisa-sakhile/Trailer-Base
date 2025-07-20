@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { auth, db } from "../config/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth"; // signOut is still needed for the handleLogout function, though not used directly in the UI here.
 import type { User as FirebaseUser } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import { Home, Tv, Users, Search, LogIn, LogOut } from "lucide-react";
+import { Popcorn, Tv, AtSign, Search, LogIn } from "lucide-react"; // LogOut icon removed from import
 import logo from "../logo.svg?url";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
 
 interface NavItem {
-  icon: React.ComponentType<{ size: number }>;
+  icon: React.ComponentType<{ size: number; className?: string }>;
   path: string;
   label: string;
+  search?: Record<string, any>;
   action?: () => void;
 }
 
 const Header = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,9 +45,9 @@ const Header = () => {
 
   const getProfileImage = () => {
     if (user?.photoURL) return user.photoURL;
-    if (userData?.gender === "female") return female;
+    if ((userData as any)?.gender === "female") return female;
     return male;
-  };
+  }; // handleLogout function is still here, but no longer directly tied to a button in this component's UI.
 
   const handleLogout = async () => {
     try {
@@ -58,46 +58,40 @@ const Header = () => {
     }
   };
 
+  const getSearchForPath = (path: string) => {
+    switch (path) {
+      case "/":
+      case "/tv":
+        return { period: "day", page: 1 };
+      case "/people":
+        return { page: 1 };
+      case "/search":
+        return { query: "", type: "movies", page: 1 };
+      default:
+        return undefined;
+    }
+  };
+
   const navItems: NavItem[] = [
     {
-      icon: Home,
+      icon: Popcorn,
       path: "/",
-      label: "Home",
-      action: () =>
-        navigate({
-          to: "/",
-          search: { period: "day", page: 1 },
-        }),
+      label: "Movies",
     },
     {
       icon: Tv,
       path: "/tv",
       label: "TV Shows",
-      action: () =>
-        navigate({
-          to: "/tv",
-          search: { period: "day", page: 1 },
-        }),
     },
     {
-      icon: Users,
+      icon: AtSign,
       path: "/people",
       label: "People",
-      action: () =>
-        navigate({
-          to: "/people",
-          search: { page: 1 },
-        }),
     },
     {
       icon: Search,
       path: "/search",
       label: "Search",
-      action: () =>
-        navigate({
-          to: "/search",
-          search: { query: "", type: "movies", page: 1},
-        }),
     },
   ];
 
@@ -106,173 +100,159 @@ const Header = () => {
       ? location.pathname === path
       : location.pathname.startsWith(path);
 
+  const NavItemComponent: React.FC<{ item: NavItem; isMobile?: boolean }> = ({
+    item,
+    isMobile = false,
+  }) => {
+    const linkClasses = `relative flex items-center justify-center w-10 h-10 rounded-md transition-all duration-200 group ${
+      isActive(item.path)
+        ? "bg-white/15 text-white shadow-md"
+        : "text-gray-400 hover:bg-white/5 hover:text-white"
+    } ${isMobile ? "rounded-full !bg-transparent" : ""}`;
+
+    const mobileTextClasses = `text-[10px] mt-1 font-medium ${
+      isActive(item.path) ? "text-white" : "text-gray-400"
+    }`;
+
+    return (
+      <div
+        className={`group relative flex ${isMobile ? "flex-col items-center" : ""}`}>
+               {" "}
+        {item.action ? (
+          <button
+            onClick={item.action}
+            aria-label={item.label}
+            className={linkClasses}>
+                       {" "}
+            <item.icon
+              size={20}
+              className="transition-transform duration-150 group-hover:scale-105"
+            />
+                     {" "}
+          </button>
+        ) : (
+          <Link
+            to={item.path}
+            search={getSearchForPath(item.path)}
+            aria-label={item.label}
+            className={linkClasses}>
+                       {" "}
+            <item.icon
+              size={20}
+              className="transition-transform duration-150 group-hover:scale-105"
+            />
+                     {" "}
+          </Link>
+        )}
+               {" "}
+        {!isMobile && (
+          <span className="absolute left-full ml-3 px-2 py-1 rounded-md bg-gray-800 text-xs text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md">
+                        {item.label}         {" "}
+          </span>
+        )}
+               {" "}
+        {isMobile && <span className={mobileTextClasses}>{item.label}</span>}   
+         {" "}
+      </div>
+    );
+  };
+
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col h-screen w-16  backdrop-blur-lg border-r border-gray-900 fixed z-50">
-        <div className="flex flex-col items-center py-6 flex-grow">
-          {/* Logo */}
-          <Link to="/" search={{ period: "day", page: 1 }} className="mb-10">
-            <img src={logo} alt="Logo" className="w-8 h-8" />
-          </Link>
-          {/* Navigation */}
-          <nav className="flex flex-col items-center space-y-6 w-full px-2">
-            {navItems.map((item) => (
-              <div
-                key={item.path}
-                className="relative group w-full flex justify-center">
-                {item.action ? (
-                  <button
-                    onClick={item.action}
-                    aria-label={item.label}
-                    className={`p-2 rounded-lg transition-all ${
-                      isActive(item.path)
-                        ? "text-blue-400 bg-blue-900/20"
-                        : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                    tabIndex={0}>
-                    <item.icon size={20} />
-                  </button>
-                ) : (
-                  <Link
-                    to={item.path}
-                    search={
-                      item.path === "/"
-                        ? { period: "day", page: 1 }
-                        : item.path === "/tv"
-                          ? { period: "day", page: 1 }
-                          : item.path === "/people"
-                            ? { page: 1 }
-                            : undefined
-                    }
-                    aria-label={item.label}
-                    className={`p-2 rounded-lg transition-all ${
-                      isActive(item.path)
-                        ? "text-blue-400 bg-blue-900/20"
-                        : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                    tabIndex={0}>
-                    <item.icon size={20} />
-                  </Link>
-                )}
-                {/* Tooltip */}
-                <span className="absolute left-full ml-4 px-2 py-1 rounded-md bg-gray-800 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
-                  {item.label}
-                </span>
-              </div>
-            ))}
-          </nav>
-        </div>
-        {/* User Section (bottom) */}
-        <div className="p-4 border-t border-gray-800">
-          {!loading && user ? (
-            <div className="relative group flex flex-col items-center">
-              <Link
-                to="/auth/profile"
-                aria-label="Profile"
-                className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden">
-                <img
-                  src={getProfileImage()}
-                  alt="Profile"
-                  className="w-full h-full rounded-full object-cover"
-                />
-              </Link>
-              <span className="absolute left-full ml-4 px-2 py-1 rounded-md bg-gray-800 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
-                Profile
-              </span>
-              <button
-                onClick={handleLogout}
-                className="mt-2 w-8 h-8 rounded-full flex items-center justify-center bg-red-600 hover:bg-red-700 transition-colors"
-                aria-label="Logout">
-                <LogOut size={16} className="text-white" />
-              </button>
-            </div>
-          ) : (
-            <div className="relative group flex justify-center">
-              <Link
-                to="/auth"
-                aria-label="Login"
-                className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-300 hover:text-white transition-colors">
-                <LogIn size={16} />
-              </Link>
-              <span className="absolute left-full ml-4 px-2 py-1 rounded-md bg-gray-800 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
-                Login
-              </span>
-            </div>
-          )}
-        </div>
-      </aside>
-
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 min-w-[300px] max-w-[330px] bg-gray-900/80 backdrop-blur-lg border border-gray-800 z-50 rounded-md">
-        <div className="flex justify-around py-3">
+            {/* Desktop/Tablet Sidebar */}     {" "}
+      <aside className="hidden md:flex flex-col w-14 fixed z-50 left-0 top-0 h-full bg-gray-950 backdrop-blur-xl p-2 items-center shadow-lg justify-between py-6 border-r border-gray-800/50">
+               {" "}
+        <Link to="/" search={{ period: "day", page: 1 }} className="mb-4">
+                   {" "}
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-8 h-8 rounded-full shadow-md"
+          />
+                 {" "}
+        </Link>
+               {" "}
+        <nav className="flex flex-col items-center gap-4 my-auto">
+                   {" "}
           {navItems.map((item) => (
-            <div key={item.path} className="flex flex-col items-center">
-              {item.action ? (
-                <button
-                  onClick={item.action}
-                  aria-label={item.label}
-                  className={`p-2 rounded-lg ${
-                    isActive(item.path) ? "text-blue-400" : "text-gray-400"
-                  }`}>
-                  <item.icon size={20} />
-                </button>
-              ) : (
-                <Link
-                  to={item.path}
-                  search={
-                    item.path === "/"
-                      ? { period: "day", page: 1 }
-                      : item.path === "/tv"
-                        ? { period: "day", page: 1 }
-                        : item.path === "/people"
-                          ? { page: 1 }
-                          : undefined
-                  }
-                  aria-label={item.label}
-                  className={`p-2 rounded-lg ${
-                    isActive(item.path) ? "text-blue-400" : "text-gray-400"
-                  }`}>
-                  <item.icon size={20} />
-                </Link>
-              )}
-              <span className="text-xs mt-1">{item.label}</span>
-            </div>
+            <NavItemComponent key={item.path} item={item} />
           ))}
-          <div className="flex flex-col items-center">
+                 {" "}
+        </nav>
+               {" "}
+        <div className="flex flex-col items-center gap-4 pt-4 border-t border-gray-700/20 w-full">
+                   {" "}
+          {!loading && user ? (
+            // Only the profile link is shown when logged in
+            <Link
+              to="/auth/profile"
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-transparent transition-all duration-200 hover:border-white focus:outline-none focus:ring-2 focus:ring-white/50 shadow-md">
+                           {" "}
+              <img
+                src={getProfileImage()}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+                         {" "}
+            </Link>
+          ) : (
+            // Login button for logged out state
+            <Link
+              to="/auth"
+              aria-label="Login"
+              className="p-2 bg-blue-700/50 hover:bg-blue-600 rounded-full transition-all duration-200 text-white shadow-lg">
+                            <LogIn size={18} />           {" "}
+            </Link>
+          )}
+                 {" "}
+        </div>
+             {" "}
+      </aside>
+            {/* Mobile Navigation */}     {" "}
+      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-lg bg-black/60 backdrop-blur-2xl rounded-3xl z-50 px-4 py-3 shadow-2xl">
+               {" "}
+        <div className="flex justify-around items-center h-full">
+                   {" "}
+          {navItems.slice(0, 2).map((item) => (
+            <NavItemComponent key={item.path} item={item} isMobile={true} />
+          ))}
+                   {" "}
+          <div className="relative -mt-8 flex justify-center items-center">
+                       {" "}
             {!loading && user ? (
               <Link
                 to="/auth/profile"
-                aria-label="Profile"
-                className={`p-2 rounded-lg ${
+                className={`w-16 h-16 flex items-center justify-center rounded-full border-4 ${
                   location.pathname.startsWith("/auth/profile")
-                    ? "text-blue-400"
-                    : "text-gray-400"
-                }`}>
+                    ? "border-white"
+                    : "border-gray-700"
+                } overflow-hidden bg-gray-800 shadow-xl transition-all duration-200 hover:scale-105`}>
+                               {" "}
                 <img
                   src={getProfileImage()}
                   alt="Profile"
-                  className="w-7 h-7 rounded-full object-cover border-2 border-blue-400"
+                  className="w-full h-full object-cover"
                 />
+                             {" "}
               </Link>
             ) : (
               <Link
                 to="/auth"
-                aria-label="Login"
-                className={`p-2 rounded-lg ${
-                  location.pathname.startsWith("/auth")
-                    ? "text-blue-400"
-                    : "text-gray-400"
-                }`}>
-                <LogIn size={20} />
+                className="w-16 h-16 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-xl hover:scale-105">
+                                <LogIn size={28} />             {" "}
               </Link>
             )}
-            <span className="text-xs mt-1">
-              {!loading && user ? "Profile" : "Login"}
-            </span>
+                     {" "}
           </div>
+                   {" "}
+          {navItems.slice(2).map((item) => (
+            <NavItemComponent key={item.path} item={item} isMobile={true} />
+          ))}
+                 {" "}
         </div>
+             {" "}
       </nav>
+         {" "}
     </>
   );
 };

@@ -63,7 +63,7 @@ const MediaList: React.FC<MediaListProps> = ({
           to={`/${mediaType}/list/$list`}
           params={{ list: list }}
           search={{ page: 1 }}>
-          <button className="px-3 py-2 text-sm font-medium text-white bg-blue-700 backdrop-blur-md rounded-md hover:bg-blue-900/80 hover:text-white transition-all duration-300">
+          <button className="px-3 py-2 text-xs md:text-sm font-medium text-white bg-blue-700 backdrop-blur-md rounded-md hover:bg-blue-900/80 hover:text-white transition-all duration-300">
             View All {title}
           </button>
         </Link>

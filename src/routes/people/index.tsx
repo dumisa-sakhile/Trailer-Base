@@ -63,65 +63,41 @@ function People() {
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const updateScrollState = () => {
-    if (!carouselRef.current) {
-      return;
-    }
+    if (!carouselRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-    const epsilon = 1; // Small margin for floating-point precision
     setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft + clientWidth + epsilon < scrollWidth);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth);
   };
 
   useEffect(() => {
     const carousel = carouselRef.current;
-    if (carousel) {
-      // Initial state update
-      updateScrollState();
-      // Handle scroll events
-      const handleScroll = () => updateScrollState();
-      carousel.addEventListener("scroll", handleScroll);
-      // Handle window resize
-      window.addEventListener("resize", updateScrollState);
-      // Update state when trending data loads
-      if (!trendingLoading && trendingData) {
-        updateScrollState();
-      }
-      return () => {
-        carousel.removeEventListener("scroll", handleScroll);
-        window.removeEventListener("resize", updateScrollState);
-      };
-    }
-  }, [trendingLoading, trendingData]);
+    if (!carousel) return;
+
+    updateScrollState();
+    carousel.addEventListener("scroll", updateScrollState);
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      carousel.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [trendingData]);
 
   const scrollCarousel = (direction: "left" | "right") => {
-    if (!carouselRef.current) {
-      return;
-    }
-
-    const { scrollLeft, clientWidth, scrollWidth } = carouselRef.current;
-    // Fallback to clientWidth if card width isn't available
-    const cardWidth =
-      carouselRef.current.querySelector(".snap-start")?.clientWidth ||
-      clientWidth / 2;
-    const scrollAmount = cardWidth * 2; // Scroll by two cards
-
-    let newScroll: number;
-    if (direction === "right") {
-      newScroll = Math.min(
-        scrollLeft + scrollAmount,
-        scrollWidth - clientWidth
-      );
-    } else {
-      newScroll = Math.max(scrollLeft - scrollAmount, 0);
-    }
-
+    if (!carouselRef.current) return;
+    
+    const { scrollLeft, clientWidth } = carouselRef.current;
+    const scrollAmount = clientWidth * 0.8;
+    
     carouselRef.current.scrollTo({
-      left: newScroll,
-      behavior: "smooth",
+      left: direction === "right" 
+        ? scrollLeft + scrollAmount 
+        : scrollLeft - scrollAmount,
+      behavior: "smooth"
     });
   };
 
-  // Animation variants for staggered entrance
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -143,30 +119,21 @@ function People() {
   };
 
   return (
-    <div className="w-full pt-24 md:pt-16 flex flex-col gap-4 bg-gradient-to-br from-gray-950 to-black text-white">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}>
-      </motion.div>
+    <div className="w-full md:pt-16 flex flex-col bg-gradient-to-br from-gray-950 to-black text-white">
       <title>Trailer Base - People</title>
 
       <motion.section
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full flex flex-col items-center justify-center gap-4 py-4">
-        <motion.h1
-          variants={itemVariants}
-          className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
+        className="w-full flex flex-col items-center justify-center gap-4 py-4"
+      >
+        <motion.h1 variants={itemVariants} className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
           Trailer Base - People
         </motion.h1>
-        <motion.p
-          variants={itemVariants}
-          className="text-sm sm:text-base font-light text-center max-w-2xl">
-          Welcome to Trailer Base, where you can explore the stars of film and
-          TV. These are the trending people of the{" "}
-          <span className="font-semibold uppercase">{period}</span>.
+        <motion.p variants={itemVariants} className="text-sm sm:text-base font-light text-center max-w-2xl">
+          Welcome to Trailer Base, where you can explore the stars of film and TV.
+          These are the trending people of the <span className="font-semibold uppercase">{period}</span>.
         </motion.p>
       </motion.section>
 
@@ -174,27 +141,28 @@ function People() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="flex items-center justify-center gap-2 py-2">
+        className="flex items-center justify-center gap-2 py-2"
+      >
         <motion.button
           variants={itemVariants}
           onClick={() => setPeriod("day")}
-          className={`button-style px-4 py-2 rounded-full transition-all duration-200 ${
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
             period === "day"
               ? "bg-[#333]/50 ring-1 ring-white/10"
               : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 ring-1 ring-blue-400/10"
           }`}
-          aria-label="View daily trending people">
+        >
           Day
         </motion.button>
         <motion.button
           variants={itemVariants}
           onClick={() => setPeriod("week")}
-          className={`button-style px-4 py-2 rounded-full transition-all duration-200 ${
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
             period === "week"
               ? "bg-[#333]/50 ring-1 ring-white/10"
               : "opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 ring-1 ring-blue-400/10"
           }`}
-          aria-label="View weekly trending people">
+        >
           Week
         </motion.button>
       </motion.section>
@@ -203,170 +171,149 @@ function People() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative w-full max-w-[98vw] overflow-x-hidden py-4">
-        <div className="flex items-center justify-between mb-4 px-2 sm:px-4">
+        className="relative w-full max-w-[98vw] py-2"  
+      >
+        <div className="flex items-center justify-between mb-2 px-2 sm:px-4">  {/* Reduced margin here */}
           <motion.h2 variants={itemVariants} className="text-2xl font-bold">
             Trending People
           </motion.h2>
           <motion.div variants={itemVariants} className="flex gap-1 sm:gap-2">
             <button
               onClick={() => scrollCarousel("left")}
-              aria-label="Scroll left"
               disabled={!canScrollLeft}
-              className={`bg-[rgba(255,255,255,0.1)] rounded-md p-1.5 sm:p-2.5 transition-all duration-200 ring-1 ring-blue-400/10 ${
+              className={`p-1.5 sm:p-2.5 rounded-md transition-all duration-200 ${
                 canScrollLeft
-                  ? "opacity-80 hover:bg-blue-500 hover:scale-105"
+                  ? "opacity-80 hover:bg-blue-500 hover:scale-105 bg-[rgba(255,255,255,0.1)]"
                   : "opacity-20 cursor-not-allowed"
-              }`}>
+              }`}
+            >
               <LeftIcon />
             </button>
             <button
               onClick={() => scrollCarousel("right")}
-              aria-label="Scroll right"
               disabled={!canScrollRight}
-              className={`bg-[rgba(255,255,255,0.1)] rounded-md p-1.5 sm:p-2.5 transition-all duration-200 ring-1 ring-blue-400/10 ${
+              className={`p-1.5 sm:p-2.5 rounded-md transition-all duration-200 ${
                 canScrollRight
-                  ? "opacity-80 hover:bg-blue-500 hover:scale-105"
+                  ? "opacity-80 hover:bg-blue-500 hover:scale-105 bg-[rgba(255,255,255,0.1)]"
                   : "opacity-20 cursor-not-allowed"
-              }`}>
+              }`}
+            >
               <RightIcon />
             </button>
           </motion.div>
         </div>
-        {trendingLoading ? (
-          <motion.div variants={itemVariants}>
-            <Loading />
-          </motion.div>
-        ) : trendingError ? (
-          <motion.p
-            variants={itemVariants}
-            className="text-center text-red-500">
-            Error loading trending people: {trendingErrorObj?.message}
-          </motion.p>
-        ) : (
-          <motion.div
-            ref={carouselRef}
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex gap-2 sm:gap-3 overflow-x-auto pb-4 px-2 sm:px-4 snap-x snap-mandatory scroll-smooth scrollbar-hide"
-            style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-x" }}>
-            {trendingData?.results?.map((person: any) => (
-              <motion.div
-                key={person.id}
-                variants={itemVariants}
-                className="snap-start flex-shrink-0">
-                <CastCard
-                  id={person.id}
-                  name={person.name}
-                  profile_path={person.profile_path}
-                  character={
-                    person.character || person.known_for_department || "Actor"
-                  }
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </motion.section>
 
-      <motion.section
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="py-6 bg-black flex flex-col items-center justify-center gap-4">
-        <motion.h2
-          variants={itemVariants}
-          className="text-3xl text-center font-bold">
-          Popular People
-        </motion.h2>
-        <motion.p
-          variants={itemVariants}
-          className="text-sm sm:text-base font-light text-center max-w-2xl">
-          Explore some of the most popular stars of film and television.
-        </motion.p>
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="w-full">
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8 px-4">
-            {popularLoading || popularError ? (
-              <motion.p variants={itemVariants} className="text-gray-400">
-                {popularLoading ? (
-                  <span>Loading popular people...</span>
-                ) : (
-                  `Failed to load popular people: ${popularErrorObj?.message}`
-                )}
-              </motion.p>
-            ) : (
-              popularData?.results?.map((person: any) => (
-                <motion.div key={person.id} variants={itemVariants}>
+        {trendingLoading ? (
+          <Loading />
+        ) : trendingError ? (
+          <p className="text-center text-red-500">
+            Error loading trending people: {trendingErrorObj?.message}
+          </p>
+        ) : (
+          <div className="relative">
+            <div
+              ref={carouselRef}
+              className="flex gap-4 overflow-x-auto pb-2 px-2 sm:px-4 scroll-smooth scrollbar-hide"  
+              style={{ minHeight: "300px" }}
+            >
+              {trendingData?.results?.map((person: any) => (
+                <motion.div
+                  key={person.id}
+                  variants={itemVariants}
+                  className="flex-shrink-0"
+                  style={{ width: "150px" }}
+                >
                   <CastCard
                     id={person.id}
                     name={person.name}
                     profile_path={person.profile_path}
-                    character={person.known_for_department || "Actor"}
+                    character={person.character || person.known_for_department || "Actor"}
                   />
                 </motion.div>
-              ))
-            )}
+              ))}
+            </div>
           </div>
-        </motion.div>
+        )}
+      </motion.section>
+
+      {/* Reduced gap between sections by removing extra padding/margin */}
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="py-4 bg-black flex flex-col items-center justify-center -mt-28"  
+      >
+        <motion.h2 variants={itemVariants} className="text-3xl text-center font-bold mt-2">  {/* Reduced margin here */}
+          Popular People
+        </motion.h2>
+        <motion.p variants={itemVariants} className="text-sm sm:text-base font-light text-center max-w-2xl mb-4">  {/* Adjusted margin here */}
+          Explore some of the most popular stars of film and television.
+        </motion.p>
+
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6 md:px-4">  {/* Reduced gap here */}
+          {popularLoading ? (
+            <Loading />
+          ) : popularError ? (
+            <p className="text-red-500">
+              Error loading popular people: {popularErrorObj?.message}
+            </p>
+          ) : (
+            popularData?.results?.map((person: any) => (
+              <motion.div
+                key={person.id}
+                variants={itemVariants}
+                className="w-[150px]"
+              >
+                <CastCard
+                  id={person.id}
+                  name={person.name}
+                  profile_path={person.profile_path}
+                  character={person.known_for_department || "Actor"}
+                />
+              </motion.div>
+            ))
+          )}
+        </div>
+
         {!popularLoading && !popularError && (
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex items-center justify-center gap-2 mt-4">
+            className="flex items-center justify-center gap-2 mt-4"
+          >
             <Link
               to="/people"
-              search={(prev) => ({
-                ...prev,
-                page: page - 1,
-              })}
-              className={`flex items-center gap-1.5 bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ring-1 ring-blue-400/10 ${
+              search={(prev) => ({ ...prev, page: page - 1 })}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-md transition-all duration-200 ${
                 page === 1
                   ? "opacity-30 cursor-not-allowed"
-                  : "opacity-80 hover:bg-blue-500 hover:scale-105"
+                  : "opacity-80 hover:bg-blue-500 hover:scale-105 bg-[rgba(255,255,255,0.1)]"
               }`}
               disabled={page === 1}
-              aria-label="Go to previous popular page">
-              <LeftIcon />
-              Prev
+            >
+              <LeftIcon /> Prev
             </Link>
-            <motion.span
-              variants={itemVariants}
-              className="text-gray-200 text-sm font-light px-3">
-              {page?.toLocaleString()} /{" "}
-              {popularData?.total_pages?.toLocaleString() ?? "?"}
-            </motion.span>
+            <span className="text-gray-200 text-sm font-light px-3">
+              {page} / {popularData?.total_pages ?? "?"}
+            </span>
             <Link
               to="/people"
-              search={(prev) => ({
-                ...prev,
-                page: page + 1,
-              })}
-              className={`flex items-center gap-1.5 bg-[rgba(255,255,255,0.1)] rounded-md px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 ring-1 ring-blue-400/10 ${
-                popularData?.total_pages === page
+              search={(prev) => ({ ...prev, page: page + 1 })}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-md transition-all duration-200 ${
+                page === popularData?.total_pages
                   ? "opacity-30 cursor-not-allowed"
-                  : "opacity-80 hover:bg-blue-500 hover:scale-105"
+                  : "opacity-80 hover:bg-blue-500 hover:scale-105 bg-[rgba(255,255,255,0.1)]"
               }`}
-              disabled={popularData?.total_pages === page}
-              aria-label="Go to next popular page">
-              Next
-              <RightIcon />
+              disabled={page === popularData?.total_pages}
+            >
+              Next <RightIcon />
             </Link>
           </motion.div>
         )}
       </motion.section>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.8 }}>
-        {!trendingLoading && !popularLoading && <Footer />}
-      </motion.div>
+      <Footer />
     </div>
   );
 }

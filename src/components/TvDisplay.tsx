@@ -1,28 +1,28 @@
 import { Link } from "@tanstack/react-router";
 import React, {
+  useRef,
   useState,
   useMemo,
   useCallback,
   Suspense,
   useEffect,
-  useRef,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { FixedSizeList } from "react-window";
+import type { ListChildComponentProps } from "react-window";
 import debounce from "lodash/debounce";
 import { ErrorBoundary } from "react-error-boundary";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useBookmarkMutations } from "./useBookmarkMutations";
 import { getTVDetails } from "@/api/tv";
-import { AddIcon, DeleteIcon } from "./icons/Icons"; // Removed LeftIcon, RightIcon
-import Atropos from "atropos/react";
-import "atropos/atropos.css";
-import { motion, useAnimationControls } from "framer-motion";
+import { AddIcon, DeleteIcon, LeftIcon, RightIcon } from "./icons/Icons";
+import Loading from "@/components/Loading";
 
 interface TVProps {
   id: number;
-  title: string;
+  name: string;
   release_date: string;
   poster_path: string;
   vote_average: number;
@@ -46,50 +46,121 @@ interface DisplayProps {
   isLoading: boolean;
   isError: boolean;
   error: unknown;
-  category?: "tv";
+  category: "tv";
 }
 
 const ErrorFallback: React.FC<{ error: Error }> = ({ error }) => (
   <div className="text-red-500 text-center p-4">Error: {error.message}</div>
 );
 
-const CustomLoading: React.FC = () => (
-  <div className="flex items-center justify-center h-24">
-    <div className="w-12 h-12 border-4 border-t-blue-600 border-gray-700 rounded-full animate-spin-pulse"></div>
-    <style>{`
-      @keyframes spin-pulse {
-        0% {
-          transform: rotate(0deg);
-          border-width: 4px;
-        }
-        50% {
-          border-width: 6px;
-        }
-        100% {
-          transform: rotate(360deg);
-          border-width: 4px;
-        }
-      }
-      .animate-spin-pulse {
-        animation: spin-pulse 1s linear infinite;
-      }
-    `}</style>
-  </div>
-);
+const TVCard: React.FC<{
+  tvShow: TVProps;
+  index: number;
+  style: React.CSSProperties;
+  isSelected: boolean;
+  onClick: (id: number) => void;
+  bookmarks?: string[];
+  category: "tv";
+}> = ({ tvShow, index, style, isSelected, onClick, bookmarks, category }) => {
+  const { addBookmarkMutation, removeBookmarkMutation } =
+    useBookmarkMutations();
+
+  return (
+    <div style={style} className="relative group inline-block">
+      <Suspense
+        fallback={
+          <div
+            className="w-[140px] h-[210px] bg-gray-900 rounded-md"
+            style={{ borderRadius: "0.375rem" }}>
+            <Loading />
+          </div>
+        }>
+        <button
+          onClick={() => onClick(tvShow.id)}
+          className={`w-[140px] h-[210px] overflow-hidden shadow-md focus:outline-none rounded-md ${
+            isSelected ? "border-2 border-blue-500" : ""
+          }`}
+          style={{ borderRadius: "0.375rem" }}>
+          {tvShow.poster_path ? (
+            <img
+              src={`https://image.tmdb.org/t/p/w342${tvShow.poster_path}`}
+              srcSet={`
+                https://image.tmdb.org/t/p/w185${tvShow.poster_path} 185w,
+                https://image.tmdb.org/t/p/w342${tvShow.poster_path} 342w
+              `}
+              sizes="(max-width: 640px) 185px, 342px"
+              alt={tvShow.name || "TV Show"}
+              className="w-full h-full object-cover rounded-md"
+              loading="lazy"
+              style={{ borderRadius: "0.375rem" }}
+            />
+          ) : (
+            <div
+              className="w-full h-full bg-gray-900 flex items-center justify-center rounded-md"
+              style={{ borderRadius: "0.375rem" }}>
+              <p className="text-gray-500 text-sm">No poster</p>
+            </div>
+          )}
+          <div
+            className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
+            style={{ borderRadius: "0.375rem" }}>
+            <h3 className="text-white text-xs font-semibold text-left line-clamp-2 geist-bold">
+              <span className="font-bold text-lg">{index + 1}</span> -{" "}
+              {tvShow.name || "Unknown"}
+            </h3>
+          </div>
+        </button>
+        {auth?.currentUser && (
+          <div className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity">
+            {bookmarks?.includes(tvShow.id.toString()) ? (
+              <button
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200"
+                onClick={() =>
+                  removeBookmarkMutation.mutate(tvShow.id.toString())
+                }
+                disabled={removeBookmarkMutation.isPending}
+                aria-label={`Remove ${tvShow.name || "Unknown"} from bookmarks`}>
+                <DeleteIcon />
+              </button>
+            ) : (
+              <button
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                onClick={() =>
+                  addBookmarkMutation.mutate({
+                    id: tvShow.id,
+                    title: tvShow.name,
+                    poster_path: tvShow.poster_path,
+                    vote_average: tvShow.vote_average,
+                    release_date: tvShow.release_date,
+                    category,
+                  })
+                }
+                disabled={addBookmarkMutation.isPending || !tvShow.poster_path}
+                aria-label={`Add ${tvShow.name || "Unknown"} to bookmarks`}>
+                <AddIcon />
+              </button>
+            )}
+          </div>
+        )}
+      </Suspense>
+    </div>
+  );
+};
 
 const TvDisplay: React.FC<DisplayProps> = ({
   data,
   isLoading,
   isError,
   error,
-  category = "tv",
+  category,
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const listRef = useRef<FixedSizeList>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const queryClient = useQueryClient();
-  const { addBookmarkMutation, removeBookmarkMutation } = useBookmarkMutations();
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimationControls();
+  const { addBookmarkMutation, removeBookmarkMutation } =
+    useBookmarkMutations();
+  const [featuredTVId, setFeaturedTVId] = useState<number | null>(null);
 
   const otherTVShows = useMemo(() => data?.results || [], [data?.results]);
 
@@ -109,46 +180,126 @@ const TvDisplay: React.FC<DisplayProps> = ({
     enabled: !!auth.currentUser,
   });
 
-  const { data: centerTVDetails, isLoading: isDetailsLoading } =
-    useQuery<DetailedTVProps>({
-      queryKey: ["tvDetails", otherTVShows[currentIndex]?.id],
-      queryFn: () =>
-        getTVDetails(otherTVShows[currentIndex]?.id?.toString() || ""),
-      enabled:
-        !!otherTVShows[currentIndex]?.id &&
-        Number.isInteger(otherTVShows[currentIndex]?.id) &&
-        otherTVShows[currentIndex]?.id > 0,
-      retry: 1,
-    });
+  const {
+    data: featuredTVDetails,
+    isLoading: isDetailsLoading,
+    error: detailsError,
+  } = useQuery<DetailedTVProps>({
+    queryKey: ["tvDetails", featuredTVId],
+    queryFn: () => getTVDetails(featuredTVId?.toString() || ""),
+    enabled: !!featuredTVId,
+  });
 
+  const featuredTV = useMemo(
+    () =>
+      otherTVShows.find((tv) => tv.id === featuredTVId) ||
+      (data?.results?.length ? data.results[0] : null),
+    [otherTVShows, featuredTVId, data?.results]
+  );
+
+  // Handle initial loading state
   useEffect(() => {
-    if (!isLoading && otherTVShows.length > 0) {
+    if (!isLoading && !isDetailsLoading && (featuredTV || featuredTVDetails)) {
       setIsInitialLoading(false);
     }
-  }, [isLoading, otherTVShows]);
+  }, [isLoading, isDetailsLoading, featuredTV, featuredTVDetails]);
 
-  const handleCardClick = async (index: number) => {
-    if (index !== currentIndex) {
-      setCurrentIndex(index);
-      await controls.start({ x: 0 });
+  // Set default featured TV show to the first in the list
+  useEffect(() => {
+    if (!featuredTVId && otherTVShows.length > 0) {
+      setFeaturedTVId(otherTVShows[0].id);
     }
-  };
+  }, [featuredTVId, otherTVShows]);
 
-  const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
-    const cardWidth = 200;
-    const threshold = cardWidth / 2;
-    if (Math.abs(info.offset.x) > threshold) {
-      const direction = info.offset.x > 0 ? -1 : 1;
-      setCurrentIndex(
-        (prev) => (prev - direction + otherTVShows.length) % otherTVShows.length
-      );
-    }
-    controls.start({ x: 0 });
-  };
+  // Calculate visible items and max scroll offset
+  const itemSize = 150; // 140px card + 10px margin
+  const visibleItems = Math.floor(window.innerWidth / itemSize);
+  const maxScrollOffset = Math.max(
+    0,
+    (otherTVShows.length - visibleItems) * itemSize
+  );
+
+  // Smooth scroll animation
+  const smoothScrollTo = useCallback(
+    (targetOffset: number, duration: number) => {
+      const startOffset = scrollOffset;
+      const startTime = performance.now();
+
+      const animateScroll = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = progress * (2 - progress); // Ease-in-out
+        const newOffset = Math.round(
+          startOffset + (targetOffset - startOffset) * ease
+        );
+
+        if (listRef.current) {
+          listRef.current.scrollTo(newOffset);
+          setScrollOffset(newOffset);
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
+
+      requestAnimationFrame(animateScroll);
+    },
+    [scrollOffset]
+  );
+
+  // Debounced scroll functions
+  const scrollLeft = useMemo(
+    () =>
+      debounce(
+        () => {
+          if (listRef.current) {
+            const currentIndex = Math.floor(scrollOffset / itemSize);
+            if (currentIndex <= 0) {
+              // Jump to last TV show, align last card to right edge
+              const newOffset = Math.max(
+                0,
+                (otherTVShows.length - visibleItems) * itemSize
+              );
+              smoothScrollTo(newOffset, 500);
+            } else {
+              const newIndex = currentIndex - 1;
+              const newOffset = newIndex * itemSize;
+              smoothScrollTo(newOffset, 500);
+            }
+          }
+        },
+        300,
+        { leading: true, trailing: false }
+      ),
+    [scrollOffset, otherTVShows.length, visibleItems, smoothScrollTo, itemSize]
+  );
+
+  const scrollRight = useMemo(
+    () =>
+      debounce(
+        () => {
+          if (listRef.current) {
+            const currentIndex = Math.floor(scrollOffset / itemSize);
+            const maxIndex = otherTVShows.length - 1;
+            if (currentIndex >= maxIndex - visibleItems + 1) {
+              // Jump to first TV show
+              smoothScrollTo(0, 500);
+            } else {
+              const newIndex = currentIndex + 1;
+              const newOffset = newIndex * itemSize;
+              smoothScrollTo(newOffset, 500);
+            }
+          }
+        },
+        300,
+        { leading: true, trailing: false }
+      ),
+    [scrollOffset, otherTVShows.length, visibleItems, smoothScrollTo, itemSize]
+  );
 
   const prefetchTVDetails = useCallback(
     (id: number) => {
-      if (!Number.isInteger(id) || id <= 0) return;
       queryClient.prefetchQuery({
         queryKey: ["tvDetails", id],
         queryFn: () => getTVDetails(id.toString()),
@@ -160,275 +311,236 @@ const TvDisplay: React.FC<DisplayProps> = ({
   const handleTVClick = useMemo(
     () =>
       debounce((id: number) => {
-        if (!Number.isInteger(id) || id <= 0) return;
+        setFeaturedTVId(id);
         const currentIndex = otherTVShows.findIndex((tv) => tv.id === id);
         if (currentIndex >= 0) {
           [currentIndex - 1, currentIndex + 1]
             .filter((i) => i >= 0 && i < otherTVShows.length)
             .forEach((i) => prefetchTVDetails(otherTVShows[i].id));
+          const newOffset = Math.min(currentIndex * itemSize, maxScrollOffset);
+          smoothScrollTo(newOffset, 500);
         }
       }, 300),
-    [otherTVShows, prefetchTVDetails]
+    [otherTVShows, prefetchTVDetails, smoothScrollTo, maxScrollOffset]
   );
 
   const formatRuntime = useCallback((runtime?: number[]) => {
-    if (!runtime || runtime.length === 0 || runtime[0] <= 0) return "";
-    return `${runtime[0]}m`;
+    if (!runtime || runtime.length === 0) return "N/A";
+    const average = runtime[0] || 0;
+    if (average <= 0) return "N/A";
+    const hours = Math.floor(average / 60);
+    const minutes = average % 60;
+    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
   }, []);
 
   const formatDate = useCallback((dateString?: string) => {
-    if (!dateString) return "";
+    if (!dateString) return "N/A";
     try {
       return new Intl.DateTimeFormat("en-US", {
         month: "short",
-        day: "numeric",
+        day: "2-digit",
         year: "numeric",
       }).format(new Date(dateString));
     } catch {
-      return "";
+      return "N/A";
     }
   }, []);
 
-  const formatLanguage = useCallback((lang?: string) => {
-    if (!lang) return "";
-    return (
-      new Intl.DisplayNames(["en"], { type: "language" })
-        .of(lang)
-        ?.toUpperCase() || ""
-    );
-  }, []);
+  const getFeaturedTVIndex = useCallback(
+    () => otherTVShows.findIndex((tv) => tv.id === featuredTVId) ?? -1,
+    [otherTVShows, featuredTVId]
+  );
 
   if (isInitialLoading) {
     return (
-      <div className="relative w-full h-screen  flex items-center justify-center">
-        <CustomLoading />
+      <div className="relative w-full h-screen bg-black flex items-center justify-center">
+        <Loading />
       </div>
     );
   }
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <section className="relative w-full h-screen  text-white overflow-hidden flex flex-col items-center justify-center  px-4 sm:px-6 lg:px-8">
-        <div className="-mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold ">Trending TV Shows</h2>
-          <p>Select a TV show to get started</p>
-        </div>
+      <section
+        className="relative -mt-10 w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex"
+        style={{
+          boxShadow:
+            "inset 60px 0 60px -30px rgba(0,0,0,0.8), inset -60px 0 60px -30px rgba(0,0,0,0.8)",
+        }}>
+        {/* Featured TV Background */}
         <Suspense
           fallback={
-            <div className="relative flex-grow flex items-center justify-center">
-              <CustomLoading />
+            <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+              <Loading />
             </div>
           }>
-          <div className="relative w-full max-w-[1400px] h-[700px] flex items-end justify-center">
-            {isError && (
-              <p className="text-red-500 text-sm sm:text-base">
-                Error:{" "}
-                {error instanceof Error ? error.message : "An error occurred"}
-              </p>
-            )}
-            {!isError && otherTVShows.length > 0 && (
-              <div className="relative w-full h-full flex items-end justify-center perspective-1000">
-                <motion.div
-                  ref={carouselRef}
-                  className="relative w-full h-full flex items-end justify-center overflow-hidden"
-                  style={{ cursor: "grab" }}>
-                  {otherTVShows.map((tvShow, index) => {
-                    const totalTVShows = otherTVShows.length;
-                    let offset = index - currentIndex;
-                    if (offset > totalTVShows / 2) offset -= totalTVShows;
-                    if (offset < -totalTVShows / 2) offset += totalTVShows;
-                    const absOffset = Math.abs(offset);
-                    const isActive = offset === 0;
-
-                    const x = offset * 200;
-                    const scale = 1 - absOffset * 0.05;
-                    const zIndex = 100 - absOffset * 30;
-                    const opacity = 1;
-
-                    return (
-                      <motion.div
-                        key={tvShow.id}
-                        className="absolute group"
-                        animate={{ x, scale, opacity, zIndex }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 100,
-                          damping: 20,
-                        }}
-                        drag={isActive ? false : "x"}
-                        dragConstraints={{ left: -1000, right: 1000 }}
-                        onDragEnd={handleDragEnd}
-                        onClick={() => handleCardClick(index)}
-                        style={{ zIndex }}>
-                        <Atropos
-                          className="w-[400px] h-[600px] rounded-lg" // Updated size
-                          activeOffset={0}
-                          shadow={false}
-                          shadowScale={1}
-                          rotateXMax={12}
-                          rotateYMax={12}>
-                          <div className="atropos-scale">
-                            <div className="atropos-rotate">
-                              <div className="atropos-inner bg-[#1a1a1a]/80 rounded-lg border border-gray-700/50">
-                                {isActive ? (
-                                  <div
-                                    className="relative w-full h-full rounded-lg bg-cover bg-center"
-                                    style={{
-                                      backgroundImage: tvShow.poster_path
-                                        ? `url(https://image.tmdb.org/t/p/w500${tvShow.poster_path})`
-                                        : "none",
-                                    }}>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent flex flex-col justify-end p-6 rounded-lg">
-                                      <Suspense fallback={<CustomLoading />}>
-                                        {isDetailsLoading &&
-                                        !centerTVDetails ? (
-                                          <CustomLoading />
-                                        ) : (
-                                          <>
-                                            <h3 className="text-white text-xl sm:text-2xl font-bold capitalize">
-                                              {centerTVDetails?.original_name ||
-                                                centerTVDetails?.title ||
-                                                tvShow.title ||
-                                                "Unknown"}
-                                            </h3>
-                                            <p className="text-red-500 text-base sm:text-lg font-bold capitalize mt-1">
-                                              Rank: {index + 1}
-                                            </p>
-                                            {centerTVDetails?.tagline && (
-                                              <p className="text-gray-200 text-sm mt-1">
-                                                {centerTVDetails.tagline}
-                                              </p>
-                                            )}
-                                            <p className="text-gray-200 text-sm mt-1">
-                                              {[
-                                                formatDate(
-                                                  centerTVDetails?.release_date ||
-                                                    tvShow.release_date
-                                                ),
-                                                formatRuntime(
-                                                  centerTVDetails?.episode_run_time
-                                                ),
-                                                formatLanguage(
-                                                  centerTVDetails?.original_language
-                                                ),
-                                              ]
-                                                .filter(Boolean)
-                                                .join(" • ")}
-                                            </p>
-                                            <p className="text-gray-300 text-sm max-w-[90%] mt-2 line-clamp-3">
-                                              {centerTVDetails?.overview ||
-                                                tvShow.overview ||
-                                                "No overview available"}
-                                            </p>
-                                            {centerTVDetails?.genres?.length && (
-                                              <p className="text-gray-200 text-xs mt-2">
-                                                {centerTVDetails.genres
-                                                  .map((genre) => genre.name)
-                                                  .join(" | ")}
-                                              </p>
-                                            )}
-                                            <div className="flex gap-3 mt-4">
-                                              <Link
-                                                to="/tv/$tvId"
-                                                params={{
-                                                  tvId: tvShow.id.toString(),
-                                                }}
-                                                className="bg-blue-600 text-white px-8 py-2 rounded hover:bg-blue-700 text-sm flex items-center focus:ring-2 focus:ring-blue-500"
-                                                onClick={() =>
-                                                  handleTVClick(tvShow.id)
-                                                }>
-                                                <svg
-                                                  className="w-4 h-4 inline-block mr-1"
-                                                  fill="currentColor"
-                                                  viewBox="0 0 24 24">
-                                                  <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z" />
-                                                </svg>
-                                                Watch Now
-                                              </Link>
-                                              {auth?.currentUser &&
-                                                (bookmarks?.includes(
-                                                  tvShow.id.toString()
-                                                ) ? (
-                                                  <button
-                                                    className="bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-transform duration-200"
-                                                    onClick={() =>
-                                                      removeBookmarkMutation.mutate(
-                                                        tvShow.id.toString()
-                                                      )
-                                                    }
-                                                    disabled={
-                                                      removeBookmarkMutation.isPending
-                                                    }
-                                                    aria-label={`Remove ${tvShow.title || "Unknown Title"} from bookmarks`}>
-                                                    <DeleteIcon />
-                                                  </button>
-                                                ) : (
-                                                  <button
-                                                    className="bg-slate-600/50 backdrop-blur-md text-gray-100 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700/70 focus:ring-2 focus:ring-slate-500 transition-transform duration-200"
-                                                    onClick={() =>
-                                                      addBookmarkMutation.mutate(
-                                                        {
-                                                          id: tvShow.id,
-                                                          title: tvShow.title,
-                                                          poster_path:
-                                                            tvShow.poster_path,
-                                                          vote_average:
-                                                            tvShow.vote_average,
-                                                          release_date:
-                                                            tvShow.release_date,
-                                                          category,
-                                                        }
-                                                      )
-                                                    }
-                                                    disabled={
-                                                      addBookmarkMutation.isPending ||
-                                                      !tvShow.poster_path
-                                                    }
-                                                    aria-label={`Add ${tvShow.title || "Unknown Title"} to bookmarks`}>
-                                                    <AddIcon />
-                                                  </button>
-                                                ))}
-                                            </div>
-                                          </>
-                                        )}
-                                      </Suspense>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="w-full h-full rounded-lg">
-                                    {tvShow.poster_path ? (
-                                      <img
-                                        src={`https://image.tmdb.org/t/p/w500${tvShow.poster_path}`}
-                                        srcSet={`
-                                          https://image.tmdb.org/t/p/w342${tvShow.poster_path} 342w,
-                                          https://image.tmdb.org/t/p/w500${tvShow.poster_path} 500w
-                                        `}
-                                        sizes="(max-width: 640px) 342px, 500px"
-                                        alt={tvShow.title || "TV Show"}
-                                        className="w-full h-full object-cover rounded-lg"
-                                        loading="lazy"
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full flex items-center justify-center rounded-lg bg-[#1a1a1a]/80">
-                                        <p className="text-gray-400 text-lg">
-                                          No poster
-                                        </p>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </Atropos>
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
+          <div className="fixed inset-0 w-full h-full">
+            {featuredTV?.backdrop_path ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w1280${featuredTV.backdrop_path}`}
+                srcSet={`
+                  https://image.tmdb.org/t/p/w780${featuredTV.backdrop_path} 780w,
+                  https://image.tmdb.org/t/p/w1280${featuredTV.backdrop_path} 1280w
+                `}
+                sizes="(max-width: 1024px) 780px, 1280px"
+                alt={featuredTV.name || "Featured TV Show"}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <p className="text-gray-400">No backdrop available</p>
               </div>
             )}
           </div>
         </Suspense>
+
+        {/* Gradient Overlay */}
+        <div className="fixed inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
+
+        {/* Featured TV Content */}
+        <Suspense
+          fallback={
+            <div className="relative flex-grow flex items-center justify-center z-20">
+              <Loading />
+            </div>
+          }>
+          <div className="relative flex-grow flex items-center justify-end z-20">
+            {(featuredTV || isDetailsLoading) && (
+              <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
+                <h3 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl geist-bold capitalize">
+                  {featuredTV?.name || "Unknown"}
+                </h3>
+                <p className="text-red-500 text-lg sm:text-xl md:text-2xl lg:text-3xl geist-bold capitalize mt-2">
+                  {`Rank: ${getFeaturedTVIndex() + 1}`}
+                </p>
+                <p className="text-gray-200 text-sm sm:text-base md:text-lg mt-2">
+                  {featuredTVDetails?.tagline || "No tagline available"}
+                </p>
+                <p className="text-gray-200 text-sm sm:text-base md:text-lg">
+                  {formatDate(featuredTVDetails?.release_date) ||
+                    formatDate(featuredTV?.release_date) ||
+                    "N/A"}{" "}
+                  • {formatRuntime(featuredTVDetails?.episode_run_time)} •{" "}
+                  {featuredTVDetails?.original_language?.toUpperCase() || "N/A"}
+                </p>
+                <p className="text-gray-300 text-xs sm:text-sm max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
+                  {featuredTVDetails?.overview ||
+                    featuredTV?.overview ||
+                    "No overview available"}
+                </p>
+                {detailsError && (
+                  <p className="text-red-500 text-sm mt-2">
+                    Failed to load details
+                  </p>
+                )}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
+                  <Link
+                    to="/tv/$tvId"
+                    params={{ tvId: featuredTV?.id?.toString() || "" }}
+                    className="bg-blue-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-blue-500">
+                    <svg
+                      className="w-5 h-5 sm:w-6 sm:h-6 inline-block mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z" />
+                    </svg>
+                    Watch Now
+                  </Link>
+                  {auth?.currentUser &&
+                    (bookmarks?.includes(featuredTV?.id?.toString() || "") ? (
+                      <button
+                        className="bg-red-600 text-white px-4 sm:px-4 py-2 sm:py-3 rounded hover:bg-red-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-red-500"
+                        onClick={() =>
+                          removeBookmarkMutation.mutate(
+                            featuredTV?.id?.toString() || ""
+                          )
+                        }
+                        disabled={removeBookmarkMutation.isPending}
+                        aria-label={`Remove ${featuredTV?.name || "Unknown"} from bookmarks`}>
+                        <DeleteIcon />
+                      </button>
+                    ) : (
+                      <button
+                        className="bg-[#333]/50 backdrop-blur-md text-gray-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
+                        onClick={() =>
+                          addBookmarkMutation.mutate({
+                            id: featuredTV?.id || 0,
+                            title: featuredTV?.name || "",
+                            poster_path: featuredTV?.poster_path || "",
+                            vote_average: featuredTV?.vote_average || 0,
+                            release_date: featuredTV?.release_date || "",
+                            category,
+                          })
+                        }
+                        disabled={
+                          addBookmarkMutation.isPending ||
+                          !featuredTV?.poster_path
+                        }
+                        aria-label={`Add ${featuredTV?.name || "Unknown"} to bookmarks`}>
+                        <AddIcon />
+                      </button>
+                    ))}
+                </div>
+                <p className="text-gray-200 text-xs sm:text-sm mt-2">
+                  {featuredTVDetails?.genres
+                    ?.map((genre) => genre.name)
+                    .join(" | ") || "N/A"}
+                </p>
+              </div>
+            )}
+          </div>
+        </Suspense>
+
+        {/* Scrollable TV List */}
+        <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
+          {isError && (
+            <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
+              Error:{" "}
+              {error instanceof Error ? error.message : "An error occurred"}
+            </p>
+          )}
+          {!isError && otherTVShows.length > 0 && (
+            <FixedSizeList
+              ref={listRef}
+              height={220}
+              width={window.innerWidth}
+              itemCount={otherTVShows.length}
+              itemSize={itemSize}
+              layout="horizontal"
+              className="px-4 sm:px-6">
+              {({ index, style }: ListChildComponentProps) => (
+                <div style={{ ...style, scrollSnapAlign: "start" }}>
+                  <TVCard
+                    tvShow={otherTVShows[index]}
+                    index={index}
+                    style={{ width: "140px", height: "210px" }}
+                    isSelected={otherTVShows[index].id === featuredTVId}
+                    onClick={handleTVClick}
+                    bookmarks={bookmarks}
+                    category={category}
+                  />
+                </div>
+              )}
+            </FixedSizeList>
+          )}
+        </div>
+
+        {/* Scroll Buttons */}
+        <div className="absolute bottom-58 right-2 flex gap-2 z-20">
+          <button
+            onClick={scrollLeft}
+            aria-label="Scroll Left"
+            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
+            <LeftIcon />
+          </button>
+          <button
+            onClick={scrollRight}
+            aria-label="Scroll Right"
+            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
+            <RightIcon />
+          </button>
+        </div>
       </section>
     </ErrorBoundary>
   );
