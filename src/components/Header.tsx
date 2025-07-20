@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { auth, db } from "../config/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth"; // signOut is still needed for the handleLogout function, though not used directly in the UI here.
+import { onAuthStateChanged } from "firebase/auth"; // signOut is still needed for the handleLogout function, though not used directly in the UI here.
 import type { User as FirebaseUser } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
 import { Popcorn, Tv, AtSign, Search, LogIn } from "lucide-react"; // LogOut icon removed from import
 import logo from "../logo.svg?url";
 import male from "/male.jpg?url";
@@ -49,14 +48,14 @@ const Header = () => {
     return male;
   }; // handleLogout function is still here, but no longer directly tied to a button in this component's UI.
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast.success("Successfully signed out!");
-    } catch (error) {
-      toast.error("Failed to sign out. Please try again.");
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     await signOut(auth);
+  //     toast.success("Successfully signed out!");
+  //   } catch (error) {
+  //     toast.error("Failed to sign out. Please try again.");
+  //   }
+  // };
 
   const getSearchForPath = (path: string) => {
     switch (path) {
