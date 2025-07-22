@@ -1,15 +1,14 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import MediaCard from "./MediaCard"; // Adjust import path as needed
 import Loading from "@/components/Loading"; // Adjust import path as needed
-import { LeftIcon, RightIcon } from "./icons/Icons";
 
 interface MediaProps {
   id: number;
-  title?: string; // Optional for TV
+  title?: string; // Optional for movies
   name?: string; // Optional for TV
-  release_date?: string; // Optional for movies, first_air_date for TV
+  release_date?: string; // Optional for movies
   first_air_date?: string; // Optional for TV
   poster_path: string;
   vote_average: number;
@@ -34,28 +33,14 @@ const MediaList: React.FC<MediaListProps> = ({
   error,
   list,
 }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
-    }
-  };
-
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   };
 
   return (
-    <section className="w-full flex flex-col items-start justify-center gap-4 ">
-      <div className="w-full flex items-center justify-between px-4">
+    <section className="w-full flex flex-col items-start justify-center gap-4 px-4 sm:px-6 lg:px-8 py-6">
+      <div className="w-full flex items-center justify-between">
         <h2 className="text-2xl max-sm:text-xl lg:text-4xl text-gray-100 font-medium capitalize tracking-tight">
           {title}
         </h2>
@@ -63,46 +48,40 @@ const MediaList: React.FC<MediaListProps> = ({
           to={`/${mediaType}/list/$list`}
           params={{ list: list }}
           search={{ page: 1 }}>
-          <button className="px-3 py-2 text-xs md:text-sm font-medium text-white bg-blue-700 backdrop-blur-md rounded-md hover:bg-blue-900/80 hover:text-white transition-all duration-300">
+          <button className="px-3 py-2 text-xs md:text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             View All {title}
           </button>
         </Link>
       </div>
-      <div className="h-4" />
+      <div className="h-4" /> {/* Spacer div */}
       {isLoading && (
-        <div className="w-full text-center">
+        <div className="w-full text-center py-8">
           <Loading />
         </div>
       )}
       {isError && (
-        <div className="w-full text-center text-red-400 font-medium">
-          Error: {error?.message ?? "An error occurred"}
+        <div className="w-full text-center text-red-400 font-medium py-8">
+          Error: {error?.message ?? "An error occurred while fetching data."}
         </div>
       )}
-      <div className="relative w-full">
-        <button
-          onClick={scrollLeft}
-          aria-label="Scroll Left"
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 z-10">
-          <LeftIcon />
-        </button>
+      {!isLoading && !isError && data?.results && data.results.length > 0 && (
         <motion.div
-          ref={scrollRef}
-          className="w-full flex overflow-x-scroll scrollbar-hide items-start gap-2 lg:gap-8 lg:px-10"
+          className="w-full flex flex-wrap justify-center sm:justify-start gap-4 lg:gap-6" // Use flex-wrap and justify-center/start
           initial="hidden"
           animate="visible"
           variants={{
             hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+            visible: { opacity: 1, transition: { staggerChildren: 0.08 } }, // Slightly reduced stagger for more items
           }}>
-          {data?.results?.map((item: MediaProps) => (
+          {data.results.map((item: MediaProps) => (
             <motion.div
               key={item.id}
               variants={cardVariants}
-              className="cursor-pointer">
+              className="flex-shrink-0" // Prevents cards from shrinking
+            >
               <MediaCard
                 id={item.id}
-                title={item.title || item.name || "Untitled"} // Use name for TV
+                title={item.title || item.name || "Untitled"}
                 release_date={item.release_date || item.first_air_date || ""}
                 poster_path={item.poster_path}
                 vote_average={item.vote_average}
@@ -111,13 +90,15 @@ const MediaList: React.FC<MediaListProps> = ({
             </motion.div>
           ))}
         </motion.div>
-        <button
-          onClick={scrollRight}
-          aria-label="Scroll Right"
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-0.3 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-300 ease-in-out ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50 z-10">
-          <RightIcon />
-        </button>
-      </div>
+      )}
+      {!isLoading &&
+        !isError &&
+        (!data?.results || data.results.length === 0) && (
+          <div className="w-full text-center text-gray-400 py-8">
+            No {mediaType === "movie" ? "movies" : "TV shows"} found for this
+            list.
+          </div>
+        )}
     </section>
   );
 };

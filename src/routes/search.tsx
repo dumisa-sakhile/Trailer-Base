@@ -20,7 +20,8 @@ import {
   ChevronDown,
   Frown,
   Loader2,
-  X as CloseIcon,
+  Check,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/search")({
@@ -61,11 +62,13 @@ function Search() {
 
   const [isSearchTypeDropdownOpen, setIsSearchTypeDropdownOpen] =
     useState(false);
-  const [isGenreModalOpen, setIsGenreModalOpen] = useState(false);
-  const [activeGenreTab, setActiveGenreTab] = useState<"movie" | "tv">("movie");
-  const [inputValue, setInputValue] = useState(query);
-
   const searchTypeDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [isGenrePopupOpen, setIsGenrePopupOpen] = useState(false);
+  const genreButtonRef = useRef<HTMLButtonElement>(null);
+  const genrePopupRef = useRef<HTMLDivElement>(null);
+
+  const [inputValue, setInputValue] = useState(query);
 
   useEffect(() => {
     setInputValue(query);
@@ -80,18 +83,22 @@ function Search() {
       ) {
         setIsSearchTypeDropdownOpen(false);
       }
+      if (
+        isGenrePopupOpen &&
+        genrePopupRef.current &&
+        !genrePopupRef.current.contains(event.target as Node) &&
+        genreButtonRef.current &&
+        !genreButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsGenrePopupOpen(false);
+      }
     };
 
-    if (isSearchTypeDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isSearchTypeDropdownOpen]);
+  }, [isSearchTypeDropdownOpen, isGenrePopupOpen]);
 
   const queryOptions = {
     queryKey: ["search", query, page, type],
@@ -236,21 +243,6 @@ function Search() {
     return [];
   })();
 
-  const isDiscoverLoading =
-    (type === "movies" && discoverMoviesQuery.isLoading) ||
-    (type === "tv" && discoverTvQuery.isLoading) ||
-    (type === "people" && trendingPeopleQuery.isLoading);
-
-  const isDiscoverError =
-    (type === "movies" && discoverMoviesQuery.isError) ||
-    (type === "tv" && discoverTvQuery.isError) ||
-    (type === "people" && trendingPeopleQuery.isError);
-
-  const discoverErrorMessage =
-    (type === "movies" && (discoverMoviesQuery.error as Error)?.message) ||
-    (type === "tv" && (discoverTvQuery.error as Error)?.message) ||
-    (type === "people" && (trendingPeopleQuery.error as Error)?.message);
-
   const isLoading =
     type === "movies"
       ? movieQuery.isLoading
@@ -278,6 +270,8 @@ function Search() {
   const movieGenresList: Genre[] = movieGenres();
   const tvGenresList: Genre[] = tvGenres();
 
+  const currentGenreList = type === "movies" ? movieGenresList : tvGenresList;
+
   useEffect(() => {
     const handler = setTimeout(() => {
       if (inputValue !== query) {
@@ -303,6 +297,9 @@ function Search() {
       search: { query: "", type: newType, page: 1 },
     });
     setIsSearchTypeDropdownOpen(false);
+    if (newType === "people") {
+      setIsGenrePopupOpen(false);
+    }
   };
 
   const getSearchTypeLabel = () => {
@@ -318,30 +315,13 @@ function Search() {
     }
   };
 
-  const getHintText = () => {
-    switch (type) {
-      case "movies":
-        return "Need more movie inspiration?";
-      case "tv":
-        return "Need more TV show inspiration?";
-      case "people":
-        return "Looking for more people?";
-      default:
-        return "Need some inspiration?";
+  const getGenreButtonText = () => {
+    if (type === "movies") {
+      return " Movie Genres";
+    } else if (type === "tv") {
+      return " TV Show Genres";
     }
-  };
-
-  const getHeadingText = () => {
-    switch (type) {
-      case "movies":
-        return "Popular movie searches:";
-      case "tv":
-        return "Popular TV show searches:";
-      case "people":
-        return "Popular people searches:";
-      default:
-        return "Popular searches:";
-    }
+    return " Genres";
   };
 
   const LoadingAnimation = () => (
@@ -366,12 +346,12 @@ function Search() {
   );
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-gray-950 to-black text-white flex flex-col">
-      <header className="py-4 md:p-8 flex flex-col gap-4 sm:gap-8 z-10 shadow-lg">
-        <h2 className="text-3xl text-white text-center font-bold">
+    <section className="min-h-screen text-white flex flex-col">
+      <header className="py-6 md:p-8 flex flex-col gap-6 sm:gap-8 z-10">
+        <h1 className="text-4xl lg:text-5xl text-white text-center font-extrabold tracking-tight">
           Discover Your Next Favorite
-        </h2>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 w-full max-w-5xl mx-auto">
+        </h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 w-full max-w-5xl mx-auto px-4">
           <div className="relative flex-grow">
             <input
               autoFocus
@@ -385,41 +365,29 @@ function Search() {
               }`}
               value={inputValue}
               onChange={handleSearchChange}
-              className="w-full h-12 sm:h-14 px-4 sm:px-5 py-2 sm:py-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-sm sm:text-base text-white placeholder:text-gray-400 pl-12 sm:pl-16 pr-32 sm:pr-40 leading-6 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-normal"
+              // Placeholder text is now white
+              className="w-full h-14 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white placeholder:text-white pl-14 pr-36 leading-6 outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all font-normal shadow-lg"
               aria-label={`Search ${label.toLowerCase()}`}
             />
-            <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2">
-              <SearchIconLucide size={18} className="text-gray-400" />
+            <span className="absolute left-5 top-1/2 -translate-y-1/2">
+              <SearchIconLucide size={20} className="text-gray-400" />
             </span>
 
             <div
               ref={searchTypeDropdownRef}
-              className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2">
+              className="absolute right-3 top-1/2 -translate-y-1/2">
               <motion.button
                 onClick={() => {
                   setIsSearchTypeDropdownOpen(!isSearchTypeDropdownOpen);
-                  setIsGenreModalOpen(false);
+                  setIsGenrePopupOpen(false);
                 }}
-                className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full
-                               bg-white/5 backdrop-blur-md border border-white/10
-                               text-white text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500
-                               transition-all"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 border border-blue-700 text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all hover:bg-blue-700 hover:border-blue-800"
                 aria-label="Toggle search type dropdown"
-                whileHover={{
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  borderColor: "rgba(59, 130, 246, 0.3)",
-                  color: "#60A5FA",
-                  boxShadow: "0 0 5px rgba(59, 130, 246, 0.2)",
-                  transition: { duration: 0.15 },
-                }}
-                whileTap={{
-                  scale: 0.98,
-                  borderColor: "rgba(37, 99, 235, 0.4)",
-                  backgroundColor: "rgba(37, 99, 235, 0.2)",
-                }}>
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}>
                 {getSearchTypeLabel()}
                 <ChevronDown
-                  size={14}
+                  size={16}
                   className={`transition-transform ${
                     isSearchTypeDropdownOpen ? "rotate-180" : ""
                   }`}
@@ -428,81 +396,124 @@ function Search() {
               <AnimatePresence>
                 {isSearchTypeDropdownOpen && (
                   <motion.div
-                    className="absolute right-0 mt-2 sm:mt-3 w-36 sm:w-40
-                                 bg-gradient-to-br from-gray-900 to-gray-800
-                                 rounded-2xl
-                                 border border-gray-700/50
-                                 shadow-2xl
-                                 z-30 flex flex-col overflow-hidden"
+                    className="absolute right-0 mt-2 w-48 bg-[#242424] rounded-xl border border-[#141414] shadow-xl z-30 flex flex-col overflow-hidden p-2"
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}>
-                    
-                    <div className="p-2 flex-grow">
-                      <button
-                        onClick={() => handleCategoryChange("movies")}
-                        className={`w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-gray-300
-                                     hover:bg-blue-900/20 hover:text-blue-300
-                                     rounded-md transition-colors text-sm sm:text-base ${
-                                       type === "movies"
-                                         ? "bg-blue-800/30 text-blue-300 font-medium"
-                                         : ""
-                                     }`}>
-                        Movies
-                      </button>
-                      <button
-                        onClick={() => handleCategoryChange("tv")}
-                        className={`w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-gray-300
-                                     hover:bg-blue-900/20 hover:text-blue-300
-                                     rounded-md transition-colors text-sm sm:text-base ${
-                                       type === "tv"
-                                         ? "bg-blue-800/30 text-blue-300 font-medium"
-                                         : ""
-                                     }`}>
-                        TV Shows
-                      </button>
-                      <button
-                        onClick={() => handleCategoryChange("people")}
-                        className={`w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-gray-300
-                                     hover:bg-blue-900/20 hover:text-blue-300
-                                     rounded-md transition-colors text-sm ${
-                                       type === "people"
-                                         ? "bg-blue-800/30 text-blue-300 font-medium"
-                                         : ""
-                                     }`}>
-                        People
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => handleCategoryChange("movies")}
+                      className={`flex items-center justify-between w-full text-left px-4 py-3 text-gray-300 hover:text-blue-300 rounded-lg transition-colors text-base font-medium ${
+                        type === "movies" ? "text-blue-300" : ""
+                      }`}>
+                      Movies
+                      {type === "movies" && (
+                        <Check size={18} className="text-blue-400" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleCategoryChange("tv")}
+                      className={`flex items-center justify-between w-full text-left px-4 py-3 text-gray-300 hover:text-blue-300 rounded-lg transition-colors text-base font-medium ${
+                        type === "tv" ? "text-blue-300" : ""
+                      }`}>
+                      TV Shows
+                      {type === "tv" && (
+                        <Check size={18} className="text-blue-400" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleCategoryChange("people")}
+                      className={`flex items-center justify-between w-full text-left px-4 py-3 text-gray-300 hover:text-blue-300 rounded-lg transition-colors text-base font-medium ${
+                        type === "people" ? "text-blue-300" : ""
+                      }`}>
+                      People
+                      {type === "people" && (
+                        <Check size={18} className="text-blue-400" />
+                      )}
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              setIsGenreModalOpen(true);
-              setIsSearchTypeDropdownOpen(false);
-              setActiveGenreTab(type === "movies" ? "movie" : "tv");
-            }}
-            className="hidden sm:flex items-center justify-between gap-1 sm:gap-2 px-4 sm:px-5 py-2 sm:py-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-sm sm:text-base text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-            aria-label="Open genre selection modal">
-            <span>Browse Genres</span>
-            <ChevronDown size={16} />
-          </button>
+          {(type === "movies" || type === "tv") && (
+            <div className="relative">
+              <button
+                ref={genreButtonRef}
+                onClick={() => {
+                  setIsGenrePopupOpen(!isGenrePopupOpen);
+                  setIsSearchTypeDropdownOpen(false);
+                }}
+                className="hidden sm:flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto hover:bg-neutral-700 hover:border-blue-500 transition-colors shadow-lg"
+                aria-label="Open genre selection popup">
+                <span>{getGenreButtonText()}</span>
+                <ChevronDown
+                  size={18}
+                  className={`transition-transform ${
+                    isGenrePopupOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              <AnimatePresence>
+                {isGenrePopupOpen && (
+                  <motion.div
+                    ref={genrePopupRef}
+                    className="absolute right-0 top-full mt-2 w-80 bg-[#242424] rounded-xl border border-[#141414] shadow-xl z-20 flex flex-col overflow-hidden p-4"
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}>
+                    <button
+                      onClick={() => setIsGenrePopupOpen(false)}
+                      className="absolute top-2 right-2 p-1 text-white/80 hover:text-white hover:bg-neutral-700 rounded-full transition-colors"
+                      aria-label="Close genre popup">
+                      <X size={20} />
+                    </button>
+
+                    {/* Max height added back to this div, and links are block with no background */}
+                    <div className="flex flex-col gap-2 overflow-y-auto custom-scrollbar pt-6 pb-2 max-h-[60vh]">
+                      {currentGenreList.length > 0 ? (
+                        currentGenreList.map((genre) => (
+                          <Link
+                            key={genre.id}
+                            to={`/${type === "movies" ? "movie" : "tv"}/$type/$typeName/$typeId`}
+                            params={{
+                              type: "with_genres",
+                              typeName: genre.name,
+                              typeId: String(genre.id),
+                            }}
+                            search={{ page: 1 }}
+                            // Removed bg-neutral-700, keeping hover:bg-blue-600
+                            className="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-600 text-white text-sm font-medium transition-colors cursor-pointer"
+                            onClick={() => setIsGenrePopupOpen(false)}>
+                            {genre.name}
+                          </Link>
+                        ))
+                      ) : (
+                        <p className="text-white/70 text-sm text-center py-4">
+                          No genres available for{" "}
+                          {type === "movies" ? "movies" : "TV shows"}.
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </header>
-
-      <main className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 py-6">
+      
+      <main className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 py-8">
         <div className="max-w-7xl mx-auto">
-          <h3 className="text-xl sm:text-2xl text-white mb-6 font-medium">
+          <h3 className="text-xl sm:text-2xl text-white mb-6 font-semibold border-b border-neutral-800 pb-3">
             {query
               ? `Results for "${query}" in ${label}`
               : `Browse Popular ${label}`}
           </h3>
 
-          <section className="flex flex-wrap items-center justify-center gap-3 md:gap-6 lg:gap-8">
+          <section className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
             {isLoading && <LoadingAnimation />}
 
             {isError && (
@@ -544,86 +555,14 @@ function Search() {
               </motion.div>
             )}
 
-            {!query && (
-              <motion.div
-                className="w-full text-center py-6 px-4 max-w-full mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}>
-                <motion.p
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                  className="text-xs sm:text-sm font-light text-gray-500 mb-4 tracking-wide">
-                  {getHintText()}
-                </motion.p>
-
-                <motion.h4
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  className="text-lg sm:text-xl font-medium text-white mb-6 tracking-tight">
-                  {getHeadingText()}
-                </motion.h4>
-
-                {isDiscoverLoading ? (
-                  <LoadingAnimation />
-                ) : isDiscoverError ? (
-                  <motion.div
-                    className="w-full text-center py-8"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}>
-                    <p className="text-red-400 font-light text-base sm:text-lg">
-                      Error fetching popular content: {discoverErrorMessage}
-                    </p>
-                  </motion.div>
-                ) : discoverData.length > 0 ? (
-                  <div className="flex flex-wrap items-start justify-center gap-3 md:gap-6 lg:gap-8">
-                    {discoverData.map((item, index: number) => (
-                      <motion.div
-                        key={`${item.type}-discover-${item.id}-${index}`}
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: 0.05 * index }}>
-                        {item.type === "person" ? (
-                          <PersonSearchCard
-                            id={item.id}
-                            name={item.name}
-                            profile_path={item.profile_path}
-                            url={item.url}
-                          />
-                        ) : (
-                          <MediaCard
-                            id={Number(item.id)}
-                            title={item.title}
-                            release_date={item.release_date}
-                            poster_path={item.poster_path}
-                            vote_average={item.vote_average}
-                            type={item.type}
-                          />
-                        )}
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="w-full text-gray-500 text-sm mt-4 text-center">
-                    No popular content available for this category.
-                  </div>
-                )}
-              </motion.div>
-            )}
-
-            {query &&
-              !isLoading &&
-              results.length > 0 &&
-              results.map((item, index: number) => (
+            {!isLoading &&
+              (query ? results : discoverData).length > 0 &&
+              (query ? results : discoverData).map((item, index: number) => (
                 <motion.div
                   key={`${item.type}-${item.id}-${index}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.3 }}>
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.05 * index }}>
                   {item.type === "person" ? (
                     <PersonSearchCard
                       id={item.id}
@@ -643,100 +582,15 @@ function Search() {
                   )}
                 </motion.div>
               ))}
+
+            {!query && !isLoading && discoverData.length === 0 && (
+              <div className="w-full text-gray-500 text-sm mt-4 text-center">
+                No popular content available for this category.
+              </div>
+            )}
           </section>
         </div>
       </main>
-
-      <AnimatePresence>
-        {isGenreModalOpen && (
-          <motion.div
-            className="fixed inset-0 bg-black/10 backdrop-blur-md z-[888] hidden sm:flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setIsGenreModalOpen(false)}>
-            <motion.div
-              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-700/50 shadow-2xl max-w-[384px] max-h-[80vh] flex flex-col"
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}>
-              <div className="relative p-6 flex justify-between items-center">
-                <h3 className="text-2xl font-bold text-white">Select Genre</h3>
-                <button
-                  onClick={() => setIsGenreModalOpen(false)}
-                  className="p-1.5 rounded-full text-gray-400 hover:bg-gray-700/50 hover:text-white transition-colors"
-                  aria-label="Close modal">
-                  <CloseIcon size={20} />
-                </button>
-              </div>
-
-              <div className="px-6 pb-6 flex flex-col justify-center items-center gap-4 overflow-y-auto custom-scrollbar">
-                <div className="flex w-[200px] bg-gray-700 rounded-full p-1">
-                  <button
-                    onClick={() => setActiveGenreTab("movie")}
-                    className={`flex-1 py-2 px-3 text-center text-sm rounded-full transition-colors ${
-                      activeGenreTab === "movie"
-                        ? "bg-blue-600 text-white font-semibold shadow-md"
-                        : "text-gray-300 hover:text-white"
-                    }`}>
-                    Movies
-                  </button>
-                  <button
-                    onClick={() => setActiveGenreTab("tv")}
-                    className={`flex-1 py-2 px-3 text-center text-sm rounded-full transition-colors ${
-                      activeGenreTab === "tv"
-                        ? "bg-blue-600 text-white font-semibold shadow-md"
-                        : "text-gray-300 hover:text-white"
-                    }`}>
-                    TV Shows
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {(activeGenreTab === "movie" ? movieGenresList : tvGenresList)
-                    .length > 0 ? (
-                    (activeGenreTab === "movie"
-                      ? movieGenresList
-                      : tvGenresList
-                    ).map((genre) => (
-                      <Link
-                        key={genre.id}
-                        to={`/${activeGenreTab}/$type/$typeName/$typeId`}
-                        params={{
-                          type: "with_genres",
-                          typeName: genre.name,
-                          typeId: String(genre.id),
-                        }}
-                        search={{ page: 1 }}
-                        className={`block py-2 px-2 rounded-md text-sm text-center transition-colors text-gray-300 hover:bg-gray-700 hover:text-white`}
-                        onClick={() => setIsGenreModalOpen(false)}>
-                        {genre.name}
-                      </Link>
-                    ))
-                  ) : (
-                    <p className="col-span-full text-gray-400 text-center text-xs py-2">
-                      No genres available.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="p-6 border-t border-gray-700/50 flex justify-end items-center gap-3">
-                <button
-                  onClick={() => {
-                    setIsGenreModalOpen(false);
-                  }}
-                  className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-sm shadow-md">
-                  Close
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }

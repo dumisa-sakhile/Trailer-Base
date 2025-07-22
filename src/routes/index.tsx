@@ -98,17 +98,20 @@ function App() {
 
   return (
     <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen ">
-      <motion.div
+      {/* This motion.div was empty and can be removed or repurposed if it's meant to animate the whole page entrance */}
+      {/* <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}>
-      </motion.div>
+      </motion.div> */}
+
+      {/* Changed whileInView to animate for immediate animation on render */}
       <motion.div
         variants={itemVariants}
         className="relative hidden md:block"
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}>
+        animate="visible" // Changed from whileInView
+      >
         <Display
           data={trendingData}
           isLoading={isTrendingLoading}
@@ -117,29 +120,13 @@ function App() {
           category="movie"
         />
       </motion.div>
-      <motion.section
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}
-        className="rounded-md flex flex-col items-center justify-center gap-6 md:px-12 lg:w-[90%] lg:mx-auto">
-        <motion.h1
-          variants={itemVariants}
-          className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-center">
-        Discover Movies
-        </motion.h1>
-        <motion.p
-          variants={itemVariants}
-          className="text-gray-300 font-medium text-center max-w-md">
-        Find the latest and most popular movies on Trailer Base. </motion.p>
-        
-      </motion.section>
-<br />
+
+      {/* Changed whileInView to animate for immediate animation on render */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}>
+        animate="visible" // Changed from whileInView
+      >
         <MediaList
           mediaType="movie"
           list="popular"
@@ -152,11 +139,12 @@ function App() {
       </motion.div>
       <br />
       <br />
+      {/* Changed whileInView to animate for immediate animation on render */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}>
+        animate="visible" // Changed from whileInView
+      >
         <MediaList
           mediaType="movie"
           list="top_rated"
@@ -169,11 +157,12 @@ function App() {
       </motion.div>
       <br />
       <br />
+      {/* Changed whileInView to animate for immediate animation on render */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}>
+        animate="visible" // Changed from whileInView
+      >
         <MediaList
           mediaType="movie"
           list="upcoming"

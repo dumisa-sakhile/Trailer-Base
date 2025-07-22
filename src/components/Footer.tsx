@@ -1,37 +1,45 @@
-import React from "react";
+import type {FunctionComponent} from "react";
+import {Link} from "@tanstack/react-router";
 
-const Footer: React.FC = () => {
+const Footer: FunctionComponent = () => {
   return (
-    <footer className="bg-[#333]/50 backdrop-blur-md text-base text-gray-100 rounded-lg shadow-sm m-4 t md:geist-regular text-center mx-auto max-w-[calc(100vw-4vw)] md:max-w-[1100px]">
-      <div className="w-full p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-        {/* Left Section */}
-        <div className="text-sm text-gray-200 whitespace-nowrap md:text-left">
-          © {new Date().getFullYear()}{" "}
-          <a href="#" className="hover:text-blue-500">
+    <footer className="bg-gray-950/70 backdrop-blur-lg text-base text-gray-300 rounded-lg shadow-xl mx-auto my-8 p-6 max-w-[calc(100vw-4vw)] md:max-w-[1100px] border border-gray-800/50 ">
+      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        {/* Left Section - Copyright */}
+        <div className="text-sm text-gray-400 whitespace-nowrap text-center md:text-left">
+          &copy; {new Date().getFullYear()}{" "}
+          <Link to="/" search={{ period: "day" ,page: 1}}
+            className="text-blue-400 hover:text-blue-300 transition-colors duration-200 font-semibold">
             Trailer Base
-          </a>
+          </Link>
           . All Rights Reserved.
         </div>
-        {/* Center Section */}
-        <div className="text-sm text-gray-200 whitespace-nowrap md:text-center">
-          Made with ❤️ by{" "}
+
+        {/* Center Section - Made By */}
+        <div className="text-sm text-gray-400 whitespace-nowrap text-center">
+          Made with{" "}
+          <span className="text-red-500 animate-pulse" aria-label="love">
+            &hearts;
+          </span>{" "}
+          by{" "}
           <a
             href="https://sakhile-dumisa.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-blue-500">
+            className="text-blue-400 hover:text-blue-300 transition-colors duration-200 font-semibold">
             Dumisa Sakhile
           </a>
         </div>
-        {/* Right Section */}
+
+        {/* Right Section - External Links */}
         <div className="flex justify-center md:justify-end">
-          <ul className="flex flex-wrap items-center justify-center text-sm font-medium text-gray-200 space-x-4 md:space-x-6">
+          <ul className="flex flex-wrap items-center justify-center text-sm font-medium text-gray-400 space-x-6">
             <li>
               <a
                 href="https://github.com/dumisa-sakhile"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-blue-500 whitespace-nowrap">
+                className="hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
                 GitHub
               </a>
             </li>
@@ -40,7 +48,7 @@ const Footer: React.FC = () => {
                 href="https://www.themoviedb.org/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-blue-500 whitespace-nowrap">
+                className="hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
                 TMDb API
               </a>
             </li>
@@ -49,7 +57,7 @@ const Footer: React.FC = () => {
                 href="https://tanstack.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-blue-500 whitespace-nowrap">
+                className="hover:text-blue-300 transition-colors duration-200 whitespace-nowrap">
                 Tanstack
               </a>
             </li>

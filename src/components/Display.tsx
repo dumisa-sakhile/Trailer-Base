@@ -13,12 +13,17 @@ import { FixedSizeList } from "react-window";
 import type { ListChildComponentProps } from "react-window";
 import debounce from "lodash/debounce";
 import { ErrorBoundary } from "react-error-boundary";
+import {
+  BookmarkPlus,
+  BookmarkMinus,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Loading from "@/components/Loading";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useBookmarkMutations } from "./useBookmarkMutations";
 import { getMovieDetails } from "@/api/movie";
-import { AddIcon, DeleteIcon, LeftIcon, RightIcon } from "./icons/Icons";
 
 interface MovieProps {
   id: number;
@@ -50,6 +55,35 @@ interface DisplayProps {
 const ErrorFallback: React.FC<{ error: Error }> = ({ error }) => (
   <div className="text-red-500 text-center p-4">Error: {error.message}</div>
 );
+
+// Define item size as a constant
+const ITEM_WIDTH = 140; // Card width
+const ITEM_MARGIN = 10; // Margin between cards
+const ITEM_SIZE = ITEM_WIDTH + ITEM_MARGIN; // Total size for FixedSizeList
+
+// Custom hook to get window dimensions for responsiveness
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+};
 
 const MovieCard: React.FC<{
   movie: MovieProps;
@@ -109,7 +143,9 @@ const MovieCard: React.FC<{
           </div>
         </button>
         {auth?.currentUser && (
-          <div className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity">
+          <div
+            className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity rounded-md"
+            style={{ borderRadius: "0.375rem" }}>
             {bookmarks?.includes(movie.id.toString()) ? (
               <button
                 className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200"
@@ -118,7 +154,7 @@ const MovieCard: React.FC<{
                 }
                 disabled={removeBookmarkMutation.isPending}
                 aria-label={`Remove ${movie.title || "Unknown"} from bookmarks`}>
-                <DeleteIcon />
+                <BookmarkMinus size={20} />
               </button>
             ) : (
               <button
@@ -135,7 +171,7 @@ const MovieCard: React.FC<{
                 }
                 disabled={addBookmarkMutation.isPending || !movie.poster_path}
                 aria-label={`Add ${movie.title || "Unknown"} to bookmarks`}>
-                <AddIcon />
+                <BookmarkPlus size={20} />
               </button>
             )}
           </div>
@@ -154,11 +190,12 @@ const Display: React.FC<DisplayProps> = ({
 }) => {
   const listRef = useRef<FixedSizeList>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const queryClient = useQueryClient();
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
   const [featuredMovieId, setFeaturedMovieId] = useState<number | null>(null);
+
+  const { width: windowWidth } = useWindowSize(); // Get dynamic window width
 
   const otherMovies = useMemo(() => data?.results || [], [data?.results]);
 
@@ -195,17 +232,6 @@ const Display: React.FC<DisplayProps> = ({
     [otherMovies, featuredMovieId, data?.results]
   );
 
-  // Handle initial loading state
-  useEffect(() => {
-    if (
-      !isLoading &&
-      !isDetailsLoading &&
-      (featuredMovie || featuredMovieDetails)
-    ) {
-      setIsInitialLoading(false);
-    }
-  }, [isLoading, isDetailsLoading, featuredMovie, featuredMovieDetails]);
-
   // Set default featured movie to the first in the list
   useEffect(() => {
     if (!featuredMovieId && otherMovies.length > 0) {
@@ -213,12 +239,11 @@ const Display: React.FC<DisplayProps> = ({
     }
   }, [featuredMovieId, otherMovies]);
 
-  // Calculate visible items and max scroll offset
-  const itemSize = 150; // 140px card + 10px margin
-  const visibleItems = Math.floor(window.innerWidth / itemSize);
+  // Calculate visible items and max scroll offset dynamically
+  const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
   const maxScrollOffset = Math.max(
     0,
-    (otherMovies.length - visibleItems) * itemSize
+    (otherMovies.length - visibleItems) * ITEM_SIZE
   );
 
   // Smooth scroll animation
@@ -250,54 +275,44 @@ const Display: React.FC<DisplayProps> = ({
     [scrollOffset]
   );
 
-  // Debounced scroll functions
+  // Debounced scroll functions with trailing: true (default)
   const scrollLeft = useMemo(
     () =>
-      debounce(
-        () => {
-          if (listRef.current) {
-            const currentIndex = Math.floor(scrollOffset / itemSize);
-            if (currentIndex <= 0) {
-              // Jump to last movie, align last card to right edge
-              const newOffset = Math.max(
-                0,
-                (otherMovies.length - visibleItems) * itemSize
-              );
-              smoothScrollTo(newOffset, 500);
-            } else {
-              const newIndex = currentIndex - 1;
-              const newOffset = newIndex * itemSize;
-              smoothScrollTo(newOffset, 500);
-            }
+      debounce(() => {
+        if (listRef.current) {
+          const currentIndex = Math.floor(scrollOffset / ITEM_SIZE);
+          if (currentIndex <= 0) {
+            const newOffset = Math.max(
+              0,
+              (otherMovies.length - visibleItems) * ITEM_SIZE
+            );
+            smoothScrollTo(newOffset, 500);
+          } else {
+            const newIndex = currentIndex - 1;
+            const newOffset = newIndex * ITEM_SIZE;
+            smoothScrollTo(newOffset, 500);
           }
-        },
-        300,
-        { leading: true, trailing: false }
-      ),
-    [scrollOffset, otherMovies.length, visibleItems, smoothScrollTo, itemSize]
+        }
+      }, 300),
+    [scrollOffset, otherMovies.length, visibleItems, smoothScrollTo]
   );
 
   const scrollRight = useMemo(
     () =>
-      debounce(
-        () => {
-          if (listRef.current) {
-            const currentIndex = Math.floor(scrollOffset / itemSize);
-            const maxIndex = otherMovies.length - 1;
-            if (currentIndex >= maxIndex - visibleItems + 1) {
-              // Jump to first movie
-              smoothScrollTo(0, 500);
-            } else {
-              const newIndex = currentIndex + 1;
-              const newOffset = newIndex * itemSize;
-              smoothScrollTo(newOffset, 500);
-            }
+      debounce(() => {
+        if (listRef.current) {
+          const currentIndex = Math.floor(scrollOffset / ITEM_SIZE);
+          const maxIndex = otherMovies.length - 1;
+          if (currentIndex >= maxIndex - visibleItems + 1) {
+            smoothScrollTo(0, 500);
+          } else {
+            const newIndex = currentIndex + 1;
+            const newOffset = newIndex * ITEM_SIZE;
+            smoothScrollTo(newOffset, 500);
           }
-        },
-        300,
-        { leading: true, trailing: false }
-      ),
-    [scrollOffset, otherMovies.length, visibleItems, smoothScrollTo, itemSize]
+        }
+      }, 300),
+    [scrollOffset, otherMovies.length, visibleItems, smoothScrollTo]
   );
 
   const prefetchMovieDetails = useCallback(
@@ -319,7 +334,7 @@ const Display: React.FC<DisplayProps> = ({
           [currentIndex - 1, currentIndex + 1]
             .filter((i) => i >= 0 && i < otherMovies.length)
             .forEach((i) => prefetchMovieDetails(otherMovies[i].id));
-          const newOffset = Math.min(currentIndex * itemSize, maxScrollOffset);
+          const newOffset = Math.min(currentIndex * ITEM_SIZE, maxScrollOffset);
           smoothScrollTo(newOffset, 500);
         }
       }, 300),
@@ -348,7 +363,8 @@ const Display: React.FC<DisplayProps> = ({
     [otherMovies, featuredMovieId]
   );
 
-  if (isInitialLoading) {
+  // Direct check for initial loading state
+  if (isLoading || isDetailsLoading || !featuredMovie) {
     return (
       <div className="relative w-full h-screen bg-black flex items-center justify-center">
         <Loading />
@@ -371,7 +387,7 @@ const Display: React.FC<DisplayProps> = ({
               <Loading />
             </div>
           }>
-          <div className="fixed inset-0 w-full h-full">
+          <div className="absolute inset-0 w-full h-full">
             {featuredMovie?.backdrop_path ? (
               <img
                 src={`https://image.tmdb.org/t/p/w1280${featuredMovie.backdrop_path}`}
@@ -393,7 +409,7 @@ const Display: React.FC<DisplayProps> = ({
         </Suspense>
 
         {/* Gradient Overlay */}
-        <div className="fixed inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
 
         {/* Featured Movie Content */}
         <Suspense
@@ -462,7 +478,7 @@ const Display: React.FC<DisplayProps> = ({
                         }
                         disabled={removeBookmarkMutation.isPending}
                         aria-label={`Remove ${featuredMovie?.title || "Unknown"} from bookmarks`}>
-                        <DeleteIcon />
+                        <BookmarkMinus size={20} />
                       </button>
                     ) : (
                       <button
@@ -482,7 +498,7 @@ const Display: React.FC<DisplayProps> = ({
                           !featuredMovie?.poster_path
                         }
                         aria-label={`Add ${featuredMovie?.title || "Unknown"} to bookmarks`}>
-                        <AddIcon />
+                        <BookmarkPlus size={20} />
                       </button>
                     ))}
                 </div>
@@ -508,9 +524,9 @@ const Display: React.FC<DisplayProps> = ({
             <FixedSizeList
               ref={listRef}
               height={220}
-              width={window.innerWidth}
+              width={windowWidth} // Use dynamic window width
               itemCount={otherMovies.length}
-              itemSize={itemSize}
+              itemSize={ITEM_SIZE} // Use constant item size
               layout="horizontal"
               className="px-4 sm:px-6">
               {({ index, style }: ListChildComponentProps) => (
@@ -518,7 +534,7 @@ const Display: React.FC<DisplayProps> = ({
                   <MovieCard
                     movie={otherMovies[index]}
                     index={index}
-                    style={{ width: "140px", height: "210px" }}
+                    style={{ width: `${ITEM_WIDTH}px`, height: "210px" }} // Use ITEM_WIDTH
                     isSelected={otherMovies[index].id === featuredMovieId}
                     onClick={handleMovieClick}
                     bookmarks={bookmarks}
@@ -536,13 +552,13 @@ const Display: React.FC<DisplayProps> = ({
             onClick={scrollLeft}
             aria-label="Scroll Left"
             className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-            <LeftIcon />
+            <ChevronLeft size={20} />
           </button>
           <button
             onClick={scrollRight}
             aria-label="Scroll Right"
             className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-            <RightIcon />
+            <ChevronRight size={20} />
           </button>
         </div>
       </section>

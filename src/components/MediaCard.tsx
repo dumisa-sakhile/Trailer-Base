@@ -4,7 +4,7 @@ import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import { useBookmarkMutations } from "./useBookmarkMutations";
-import { AddIcon, DeleteIcon, StarIcon } from "./icons/Icons";
+import { BookmarkPlus, BookmarkMinus, Star } from "lucide-react";
 
 interface MediaCardProps {
   id?: number;
@@ -73,7 +73,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 max-sm:p-2">
           <div className="flex items-center gap-2">
-            <StarIcon />
+            <Star size={16} className="text-[#FACC15]" />
             <span className="text-xs font-semibold text-[#FACC15] max-sm:text-[9px]">
               {vote_average?.toFixed(1) ?? "N/A"}/10
             </span>
@@ -96,7 +96,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               }
               disabled={removeBookmarkMutation?.isPending}
               aria-label={`Remove ${title ?? "media item"} from bookmarks`}>
-              <DeleteIcon />
+              <BookmarkMinus size={20} />
             </button>
           ) : (
             <button
@@ -113,7 +113,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               }
               disabled={addBookmarkMutation?.isPending}
               aria-label={`Add ${title ?? "media item"} to bookmarks`}>
-              <AddIcon />
+              <BookmarkPlus size={20} />
             </button>
           )}
         </>
