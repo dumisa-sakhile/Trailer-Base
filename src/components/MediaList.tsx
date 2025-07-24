@@ -39,7 +39,7 @@ const MediaList: React.FC<MediaListProps> = ({
   };
 
   return (
-    <section className="w-full flex flex-col items-start justify-center gap-4 px-4 sm:px-6 lg:px-8 py-6">
+    <section className="w-full flex flex-col items-center justify-center gap-4 px-4 sm:px-6 lg:px-8 py-6">
       <div className="w-full flex items-center justify-between">
         <h2 className="text-2xl max-sm:text-xl lg:text-4xl text-gray-100 font-medium capitalize tracking-tight">
           {title}

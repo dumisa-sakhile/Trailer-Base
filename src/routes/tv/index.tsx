@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { getTrendingTV, getTVList } from "@/api/tv";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import TvDisplay from "@/components/TvDisplay";
 import MediaList from "@/components/MediaList";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import { Search as SearchIconLucide } from "lucide-react";
 
 interface PageProps {
   page: number;
@@ -21,6 +23,26 @@ export const Route = createFileRoute("/tv/")({
 
 function App() {
   const { period, page } = Route.useSearch();
+  const navigate = useNavigate();
+  const [searchInput, setSearchInput] = useState("");
+
+  // Debounce search input to navigate to /search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchInput) {
+        navigate({
+          to: "/search",
+          search: { query: searchInput, type: "tv", page: 1 },
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchInput, navigate]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
 
   // Trending TV Shows Query
   const {
@@ -114,21 +136,32 @@ function App() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen ">
-      {/* This motion.div was empty and can be removed or repurposed if it's meant to animate the whole page entrance */}
-      {/* <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}>
-      </motion.div> */}
+    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen">
+      {/* Mobile-only search section */}
+      <section className="md:hidden px-4 pt-6">
+        <h1 className="text-3xl text-white text-center font-extrabold tracking-tight mb-4">
+          Find Your Next TV Show
+        </h1>
+        <div className="relative">
+          <input
+            type="search"
+            placeholder="Search TV shows, e.g. The Chosen"
+            value={searchInput}
+            onChange={handleSearchChange}
+            className="w-full h-12 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white placeholder:text-white pl-12 pr-4 leading-6 outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all font-normal shadow-lg"
+            aria-label="Search TV shows"
+          />
+          <span className="absolute left-4 top-1/2 -translate-y-1/2">
+            <SearchIconLucide size={18} className="text-gray-400" />
+          </span>
+        </div>
+      </section>
 
-      {/* Changed whileInView to animate for immediate animation on render */}
       <motion.div
         variants={itemVariants}
         className="hidden md:block"
         initial="hidden"
-        animate="visible" // Changed from whileInView
-      >
+        animate="visible">
         <TvDisplay
           data={mappedTrendingData}
           isLoading={isTrendingLoading}
@@ -138,12 +171,10 @@ function App() {
         />
       </motion.div>
 
-      {/* Changed whileInView to animate for immediate animation on render */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="visible" // Changed from whileInView
-      >
+        animate="visible">
         <MediaList
           mediaType="tv"
           list="popular"
@@ -156,12 +187,10 @@ function App() {
       </motion.div>
       <br />
       <br />
-      {/* Changed whileInView to animate for immediate animation on render */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="visible" // Changed from whileInView
-      >
+        animate="visible">
         <MediaList
           mediaType="tv"
           list="top_rated"

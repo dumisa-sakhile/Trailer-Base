@@ -11,6 +11,7 @@ import MediaCard from "@/components/MediaCard";
 import EditProfileForm from "@/components/EditProfileForm";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
+import toast from "react-hot-toast";
 
 export interface Bookmark {
   id: number;
@@ -26,6 +27,8 @@ interface UserData {
   gender?: string;
 }
 
+
+
 export const Route = createFileRoute("/auth/profile")({
   component: Profile,
 });
@@ -34,6 +37,22 @@ function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "movie" | "tv">("all");
+
+  const navigate = Route.useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (!currentUser) {
+        navigate({
+          to: "/auth",
+        });
+        toast.error("You must be signed in to view the profile page.");
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {

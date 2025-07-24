@@ -29,6 +29,11 @@ function Auth() {
   const [user, setUser] = useState<any | null>(null);
   const navigate = useNavigate();
 
+  const buttonBaseStyles =
+    "w-full py-2 px-4 rounded-lg transition-all duration-200";
+  const disabledStyles =
+    "opacity-50 cursor-not-allowed bg-gray-600 hover:bg-gray-600";
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -189,48 +194,75 @@ function Auth() {
     }
   };
 
-  // Animation variants for staggered entrance
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
-
   return (
     <>
-      <title>Explore Movies & TV Shows</title>
+      <title>Trailer Base - Sign In</title>
+      {/* Tailwind CSS custom styles for blob animation and body background */}
+      <style>
+        {`
+        body {
+          background-color: #1a1a1a; /* Dark background for better contrast */
+        }
+
+        @keyframes blob {
+          0% {
+            transform: translate(0, 0) scale(1);
+          }
+          33% {
+            transform: translate(50px, -80px) scale(1.2); /* Increased movement and scale */
+          }
+          66% {
+            transform: translate(-40px, 40px) scale(0.8); /* Increased movement and scale */
+          }
+          100% {
+            transform: translate(0, 0) scale(1);
+          }
+        }
+
+        .animate-blob {
+          animation: blob 10s infinite cubic-bezier(0.6, 0.01, 0.3, 0.9); /* Increased duration for smoother effect */
+        }
+
+        .animation-delay-2000 {
+          animation-delay: 3s; /* Adjusted delay */
+        }
+
+        .animation-delay-4000 {
+          animation-delay: 6s; /* Adjusted delay */
+        }
+        `}
+      </style>
+      {/* Background Gradients/Effects */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 z-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
+        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
+      </div>
+
       <motion.section
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="w-full h-lvh flex items-center justify-center bg-black text-white px-4 sm:px-0">
+        className="relative z-10 w-full min-h-[700px] flex items-center justify-center text-white overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}>
         <motion.div
-          variants={containerVariants}
-          className="bg-[#222222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-sm">
+          className="bg-[#222222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-md"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}>
           <motion.h2
-            variants={itemVariants}
-            className="text-2xl font-bold mb-6">
+            className="text-2xl font-bold mb-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}>
             {user ? "Sign Out" : "Log In or Create an Account"}
           </motion.h2>
 
           {error && (
             <motion.div
-              variants={itemVariants}
               className="mb-4 text-red-500 text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
               aria-live="assertive">
               {error}
             </motion.div>
@@ -238,72 +270,88 @@ function Auth() {
 
           {user ? (
             <motion.div
-              variants={containerVariants}
-              className="mb-4 text-center">
-              <motion.p variants={itemVariants} className="mb-4 text-sm">
+              className="mb-4 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}>
+              <motion.p
+                className="mb-4 text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}>
                 You are signed in as {user.email}.
               </motion.p>
               <motion.button
-                variants={itemVariants}
                 onClick={handleSignOut}
                 disabled={isLoading}
-                className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg disabled:opacity-50 text-sm">
+                className={`${buttonBaseStyles} bg-red-600 text-white ${isLoading ? disabledStyles : "hover:bg-red-700"}`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}>
                 {isLoading ? "Signing Out..." : "Sign Out"}
               </motion.button>
             </motion.div>
           ) : isLinkSent ? (
             <motion.div
-              variants={containerVariants}
-              className="mb-4 text-center">
+              className="mb-4 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}>
               <motion.div
-                variants={itemVariants}
                 className="mb-4 text-green-500 text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
                 aria-live="polite">
-                Magic link sent! Please check your email to sign in or create an account.
+                Magic link sent! Please check your email to sign in or create an
+                account.
               </motion.div>
               <motion.a
-                variants={itemVariants}
                 href={getEmailProviderUrl(
                   window.localStorage.getItem("emailForSignIn") || ""
                 )}
                 rel="noopener noreferrer"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg disabled:opacity-50 inline-block text-sm">
+                className={`${buttonBaseStyles} bg-blue-600 hover:bg-blue-700 text-white inline-block`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}>
                 Open Email
               </motion.a>
             </motion.div>
           ) : (
             <>
               <motion.button
-                variants={itemVariants}
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center bg-white text-black py-2 px-4 rounded-lg mb-4 hover:bg-[#e5e5e5] disabled:opacity-50 text-sm"
+                className={`${buttonBaseStyles} flex items-center justify-center bg-white text-black mb-4 ${isLoading ? disabledStyles : "hover:bg-gray-200"}`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
                 aria-label="Sign in with Google">
-                <motion.img
-                  variants={itemVariants}
+                <img
                   src="https://www.google.com/favicon.ico"
                   alt="Google Icon"
                   className="w-5 h-5 mr-2"
                 />
-                Log/Sign up with Google
+                Sign in with Google {/* Changed text here */}
               </motion.button>
 
               <motion.div
-                variants={itemVariants}
-                className="flex items-center my-4">
+                className="flex items-center my-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}>
                 <div className="flex-grow border-t border-white/10"></div>
-                <motion.span
-                  variants={itemVariants}
-                  className="mx-4 text-sm text-white">
-                  or
-                </motion.span>
+                <span className="mx-4 text-sm text-white">or</span>
                 <div className="flex-grow border-t border-white/10"></div>
               </motion.div>
 
               <motion.form
-                variants={containerVariants}
-                onSubmit={handleMagicLink}>
-                <motion.div variants={itemVariants} className="mb-4">
+                onSubmit={handleMagicLink}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}>
+                <div className="mb-4">
                   <label className="block text-sm mb-2" htmlFor="email">
                     Email
                   </label>
@@ -313,19 +361,41 @@ function Auth() {
                     placeholder="Enter your email"
                     value={email}
                     onChange={handleEmailChange}
-                    className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] text-sm"
+                    className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] text-sm" // Increased py-2 to py-3 for height
                     required
                     aria-invalid={!isValidEmail}
                   />
-                </motion.div>
+                  {!isValidEmail && email && (
+                    <motion.div
+                      className="text-red-500 text-sm mt-2"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      aria-live="assertive">
+                      Please enter a valid email address.
+                    </motion.div>
+                  )}
+                </div>
 
                 <motion.button
-                  variants={itemVariants}
                   type="submit"
-                  disabled={isLoading || !isValidEmail}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg mb-4 disabled:opacity-50 text-sm">
+                  disabled={isLoading || !isValidEmail || !email}
+                  className={`${buttonBaseStyles} bg-blue-600 text-white mb-4 ${isLoading || !isValidEmail || !email ? disabledStyles : "hover:bg-blue-700"}`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.7, duration: 0.5 }}>
                   {isLoading ? "Sending..." : "Email magic link"}
                 </motion.button>
+
+                {/* New text about benefits of creating an account */}
+                <motion.p
+                  className="text-center text-xs text-gray-400 mt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}>
+                  Create an account to bookmark your favorite movies and TV
+                  shows, receive personalized recommendations, and more!
+                </motion.p>
               </motion.form>
             </>
           )}

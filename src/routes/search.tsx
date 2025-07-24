@@ -10,8 +10,7 @@ import { searchMovies, discoverMovies } from "@/api/movie";
 import { searchTV, discoverTV } from "@/api/tv";
 import { searchPerson, getTrendingPeople } from "@/api/people";
 import MediaCard from "@/components/MediaCard";
-import PersonSearchCard from "@/components/PersonSearchCard";
-
+import CastCard from "@/components/PeopleCastCard";
 import movieGenres from "@/data/movieGenres";
 import tvGenres from "@/data/tvGenres";
 import { motion, AnimatePresence } from "framer-motion";
@@ -365,7 +364,6 @@ function Search() {
               }`}
               value={inputValue}
               onChange={handleSearchChange}
-              // Placeholder text is now white
               className="w-full h-14 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white placeholder:text-white pl-14 pr-36 leading-6 outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all font-normal shadow-lg"
               aria-label={`Search ${label.toLowerCase()}`}
             />
@@ -471,7 +469,6 @@ function Search() {
                       <X size={20} />
                     </button>
 
-                    {/* Max height added back to this div, and links are block with no background */}
                     <div className="flex flex-col gap-2 overflow-y-auto custom-scrollbar pt-6 pb-2 max-h-[60vh]">
                       {currentGenreList.length > 0 ? (
                         currentGenreList.map((genre) => (
@@ -484,8 +481,7 @@ function Search() {
                               typeId: String(genre.id),
                             }}
                             search={{ page: 1 }}
-                            // Removed bg-neutral-700, keeping hover:bg-blue-600
-                            className="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-600 text-white text-sm font-medium transition-colors cursor-pointer"
+                            className="block w-full text-left px-4 py-2 rounded-lg hover:bg-blue-600 text-white text-sm font-medium transition-color cursor-pointer"
                             onClick={() => setIsGenrePopupOpen(false)}>
                             {genre.name}
                           </Link>
@@ -504,7 +500,7 @@ function Search() {
           )}
         </div>
       </header>
-      
+
       <main className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 py-8">
         <div className="max-w-7xl mx-auto">
           <h3 className="text-xl sm:text-2xl text-white mb-6 font-semibold border-b border-neutral-800 pb-3">
@@ -564,11 +560,11 @@ function Search() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.05 * index }}>
                   {item.type === "person" ? (
-                    <PersonSearchCard
-                      id={item.id}
+                    <CastCard
+                      id={Number(item.id)}
                       name={item.name}
-                      profile_path={item.profile_path}
-                      url={item.url}
+                      profile_path={item.profile_path ?? undefined}
+                      character="Actor"
                     />
                   ) : (
                     <MediaCard
