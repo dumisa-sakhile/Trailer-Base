@@ -145,7 +145,7 @@ function MovieDetails() {
 
   // Format runtime (e.g., 125 minutes -> "2h 5m")
   const formatRuntime = useCallback((minutes?: number) => {
-    if (!minutes) return "N/A";
+    if (minutes === undefined) return "N/A";
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours ? `${hours}h ` : ""}${mins ? `${mins}m` : ""}`.trim();
@@ -255,23 +255,22 @@ function MovieDetails() {
       )}
 
       {/* Movie details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8  overflow-auto">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
-        {(videosLoading || !videoUrl || !showVideo ) &&
-          data?.poster_path && (
-            <div className="hidden md:flex relative md:static">
-              <img
-                src={
-                  data?.poster_path
-                    ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
-                    : FALLBACK_POSTER
-                }
-                alt={data?.title || "Movie Poster"}
-                className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
-              />
-            </div>
-          )}
+        {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
+          <div className="hidden md:flex relative md:static">
+            <img
+              src={
+                data?.poster_path
+                  ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
+                  : FALLBACK_POSTER
+              }
+              alt={data?.title || "Movie Poster"}
+              className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+            />
+          </div>
+        )}
 
         {/* Poster image: Show on mobile as a result of the video hidden by default */}
         {data?.poster_path && (
@@ -306,7 +305,7 @@ function MovieDetails() {
           </p>
         )}
 
-        {/* Website, bookmark */}
+        {/* Website, bookmark, and release date */}
         <section className="flex gap-2 flex-wrap">
           {data?.release_date && (
             <span className="button-style">
@@ -317,7 +316,7 @@ function MovieDetails() {
               })}
             </span>
           )}
-          {data?.vote_average && (
+          {(data?.vote_average as number) > 1 && (
             <p className="flex items-center gap-2 button-style">
               <VoteIcon />
               <span className="font-bold">
@@ -326,7 +325,7 @@ function MovieDetails() {
             </p>
           )}
 
-          {data?.runtime && (
+          {(data?.runtime as number) > 1 && (
             <p className="button-style">
               Duration:{" "}
               <span className="font-bold">{formatRuntime(data?.runtime)}</span>
@@ -435,7 +434,7 @@ function MovieDetails() {
         <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight ">
           Recommendations
         </h1>
-        <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10 pb-10">
+        <section className="relative w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10">
           {recommendations?.results?.length === 0 && (
             <p>No recommendations available</p>
           )}
@@ -453,12 +452,10 @@ function MovieDetails() {
               />
             )
           )}
+          <div className="w-full h-[50px]">
+            {/* {empty div to provide spacing at the bottom of the section as this is the last element on the page} */}
+          </div>
         </section>
-
-        <br />
-        <br />
-        <br />
-        <br />
       </div>
     </>
   );

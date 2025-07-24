@@ -71,7 +71,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
             }}
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 max-sm:p-2">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 max-sm:p-2 rounded-full">
           <div className="flex items-center gap-2">
             <Star size={16} className="text-[#FACC15]" />
             <span className="text-xs font-semibold text-[#FACC15] max-sm:text-[9px]">

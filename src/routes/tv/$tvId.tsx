@@ -261,7 +261,7 @@ function TVDetails() {
       </div>
 
       {/* TV show details */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 pb-10">
+      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 pb-10 overflow-auto">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
@@ -320,7 +320,7 @@ function TVDetails() {
               })}
             </span>
           )}
-          {data?.vote_average && (
+          {data?.vote_average as number > 1 && (
             <p className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10">
               <StarIcon />
               <span className="font-bold">
@@ -347,9 +347,7 @@ function TVDetails() {
               className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Visit TV show website">
               <WebsiteIcon />
-              <span className="text-md  capitalize">
-                website
-              </span>
+              <span className="text-md  capitalize">website</span>
             </a>
           )}
           <TvBookmarkBtn
@@ -362,7 +360,6 @@ function TVDetails() {
             }}
             isBookmarked={!!isBookmarked}
             category="tv"
-      
           />
           {videoUrl && (
             <a
@@ -393,7 +390,6 @@ function TVDetails() {
               })
             )}
             typeKey="with_original_language"
-           
           />
         )}
 
@@ -402,7 +398,6 @@ function TVDetails() {
             title="Genre"
             items={data?.genres?.map(({ name, id }) => ({ id, name }))}
             typeKey="with_genres"
-           
           />
         )}
 
@@ -414,7 +409,6 @@ function TVDetails() {
               name,
             }))}
             typeKey="with_companies"
-           
           />
         )}
 
@@ -426,7 +420,6 @@ function TVDetails() {
               name,
             }))}
             typeKey="with_origin_country"
-           
           />
         )}
 
@@ -437,9 +430,7 @@ function TVDetails() {
               className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Created By">
               <CreatorIcon />
-              <span className="text-md  capitalize">
-                created by
-              </span>
+              <span className="text-md  capitalize">created by</span>
             </span>
             |
             {data?.created_by?.map(({ name, id }) => (
@@ -497,11 +488,11 @@ function TVDetails() {
               />
             )
           )}
+          <div className="w-full h-[50px]">
+            {/* {empty div to provide spacing at the bottom of the section as this is the last element on the page} */}
+          </div>
         </section>
-        <br />
-        <br />
-        <br />
-        <br />
+       
       </div>
     </>
   );
