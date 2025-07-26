@@ -23,6 +23,14 @@ const Header = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Define the allowed exact routes for the header to be visible
+  const allowedExactRoutes = ["/", "/tv", "/people", "/auth", "/search"];
+
+  // Check if the current pathname is either an exact match or follows /people/:personId pattern
+  const shouldShowHeader =
+    allowedExactRoutes.includes(location.pathname) ||
+    /^\/people\/[^/]+$/.test(location.pathname);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -140,6 +148,11 @@ const Header = () => {
     );
   };
 
+  // Conditionally render the header only on allowed routes
+  if (!shouldShowHeader) {
+    return null;
+  }
+
   return (
     <>
       {/* Desktop/Tablet Sidebar */}
@@ -186,7 +199,7 @@ const Header = () => {
       </aside>
 
       {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-lg bg-black/60 backdrop-blur-2xl rounded-3xl z-50 px-4 py-3 shadow-2xl">
+      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-black/60 backdrop-blur-2xl rounded-3xl z-50 px-4 py-3 shadow-2xl">
         <div className="flex justify-around items-center h-full">
           {navItems.slice(0, 2).map((item) => (
             <NavItemComponent key={item.path} item={item} isMobile={true} />

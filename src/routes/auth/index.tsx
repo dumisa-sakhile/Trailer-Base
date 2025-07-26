@@ -166,8 +166,7 @@ function Auth() {
 
       toast.success("Successfully signed in with Google!");
       navigate({
-        to: "/",
-        search: { page: 1, period: "day" },
+        to: "/auth/profile",
       });
     } catch (err: any) {
       setError(err.message);

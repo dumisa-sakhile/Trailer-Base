@@ -94,8 +94,7 @@ function VerifyMagicLink() {
 
       toast.success("Successfully signed in!");
       navigate({
-        to: "/",
-        search: { page: 1, period: "day" },
+        to: "/auth/profile",
       });
     } catch (err: any) {
       setError(err.message);

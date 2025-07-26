@@ -23,7 +23,6 @@ import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useBookmarkMutations } from "./useBookmarkMutations";
 import { getTVDetails } from "@/api/tv";
-import Loading from "@/components/Loading";
 
 interface TVProps {
   id: number;
@@ -103,6 +102,24 @@ const useWindowSize = () => {
   return windowSize;
 };
 
+// Skeleton loading component for a single TV show card
+const TVCardSkeleton: React.FC<{ style: React.CSSProperties }> = ({
+  style,
+}) => (
+  <div
+    style={style}
+    className="relative group inline-block animate-pulse rounded-md">
+    <div
+      className="w-[140px] h-[210px] bg-neutral-800 rounded-md"
+      style={{ borderRadius: "0.375rem" }}>
+      <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/50 to-transparent flex flex-col justify-end p-2 rounded-md">
+        <div className="h-4 bg-neutral-700 rounded w-3/4 mb-2"></div>
+        <div className="h-3 bg-neutral-700 rounded w-1/2"></div>
+      </div>
+    </div>
+  </div>
+);
+
 const TVCard: React.FC<{
   tvShow: TVProps;
   index: number;
@@ -119,11 +136,9 @@ const TVCard: React.FC<{
     <div style={style} className="relative group inline-block">
       <Suspense
         fallback={
-          <div
-            className="w-[140px] h-[210px] bg-gray-900 rounded-md"
-            style={{ borderRadius: "0.375rem" }}>
-            <Loading />
-          </div>
+          <TVCardSkeleton
+            style={{ width: `${ITEM_WIDTH}px`, height: "210px" }}
+          />
         }>
         <button
           onClick={() => onClick(tvShow.id)}
@@ -146,9 +161,9 @@ const TVCard: React.FC<{
             />
           ) : (
             <div
-              className="w-full h-full bg-gray-900 flex items-center justify-center rounded-md"
+              className="w-full h-full bg-neutral-900 flex items-center justify-center rounded-md"
               style={{ borderRadius: "0.375rem" }}>
-              <p className="text-gray-500 text-sm">No poster</p>
+              <p className="text-neutral-500 text-sm">No poster</p>
             </div>
           )}
           <div
@@ -176,7 +191,7 @@ const TVCard: React.FC<{
               </button>
             ) : (
               <button
-                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
                 onClick={() =>
                   addBookmarkMutation.mutate({
                     id: tvShow.id,
@@ -199,6 +214,58 @@ const TVCard: React.FC<{
   );
 };
 
+// Skeleton loading component for the main display area
+const TvDisplaySkeleton: React.FC = () => {
+  const { width: windowWidth } = useWindowSize();
+  const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
+
+  return (
+    <div className="relative w-full h-screen flex flex-col md:flex animate-pulse">
+      {/* Featured TV Background Skeleton */}
+      <div className="absolute inset-0 w-full h-full bg-neutral-900"></div>
+
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
+
+      {/* Featured TV Content Skeleton */}
+      <div className="relative flex-grow flex items-center justify-end z-20">
+        <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
+          <div className="h-10 bg-neutral-700 rounded w-3/4 mb-4"></div>
+          <div className="h-6 bg-red-600 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-neutral-700 rounded w-1/2 mb-2"></div>
+          <div className="h-4 bg-neutral-700 rounded w-1/3 mb-4"></div>
+          <div className="h-20 bg-neutral-700 rounded w-full mb-4"></div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
+            <div className="bg-blue-600 rounded w-32 h-10"></div>
+            <div className="bg-neutral-700 rounded w-10 h-10"></div>
+          </div>
+          <div className="h-4 bg-neutral-700 rounded w-2/3 mt-2"></div>
+        </div>
+      </div>
+
+      {/* Scrollable TV List Skeleton */}
+      <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20 flex overflow-hidden">
+        {Array.from({ length: visibleItems }).map((_, index) => (
+          <TVCardSkeleton
+            key={index}
+            style={{
+              width: `${ITEM_WIDTH}px`,
+              height: "210px",
+              marginRight: `${ITEM_MARGIN}px`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Scroll Buttons Skeleton */}
+      <div className="absolute bottom-58 right-2 flex gap-2 z-20">
+        <div className="bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+        <div className="bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+      </div>
+    </div>
+  );
+};
+
 const TvDisplay: React.FC<DisplayProps> = ({
   data,
   isLoading,
@@ -208,7 +275,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
 }) => {
   const listRef = useRef<FixedSizeList>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const queryClient = useQueryClient();
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
@@ -249,13 +315,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
       (data?.results?.length ? data.results[0] : null),
     [otherTVShows, featuredTVId, data?.results]
   );
-
-  // Handle initial loading state
-  useEffect(() => {
-    if (!isLoading && !isDetailsLoading && (featuredTV || featuredTVDetails)) {
-      setIsInitialLoading(false);
-    }
-  }, [isLoading, isDetailsLoading, featuredTV, featuredTVDetails]);
 
   // Set default featured TV show to the first in the list
   useEffect(() => {
@@ -414,12 +473,9 @@ const TvDisplay: React.FC<DisplayProps> = ({
     [otherTVShows, featuredTVId]
   );
 
-  if (isInitialLoading) {
-    return (
-      <div className="relative w-full h-screen bg-black flex items-center justify-center">
-        <Loading />
-      </div>
-    );
+  // Use combined loading states to show the skeleton
+  if (isLoading || isDetailsLoading || !featuredTV) {
+    return <TvDisplaySkeleton />;
   }
 
   return (
@@ -433,8 +489,8 @@ const TvDisplay: React.FC<DisplayProps> = ({
         {/* Featured TV Background */}
         <Suspense
           fallback={
-            <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-              <Loading />
+            <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center animate-pulse">
+              <div className="h-full w-full bg-neutral-800"></div>
             </div>
           }>
           <div className="absolute inset-0 w-full h-full">
@@ -451,8 +507,8 @@ const TvDisplay: React.FC<DisplayProps> = ({
                 loading="lazy"
               />
             ) : (
-              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
-                <p className="text-gray-400">No backdrop available</p>
+              <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
+                <p className="text-neutral-400">No backdrop available</p>
               </div>
             )}
           </div>
@@ -465,7 +521,18 @@ const TvDisplay: React.FC<DisplayProps> = ({
         <Suspense
           fallback={
             <div className="relative flex-grow flex items-center justify-center z-20">
-              <Loading />
+              <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl animate-pulse">
+                <div className="h-10 bg-neutral-700 rounded w-3/4 mb-4"></div>
+                <div className="h-6 bg-red-600 rounded w-1/4 mb-2"></div>
+                <div className="h-4 bg-neutral-700 rounded w-1/2 mb-2"></div>
+                <div className="h-4 bg-neutral-700 rounded w-1/3 mb-4"></div>
+                <div className="h-20 bg-neutral-700 rounded w-full mb-4"></div>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
+                  <div className="bg-blue-600 rounded w-32 h-10"></div>
+                  <div className="bg-neutral-700 rounded w-10 h-10"></div>
+                </div>
+                <div className="h-4 bg-neutral-700 rounded w-2/3 mt-2"></div>
+              </div>
             </div>
           }>
           <div className="relative flex-grow flex items-center justify-end z-20">
@@ -477,10 +544,10 @@ const TvDisplay: React.FC<DisplayProps> = ({
                 <p className="text-red-500 text-lg sm:text-xl md:text-2xl lg:text-3xl geist-bold capitalize mt-2">
                   {`Rank: ${getFeaturedTVIndex() + 1}`}
                 </p>
-                <p className="text-gray-200 text-sm sm:text-base md:text-lg mt-2">
+                <p className="text-neutral-200 text-sm sm:text-base md:text-lg mt-2">
                   {featuredTVDetails?.tagline || "No tagline available"}
                 </p>
-                <p className="text-gray-200 text-sm sm:text-base md:text-lg">
+                <p className="text-neutral-200 text-sm sm:text-base md:text-lg">
                   {formatDate(featuredTVDetails?.first_air_date) ||
                     formatDate(featuredTV?.release_date) ||
                     "N/A"}{" "}
@@ -492,7 +559,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                   •{" "}
                   {featuredTVDetails?.original_language?.toUpperCase() || "N/A"}
                 </p>
-                <p className="text-gray-300 text-xs sm:text-sm max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
+                <p className="text-neutral-300 text-xs sm:text-sm max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mt-2">
                   {featuredTVDetails?.overview ||
                     featuredTV?.overview ||
                     "No overview available"}
@@ -525,12 +592,14 @@ const TvDisplay: React.FC<DisplayProps> = ({
                           )
                         }
                         disabled={removeBookmarkMutation.isPending}
-                        aria-label={`Remove ${featuredTV?.name || "Unknown"} from bookmarks`}>
+                        aria-label={`Remove ${
+                          featuredTV?.name || "Unknown"
+                        } from bookmarks`}>
                         <BookmarkMinus size={20} />
                       </button>
                     ) : (
                       <button
-                        className="bg-[#333]/50 backdrop-blur-md text-gray-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
+                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredTV?.id || 0,
@@ -545,12 +614,14 @@ const TvDisplay: React.FC<DisplayProps> = ({
                           addBookmarkMutation.isPending ||
                           !featuredTV?.poster_path
                         }
-                        aria-label={`Add ${featuredTV?.name || "Unknown"} to bookmarks`}>
+                        aria-label={`Add ${
+                          featuredTV?.name || "Unknown"
+                        } to bookmarks`}>
                         <BookmarkPlus size={20} />
                       </button>
                     ))}
                 </div>
-                <p className="text-gray-200 text-xs sm:text-sm mt-2">
+                <p className="text-neutral-200 text-xs sm:text-sm mt-2">
                   {featuredTVDetails?.genres
                     ?.map((genre) => genre.name)
                     .join(" | ") || "N/A"}
@@ -568,7 +639,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
               {error instanceof Error ? error.message : "An error occurred"}
             </p>
           )}
-          {!isError && otherTVShows.length > 0 && (
+          {!isError && otherTVShows.length > 0 ? (
             <FixedSizeList
               ref={listRef}
               height={220}
@@ -591,6 +662,20 @@ const TvDisplay: React.FC<DisplayProps> = ({
                 </div>
               )}
             </FixedSizeList>
+          ) : (
+            // Skeleton for the TV show list when data is not yet available or error
+            <div className="flex overflow-hidden px-4 sm:px-6">
+              {Array.from({ length: visibleItems }).map((_, index) => (
+                <TVCardSkeleton
+                  key={index}
+                  style={{
+                    width: `${ITEM_WIDTH}px`,
+                    height: "210px",
+                    marginRight: `${ITEM_MARGIN}px`,
+                  }}
+                />
+              ))}
+            </div>
           )}
         </div>
 
