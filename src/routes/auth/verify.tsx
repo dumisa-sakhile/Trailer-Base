@@ -41,19 +41,22 @@ function VerifyMagicLink() {
           const name =
             window.localStorage.getItem("nameForSignIn") || "Anonymous";
 
-          await setDoc(doc(db, "users", user.uid), {
-            name,
-            email: user.email,
-            createdAt: new Date().toISOString(),
-          });
+          await setDoc(
+            doc(db, "users", user.uid),
+            {
+              name,
+              email: user.email,
+              createdAt: new Date().toISOString(),
+            },
+            { merge: true }
+          );
 
           window.localStorage.removeItem("nameForSignIn");
         }
 
         toast.success("Successfully signed in!");
         navigate({
-          to: "/",
-          search: { page: 1, period: "day" },
+          to: "/auth/profile",
         });
       } catch (err: any) {
         setError(err.message);
@@ -83,11 +86,15 @@ function VerifyMagicLink() {
         const name =
           window.localStorage.getItem("nameForSignIn") || "Anonymous";
 
-        await setDoc(doc(db, "users", user.uid), {
-          name,
-          email: user.email,
-          createdAt: new Date().toISOString(),
-        });
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            name,
+            email: user.email,
+            createdAt: new Date().toISOString(),
+          },
+          { merge: true }
+        );
 
         window.localStorage.removeItem("nameForSignIn");
       }
