@@ -2,12 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/config/firebase";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import {
-  collection,
-  getDocs,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import MediaCard from "@/components/MediaCard"; // Ensure this path is correct
@@ -28,6 +23,7 @@ export interface Bookmark {
 interface UserData {
   username?: string;
   gender?: string;
+  displayName?: string;
 }
 
 export const Route = createFileRoute("/auth/profile")({
@@ -64,9 +60,9 @@ const useWindowSize = () => {
 
 // Defines the dimensions for MediaCard for accurate skeleton sizing
 const MEDIA_CARD_WIDTH_DESKTOP = 260;
-const MEDIA_CARD_HEIGHT_DESKTOP = 390;
+
 const MEDIA_CARD_WIDTH_MOBILE = 120;
-const MEDIA_CARD_HEIGHT_MOBILE = 180;
+
 const CARD_GAP_MD = 24; // md:gap-6
 
 /**
@@ -110,14 +106,12 @@ const ProfileSkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
 
   let cardWidth = MEDIA_CARD_WIDTH_DESKTOP;
-  let cardHeight = MEDIA_CARD_HEIGHT_DESKTOP;
   let cardGap = CARD_GAP_MD; // md:gap-6
   let horizontalPadding = 24 * 2; // px-6
 
   // Adjust for mobile screens
   if (windowWidth < 640) {
     cardWidth = MEDIA_CARD_WIDTH_MOBILE;
-    cardHeight = MEDIA_CARD_HEIGHT_MOBILE;
     cardGap = 8; // gap-2
     horizontalPadding = 16 * 2; // px-4
   }
@@ -185,7 +179,7 @@ function Profile() {
 
   const navigate = Route.useNavigate();
 
-  // Listen for Firebase auth state changes
+  // Listen for Firebase auth check state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -353,7 +347,7 @@ function Profile() {
               <motion.h3
                 variants={itemVariants}
                 className="text-md sm:text-lg font-light text-white">
-                {user?.displayName ||
+                {userData?.displayName ||
                   userData?.username ||
                   "Anonymous, please set a username!"}
               </motion.h3>
@@ -425,7 +419,8 @@ function Profile() {
               <motion.p
                 variants={itemVariants}
                 className="text-gray-300 text-lg font-light p-4">
-                No bookmarks yet. Add some movies or TV shows to your bookmarks!
+                No {filter === "all" ? "bookmarks" : filter} bookmarks yet. Add some movies or TV shows to your
+                bookmarks!
               </motion.p>
             ) : (
               // Using flexbox with flex-wrap and justify-center for flexible columns

@@ -3,9 +3,7 @@ import { motion } from "framer-motion";
 
 // Defines the dimensions for MediaCard for accurate skeleton sizing
 const MEDIA_CARD_WIDTH_DESKTOP = 260;
-const MEDIA_CARD_HEIGHT_DESKTOP = 390;
 const MEDIA_CARD_WIDTH_MOBILE = 120;
-const MEDIA_CARD_HEIGHT_MOBILE = 180;
 const CARD_GAP_MD = 24; // md:gap-6
 const CARD_GAP_SM = 8; // gap-2
 
@@ -74,14 +72,12 @@ const PersonDetailsSkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
 
   let cardWidth = MEDIA_CARD_WIDTH_DESKTOP;
-  let cardHeight = MEDIA_CARD_HEIGHT_DESKTOP;
   let cardGap = CARD_GAP_MD;
   let horizontalPadding = 16 * 2; // px-4 initially
 
   if (windowWidth < 640) {
     // sm breakpoint
     cardWidth = MEDIA_CARD_WIDTH_MOBILE;
-    cardHeight = MEDIA_CARD_HEIGHT_MOBILE;
     cardGap = CARD_GAP_SM; // gap-2
     horizontalPadding = 16 * 2; // px-4
   } else if (windowWidth < 1024) {

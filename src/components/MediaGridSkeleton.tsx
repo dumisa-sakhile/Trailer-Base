@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 
 // Define card dimensions for the skeleton to match MediaCard's actual sizes
 const MEDIA_CARD_WIDTH_DESKTOP = 260;
-const MEDIA_CARD_HEIGHT_DESKTOP = 390;
+
 const MEDIA_CARD_WIDTH_MOBILE = 120;
-const MEDIA_CARD_HEIGHT_MOBILE = 180;
+
 const CARD_GAP = 24; // Corresponds to Tailwind's gap-6 (24px) or gap-10 (40px). Using 24px as a common base.
 
 // Custom hook to get window dimensions for responsive skeleton calculations
@@ -79,7 +79,6 @@ const MediaGridSkeleton: React.FC<MediaGridSkeletonProps> = ({ titleText }) => {
   const { width: windowWidth } = useWindowSize();
 
   let cardWidth = MEDIA_CARD_WIDTH_DESKTOP;
-  let cardHeight = MEDIA_CARD_HEIGHT_DESKTOP;
   let cardGap = CARD_GAP;
   let horizontalPadding = 40; // Based on p-4 md:pl-10 lg:pl-20, using a rough average
 
@@ -87,7 +86,6 @@ const MediaGridSkeleton: React.FC<MediaGridSkeletonProps> = ({ titleText }) => {
   if (windowWidth < 768) {
     // md breakpoint
     cardWidth = MEDIA_CARD_WIDTH_MOBILE;
-    cardHeight = MEDIA_CARD_HEIGHT_MOBILE;
     cardGap = 8; // gap-2
     horizontalPadding = 16; // px-4
   }

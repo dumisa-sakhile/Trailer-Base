@@ -86,12 +86,12 @@ const useWindowSize = () => {
 
 // Defines the dimensions for MediaCard and CastCard for accurate skeleton sizing
 const MEDIA_CARD_WIDTH_DESKTOP = 260;
-const MEDIA_CARD_HEIGHT_DESKTOP = 390;
+
 const MEDIA_CARD_WIDTH_MOBILE = 120;
-const MEDIA_CARD_HEIGHT_MOBILE = 180;
+
 
 const CAST_CARD_WIDTH = 150; // Based on the parent motion.div width in People/Search
-const CAST_CARD_HEIGHT = 225; // Approximate height (image 96 + text)
+
 
 const CARD_GAP_MD = 24; // md:gap-6
 
@@ -163,20 +163,16 @@ const SearchResultsSkeleton: React.FC<SearchResultsSkeletonProps> = ({
   const { width: windowWidth } = useWindowSize();
 
   let cardWidth = MEDIA_CARD_WIDTH_DESKTOP;
-  let cardHeight = MEDIA_CARD_HEIGHT_DESKTOP;
   let cardGap = CARD_GAP_MD; // Default gap-6
   let horizontalPadding = 24 * 2; // px-6
 
   if (type === "people") {
     cardWidth = CAST_CARD_WIDTH;
-    cardHeight = CAST_CARD_HEIGHT;
   }
 
   // Adjust for mobile screens
   if (windowWidth < 640) {
     cardWidth = type === "people" ? CAST_CARD_WIDTH : MEDIA_CARD_WIDTH_MOBILE;
-    cardHeight =
-      type === "people" ? CAST_CARD_HEIGHT : MEDIA_CARD_HEIGHT_MOBILE;
     cardGap = 16; // gap-4
     horizontalPadding = 16 * 2; // px-4
   }
@@ -687,7 +683,9 @@ function Search() {
           <section className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
             {isLoading ? (
               // Show skeleton when content is loading
-              <SearchResultsSkeleton type={type as "movies" | "tv" | "people"} />
+              <SearchResultsSkeleton
+                type={type as "movies" | "tv" | "people"}
+              />
             ) : isError ? (
               // Show error message if data fetching failed
               <motion.div

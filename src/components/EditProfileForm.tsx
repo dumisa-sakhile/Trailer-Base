@@ -32,6 +32,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
       return userDoc.exists() ? (userDoc.data() as UserData) : {};
     },
     enabled: !!user,
+    staleTime: 0,
   });
 
   const [newUsername, setNewUsername] = useState("");
@@ -70,6 +71,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
     },
     onSuccess: () => {
       toast.success("Profile updated successfully!");
+      queryClient.removeQueries({ queryKey: ["userData", user?.uid] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["userData", user?.uid] });
       setNewUsername("");
@@ -89,6 +91,10 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
     setError(null);
     if (!newUsername || newUsername.length < 3) {
       setError("Username must be at least 3 characters long");
+      return;
+    }
+    if (!gender) {
+      setError("Please select a gender");
       return;
     }
     profileMutation.mutate({ username: newUsername, gender });
@@ -199,7 +205,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
               <label
                 htmlFor="gender"
                 className="text-sm text-gray-300 block mb-1">
-                Gender
+                Gender*
               </label>
               <select
                 id="gender"
@@ -207,10 +213,11 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 onChange={(e) => setGender(e.target.value)}
                 className="w-full rounded-lg bg-[#2A2A2D] text-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
                 required>
-                <option value="">Select gender</option>
+                <option value="" disabled>
+                  Select gender
+                </option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="other">Other</option>
               </select>
             </motion.div>
           </motion.div>
