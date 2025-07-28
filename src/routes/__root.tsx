@@ -26,7 +26,7 @@ export const Route = createRootRoute({
           The value [82px] matches the sidebar's collapsed width in Header.tsx.
         */}
         <section
-          className={`absolute top-0 left-0 w-full h-screen pb-[70px] md:pb-0 bg-gradient-to-br from-gray-950 to-black z-10 overflow-auto ${
+          className={`absolute top-0 left-0 w-full h-screen pb-[80px] md:pb-0 bg-gradient-to-br from-gray-950 to-black z-10 overflow-auto ${
             shouldShowHeader ? "md:pl-[56px]" : ""
           }`}>
           {/* The Outlet renders the currently matched route component */}

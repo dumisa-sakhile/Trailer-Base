@@ -184,7 +184,7 @@ const MediaList: React.FC<MediaListProps> = ({
       {/* Render actual media cards if not loading, no error, and data is available */}
       {!isLoading && !isError && data?.results && data.results.length > 0 && (
         <motion.div
-          className="w-full flex flex-wrap justify-center sm:justify-start gap-4 lg:gap-6"
+          className="w-full flex flex-wrap justify-center sm:justify-center gap-4 lg:gap-6"
           initial="hidden"
           // Animate children with a slight stagger effect
           animate="visible"

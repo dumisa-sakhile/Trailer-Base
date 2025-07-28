@@ -156,7 +156,7 @@ const Header = () => {
   return (
     <>
       {/* Desktop/Tablet Sidebar */}
-      <aside className="hidden md:flex flex-col w-14 fixed z-50 left-0 top-0 h-full bg-gray-950 backdrop-blur-xl p-2 items-center shadow-lg justify-between py-6 border-r border-gray-800/50">
+      <aside className="hidden md:flex flex-col w-14 fixed z-50 left-0 top-0 h-full bg-black/60 backdrop-blur-2xl p-2 items-center shadow-2xl justify-between py-6  border-r-1 border-neutral-50/10">
         <Link
           to="/"
           search={{ period: "day", page: 1 }}
@@ -191,7 +191,7 @@ const Header = () => {
             <Link
               to="/auth"
               aria-label="Login"
-              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-blue-700/50 hover:bg-blue-600 transition-all duration-200 text-white shadow-lg">
+              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-600 transition-all duration-200 text-white shadow-lg">
               <LogIn size={20} />
             </Link>
           )}

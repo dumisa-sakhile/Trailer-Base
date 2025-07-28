@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import ReactPlayer from "react-player";
-import { MuteIcon, ReplayIcon, UnMuteIcon } from "./icons/Icons";
+import { VolumeOff, RotateCcw, Volume } from "lucide-react";
 
 interface BackgroundMediaProps {
   videosLoading: boolean;
@@ -82,9 +82,9 @@ const BackgroundMedia: React.FC<BackgroundMediaProps> = React.memo(
                   aria-label={isMuted ? "Unmute video" : "Mute video"}
                   tabIndex={0}>
                   {isMuted ? (
-                 <MuteIcon/>
+                 <VolumeOff/>
                   ) : (
-                   <UnMuteIcon/>
+                   <Volume/>
                   )}
                 </button>
               )}
@@ -94,7 +94,7 @@ const BackgroundMedia: React.FC<BackgroundMediaProps> = React.memo(
                   className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
                   aria-label="Replay video"
                   tabIndex={0}>
-                  <ReplayIcon/>
+                  <RotateCcw/>
                 </button>
               )}
             </div>
