@@ -31,7 +31,7 @@ const Footer: FunctionComponent = () => {
               <Heart className="text-blue-500 text-lg" aria-label="love" />
               by{" "}
               <a
-                href="https://sakhile-dumisa.vercel.app/"
+                href="https://www.sakhiledumisa.com/"
                 className="hover:font-bold transition-all duration-200"
                 target="_blank"
                 rel="noopener noreferrer">
