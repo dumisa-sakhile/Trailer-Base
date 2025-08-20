@@ -192,6 +192,14 @@ const TVCard: React.FC<{
             ) : (
               <button
                 className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                style={{
+                  padding: "0.25rem",
+                  width: "2rem",
+                  height: "2rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
                 onClick={() =>
                   addBookmarkMutation.mutate({
                     id: tvShow.id,
@@ -600,7 +608,15 @@ const TvDisplay: React.FC<DisplayProps> = ({
                       </button>
                     ) : (
                       <button
-                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
+                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 px-4 sm:px-4 py-2 sm:py-3 rounded hover:bg-white hover:text-neutral-900 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                        style={{
+                          padding: "0.5rem 1rem",
+                          minWidth: "2.5rem",
+                          minHeight: "2.5rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredTV?.id || 0,

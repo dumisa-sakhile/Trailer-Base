@@ -176,6 +176,14 @@ const MovieCard: React.FC<{
               ) : (
                 <button
                   className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                  style={{
+                    padding: "0.25rem",
+                    width: "2rem",
+                    height: "2rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                   onClick={() =>
                     addBookmarkMutation.mutate({
                       id: movie.id,
@@ -549,6 +557,14 @@ const Display: React.FC<DisplayProps> = ({
                     ) ? (
                       <button
                         className="bg-red-600 text-white px-4 sm:px-4 py-2 sm:py-3 rounded hover:bg-red-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-red-500"
+                        style={{
+                          minWidth: "2.5rem",
+                          minHeight: "2.5rem",
+                          padding: "0.5rem 1rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                         onClick={() =>
                           removeBookmarkMutation.mutate(
                             featuredMovie?.id?.toString() || ""
@@ -563,6 +579,14 @@ const Display: React.FC<DisplayProps> = ({
                     ) : (
                       <button
                         className="bg-[#333]/50 backdrop-blur-md text-neutral-100 px-4 sm:px-5 py-2 sm:py-3 rounded hover:scale-95 text-base sm:text-xl flex items-center justify-center"
+                        style={{
+                          minWidth: "2.5rem",
+                          minHeight: "2.5rem",
+                          padding: "0.5rem 1rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredMovie?.id || 0,
