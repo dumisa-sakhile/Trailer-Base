@@ -1,5 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+// Array of background images
+const bgImages = [
+  "https://image.tmdb.org/t/p/w780/pN3eaCl3sqwrerU8UNdp40F2mK0.jpg",
+  "https://image.tmdb.org/t/p/original//euYIwmwkmz95mnXvufEmbL6ovhZ.jpg",
+  "https://image.tmdb.org/t/p/original//tpiqEVTLRz2Mq7eLq5DT8jSrp71.jpg",
+];
 import { auth, db } from "../../config/firebase";
 import {
   GoogleAuthProvider,
@@ -27,6 +33,10 @@ function Auth() {
   const [error, setError] = useState<string | null>(null);
   const [isLinkSent, setIsLinkSent] = useState<boolean>(false);
   const [user, setUser] = useState<any | null>(null);
+  const [bgUrl] = useState(() => {
+    // Pick a random image on mount
+    return bgImages[Math.floor(Math.random() * bgImages.length)];
+  });
   const navigate = useNavigate();
 
   const buttonBaseStyles =
@@ -197,54 +207,32 @@ function Auth() {
     <>
       <title>Trailer Base - Sign In</title>
       {/* Tailwind CSS custom styles for blob animation and body background */}
-      <style>
-        {`
-        body {
-          background-color: #1a1a1a; /* Dark background for better contrast */
-        }
-
-        @keyframes blob {
-          0% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(50px, -80px) scale(1.2); /* Increased movement and scale */
-          }
-          66% {
-            transform: translate(-40px, 40px) scale(0.8); /* Increased movement and scale */
-          }
-          100% {
-            transform: translate(0, 0) scale(1);
-          }
-        }
-
-        .animate-blob {
-          animation: blob 10s infinite cubic-bezier(0.6, 0.01, 0.3, 0.9); /* Increased duration for smoother effect */
-        }
-
-        .animation-delay-2000 {
-          animation-delay: 3s; /* Adjusted delay */
-        }
-
-        .animation-delay-4000 {
-          animation-delay: 6s; /* Adjusted delay */
-        }
-        `}
-      </style>
-      {/* Background Gradients/Effects */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 z-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
-        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
+     
+      {/* Background Image + Gradients/Effects */}
+      <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
+        {/* Random background image */}
+        <div
+          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          style={{ backgroundImage: `url('${bgUrl}')` }}></div>
+        {/* Transparent blurred overlay for readability */}
+        <div
+          className="absolute inset-0 w-full h-full "
+          style={{
+            background: "rgba(20,20,30,0.35)",
+            pointerEvents: "none",
+          }}></div>
+        {/* Blob gradients for extra effect */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 pointer-events-none" />
+        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 pointer-events-none" />
       </div>
-
       <motion.section
         className="relative z-10 w-full min-h-[700px] flex items-center justify-center text-white overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}>
         <motion.div
-          className="bg-[#222222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-md"
+          className="bg-[#222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-[400px]"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}>
@@ -255,7 +243,6 @@ function Auth() {
             transition={{ delay: 0.3, duration: 0.5 }}>
             {user ? "Sign Out" : "Log In or Create an Account"}
           </motion.h2>
-
           {error && (
             <motion.div
               className="mb-4 text-red-500 text-sm"
@@ -266,7 +253,6 @@ function Auth() {
               {error}
             </motion.div>
           )}
-
           {user ? (
             <motion.div
               className="mb-4 text-center"
@@ -332,9 +318,8 @@ function Auth() {
                   alt="Google Icon"
                   className="w-5 h-5 mr-2"
                 />
-                Sign in with Google {/* Changed text here */}
+                Sign in with Google
               </motion.button>
-
               <motion.div
                 className="flex items-center my-4"
                 initial={{ opacity: 0 }}
@@ -344,7 +329,6 @@ function Auth() {
                 <span className="mx-4 text-sm text-white">or</span>
                 <div className="flex-grow border-t border-white/10"></div>
               </motion.div>
-
               <motion.form
                 onSubmit={handleMagicLink}
                 initial={{ opacity: 0 }}
@@ -360,7 +344,7 @@ function Auth() {
                     placeholder="Enter your email"
                     value={email}
                     onChange={handleEmailChange}
-                    className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] text-sm" // Increased py-2 to py-3 for height
+                    className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] text-sm"
                     required
                     aria-invalid={!isValidEmail}
                   />
@@ -375,7 +359,6 @@ function Auth() {
                     </motion.div>
                   )}
                 </div>
-
                 <motion.button
                   type="submit"
                   disabled={isLoading || !isValidEmail || !email}
@@ -385,10 +368,9 @@ function Auth() {
                   transition={{ delay: 0.7, duration: 0.5 }}>
                   {isLoading ? "Sending..." : "Email magic link"}
                 </motion.button>
-
                 {/* New text about benefits of creating an account */}
                 <motion.p
-                  className="text-center text-xs text-gray-400 mt-4"
+                  className="text-center text-xs text-gray-100 mt-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8, duration: 0.5 }}>

@@ -6,8 +6,10 @@ export const Route = createFileRoute('/auth')({
 })
 
 function RouteComponent() {
-  return <div>
-    <BackHomeBtn/>
-    <Outlet />
-  </div>
+  return (
+    <div className="poppins-light">
+      <BackHomeBtn />
+      <Outlet />
+    </div>
+  );
 }

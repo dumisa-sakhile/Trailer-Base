@@ -1,5 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+// Confirm Sign Out Modal
+const ConfirmSignOutModal: React.FC<{
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}> = ({ isOpen, onConfirm, onCancel }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-[#18181b] border border-white/10 rounded-2xl shadow-xl p-8 max-w-xs w-full flex flex-col items-center text-center">
+        <h3 className="text-lg font-semibold text-white mb-2">
+          Confirm Sign Out
+        </h3>
+        <p className="text-neutral-300 mb-6">
+          Are you sure you want to sign out?
+        </p>
+        <div className="flex gap-4 w-full">
+          <button
+            className="flex-1 py-2 rounded-lg bg-neutral-700 text-white hover:bg-neutral-600 transition-all"
+            onClick={onCancel}
+            autoFocus>
+            Cancel
+          </button>
+          <button
+            className="flex-1 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all"
+            onClick={onConfirm}>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 import { auth, db } from "@/config/firebase";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
@@ -176,6 +209,7 @@ function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "movie" | "tv">("all");
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const navigate = Route.useNavigate();
 
@@ -361,10 +395,7 @@ function Profile() {
               </motion.button>
               <motion.button
                 variants={itemVariants}
-                onClick={async () => {
-                  await auth.signOut();
-                  navigate({ to: "/auth" });
-                }}
+                onClick={() => setShowSignOutModal(true)}
                 className="bg-red-600 text-white font-semibold text-sm px-5 py-3 rounded-full hover:scale-105 transition-all shadow-md">
                 Sign Out
               </motion.button>
@@ -419,8 +450,8 @@ function Profile() {
               <motion.p
                 variants={itemVariants}
                 className="text-gray-300 text-lg font-light p-4">
-                No {filter === "all" ? "bookmarks" : filter} bookmarks yet. Add some movies or TV shows to your
-                bookmarks!
+                No {filter === "all" ? "bookmarks" : filter} bookmarks yet. Add
+                some movies or TV shows to your bookmarks!
               </motion.p>
             ) : (
               // Using flexbox with flex-wrap and justify-center for flexible columns
@@ -461,6 +492,16 @@ function Profile() {
         isShowing={modalOpen}
         hide={() => setModalOpen(false)}
         user={user}
+      />
+      {/* Confirm Sign Out Modal */}
+      <ConfirmSignOutModal
+        isOpen={showSignOutModal}
+        onCancel={() => setShowSignOutModal(false)}
+        onConfirm={async () => {
+          setShowSignOutModal(false);
+          await auth.signOut();
+          navigate({ to: "/auth" });
+        }}
       />
     </>
   );

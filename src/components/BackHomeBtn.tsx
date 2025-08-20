@@ -1,7 +1,6 @@
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Home } from "lucide-react";
 
-
 const BackHomeBtn = () => {
   const navigate = useNavigate();
   const { history } = useRouter();
@@ -12,10 +11,8 @@ const BackHomeBtn = () => {
       <button
         onClick={() => history.back()}
         aria-label="Go back to previous page"
-        className="
-          button-style
-        ">
-        <ChevronLeft className="w-6 h-6" />
+        className="button-style">
+        <ChevronLeft className="w-5 h-5" stroke="#e5e7eb" strokeWidth={1.5} />
         <span>Back</span>
       </button>
 
@@ -28,10 +25,8 @@ const BackHomeBtn = () => {
           })
         }
         aria-label="Go to homepage"
-        className="
-          button-style
-        ">
-        <Home className="w-6 h-6" />
+        className="button-style">
+        <Home className="w-5 h-5" stroke="#e5e7eb" strokeWidth={1.5} />
         <span>Home</span>
       </button>
     </section>

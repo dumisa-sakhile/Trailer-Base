@@ -1,5 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+// Array of background images (same as auth page)
+const bgImages = [
+  "https://image.tmdb.org/t/p/w780/pN3eaCl3sqwrerU8UNdp40F2mK0.jpg",
+  "https://image.tmdb.org/t/p/original//euYIwmwkmz95mnXvufEmbL6ovhZ.jpg",
+  "https://image.tmdb.org/t/p/original//tpiqEVTLRz2Mq7eLq5DT8jSrp71.jpg",
+];
 import { auth, db } from "../../config/firebase";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -14,6 +20,10 @@ function VerifyMagicLink() {
   const [error, setError] = useState<string | null>(null);
   const [manualEmail, setManualEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [bgUrl] = useState(() => {
+    // Pick a random image on mount
+    return bgImages[Math.floor(Math.random() * bgImages.length)];
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -134,14 +144,32 @@ function VerifyMagicLink() {
   return (
     <>
       <title>Trailer Base - Verify</title>
+      {/* Background Image + Gradients/Effects */}
+      <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
+        {/* Random background image */}
+        <div
+          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          style={{ backgroundImage: `url('${bgUrl}')` }}></div>
+        {/* Transparent blurred overlay for readability */}
+        <div
+          className="absolute inset-0 w-full h-full "
+          style={{
+            background: "rgba(20,20,30,0.35)",
+            pointerEvents: "none",
+          }}></div>
+        {/* Blob gradients for extra effect */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 pointer-events-none" />
+        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 pointer-events-none" />
+      </div>
       <motion.section
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full h-lvh flex items-center justify-center bg-black text-white">
+        className="relative z-10 w-full h-lvh flex items-center justify-center text-white">
         <motion.div
           variants={containerVariants}
-          className="bg-[#222222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-md">
+          className="bg-[#222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-[400px]">
           <motion.h2
             variants={itemVariants}
             className="text-2xl font-bold mb-6">
