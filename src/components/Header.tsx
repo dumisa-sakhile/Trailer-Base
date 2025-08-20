@@ -59,8 +59,9 @@ const Header = () => {
   const getSearchForPath = (path: string) => {
     switch (path) {
       case "/":
+        return
       case "/tv":
-        return { period: "day", page: 1 };
+        return;
       case "/people":
         return { page: 1 };
       case "/search":

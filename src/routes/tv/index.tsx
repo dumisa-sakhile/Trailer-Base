@@ -8,21 +8,14 @@ import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Search as SearchIconLucide } from "lucide-react";
 
-interface PageProps {
-  page: number;
-  period: string;
-}
 
 export const Route = createFileRoute("/tv/")({
-  validateSearch: (search: Record<string, string>): PageProps => ({
-    period: search.period ? search.period : "day",
-    page: search.page ? parseInt(search.page) : 1,
-  }),
   component: App,
 });
 
 function App() {
-  const { period, page } = Route.useSearch();
+  const page = 1;
+  const period: 'day' | 'week' = "day";
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
 

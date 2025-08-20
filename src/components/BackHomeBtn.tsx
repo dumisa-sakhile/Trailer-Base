@@ -21,7 +21,6 @@ const BackHomeBtn = () => {
         onClick={() =>
           navigate({
             to: "/",
-            search: { page: 1, period: "day" },
           })
         }
         aria-label="Go to homepage"

@@ -142,7 +142,7 @@ const TVCard: React.FC<{
         }>
         <button
           onClick={() => onClick(tvShow.id)}
-          className={`w-[140px] h-[210px] overflow-hidden shadow-md focus:outline-none rounded-md ${
+          className={`w-[140px] h-[210px] overflow-hidden focus:outline-none rounded-md hover:scale-95 transition-transform duration-200 ${
             isSelected ? "border-2 border-blue-500" : ""
           }`}
           style={{ borderRadius: "0.375rem" }}>
@@ -166,12 +166,21 @@ const TVCard: React.FC<{
               <p className="text-neutral-500 text-sm">No poster</p>
             </div>
           )}
+          {/* Styled shadow overlay and animated index/title */}
           <div
-            className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
-            style={{ borderRadius: "0.375rem" }}>
-            <h3 className="text-white text-xs font-semibold text-left line-clamp-2 geist-bold">
-              <span className="font-bold text-lg">{index + 1}</span> -{" "}
-              {tvShow.name || "Unknown"}
+            className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex flex-col justify-end p-2 rounded-md shadow-lg"
+            style={{
+              borderRadius: "0.375rem",
+              boxShadow: "0 8px 32px 0 rgba(0,0,0,0.45)",
+            }}>
+            <h3 className="text-white text-xs font-semibold text-left line-clamp-2 geist-bold drop-shadow-lg">
+              <span className="font-light text-lg  drop-shadow-lg">
+                {index + 1}
+              </span>
+              <span className="mx-1 text-white/70">•</span>
+              <span className="drop-shadow-lg font-light">
+                {tvShow.name || "Unknown"}
+              </span>
             </h3>
           </div>
         </button>
@@ -228,15 +237,15 @@ const TvDisplaySkeleton: React.FC = () => {
   const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
 
   return (
-    <div className="relative w-full h-screen flex flex-col md:flex animate-pulse">
-      {/* Featured TV Background Skeleton */}
-      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900"></div>
-
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
+    <div className="relative w-full h-screen flex flex-col animate-pulse">
+      {/* Featured TV Background Skeleton (element only, not page) */}
+      <div className="absolute left-0 top-0 w-full h-full pointer-events-none z-0">
+        <div className="w-full h-full bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent" />
+      </div>
 
       {/* Featured TV Content Skeleton */}
-      <div className="relative flex-grow flex items-center justify-end z-20">
+      <div className="relative flex-grow flex items-center justify-end z-10">
         <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
           <div className="h-10 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-4"></div>
           <div className="h-6 bg-blue-400 dark:bg-blue-700 rounded w-1/4 mb-2"></div>
@@ -251,8 +260,9 @@ const TvDisplaySkeleton: React.FC = () => {
         </div>
       </div>
 
-      {/* Scrollable TV List Skeleton */}
-      <div className="w-full h-[230px] bg-gradient-to-t from-black/70 via-black/30 to-transparent py-2 sm:py-4 z-20 flex overflow-hidden">
+      {/* Scrollable TV List Skeleton (element only, not page) */}
+      <div className="w-full h-[230px] py-2 sm:py-4 z-20 flex overflow-hidden">
+        <div className="absolute left-0 top-0 w-full h-full bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
         {Array.from({ length: visibleItems }).map((_, index) => (
           <TVCardSkeleton
             key={index}
@@ -265,7 +275,7 @@ const TvDisplaySkeleton: React.FC = () => {
         ))}
       </div>
 
-      {/* Scroll Buttons Skeleton */}
+      {/* Scroll Buttons Skeleton (element only, not page) */}
       <div className="absolute bottom-58 right-2 flex gap-2 z-20">
         <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
         <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
@@ -525,8 +535,8 @@ const TvDisplay: React.FC<DisplayProps> = ({
           </div>
         </Suspense>
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
+        {/* Gradient Overlay (left to right for featured TV shadow) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent z-10" />
 
         {/* Featured TV Content (Suspense boundary only for details) */}
         <div className="relative flex-grow flex items-center justify-end z-20">
