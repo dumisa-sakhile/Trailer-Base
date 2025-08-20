@@ -6,6 +6,7 @@ import React, {
   useCallback,
   Suspense,
   useEffect,
+  memo,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
@@ -84,7 +85,7 @@ const useWindowSize = () => {
   return windowSize;
 };
 
-// Skeleton loading component for a single movie card
+// Skeleton loading component for a single movie card (improved colors)
 const MovieCardSkeleton: React.FC<{ style: React.CSSProperties }> = ({
   style,
 }) => (
@@ -92,11 +93,11 @@ const MovieCardSkeleton: React.FC<{ style: React.CSSProperties }> = ({
     style={style}
     className="relative group inline-block animate-pulse rounded-md">
     <div
-      className="w-[140px] h-[210px] bg-neutral-800 rounded-md"
+      className="w-[140px] h-[210px] bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900 rounded-md"
       style={{ borderRadius: "0.375rem" }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/50 to-transparent flex flex-col justify-end p-2 rounded-md">
-        <div className="h-4 bg-neutral-700 rounded w-3/4 mb-2"></div>
-        <div className="h-3 bg-neutral-700 rounded w-1/2"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-white/20 to-transparent dark:from-neutral-900/80 dark:via-neutral-900/40 dark:to-transparent flex flex-col justify-end p-2 rounded-md">
+        <div className="h-4 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-2"></div>
+        <div className="h-3 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2"></div>
       </div>
     </div>
   </div>
@@ -110,93 +111,95 @@ const MovieCard: React.FC<{
   onClick: (id: number) => void;
   bookmarks?: string[];
   category: "movie" | "tv";
-}> = ({ movie, index, style, isSelected, onClick, bookmarks, category }) => {
-  const { addBookmarkMutation, removeBookmarkMutation } =
-    useBookmarkMutations();
+}> = memo(
+  ({ movie, index, style, isSelected, onClick, bookmarks, category }) => {
+    const { addBookmarkMutation, removeBookmarkMutation } =
+      useBookmarkMutations();
 
-  return (
-    <div style={style} className="relative group inline-block">
-      <Suspense
-        fallback={
-          <MovieCardSkeleton
-            style={{ width: `${ITEM_WIDTH}px`, height: "210px" }}
-          />
-        }>
-        <button
-          onClick={() => onClick(movie.id)}
-          className={`w-[140px] h-[210px] overflow-hidden shadow-md focus:outline-none rounded-md ${
-            isSelected ? "border-2 border-blue-500" : ""
-          }`}
-          style={{ borderRadius: "0.375rem" }}>
-          {movie.poster_path ? (
-            <img
-              src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
-              srcSet={`
+    return (
+      <div style={style} className="relative group inline-block">
+        <Suspense
+          fallback={
+            <MovieCardSkeleton
+              style={{ width: `${ITEM_WIDTH}px`, height: "210px" }}
+            />
+          }>
+          <button
+            onClick={() => onClick(movie.id)}
+            className={`w-[140px] h-[210px] overflow-hidden shadow-md focus:outline-none rounded-md ${
+              isSelected ? "border-2 border-blue-500" : ""
+            }`}
+            style={{ borderRadius: "0.375rem" }}>
+            {movie.poster_path ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
+                srcSet={`
                 https://image.tmdb.org/t/p/w185${movie.poster_path} 185w,
                 https://image.tmdb.org/t/p/w342${movie.poster_path} 342w
               `}
-              sizes="(max-width: 640px) 185px, 342px"
-              alt={movie.title || "Movie"}
-              className="w-full h-full object-cover rounded-md"
-              loading="lazy"
-              style={{ borderRadius: "0.375rem" }}
-            />
-          ) : (
+                sizes="(max-width: 640px) 185px, 342px"
+                alt={movie.title || "Movie"}
+                className="w-full h-full object-cover rounded-md"
+                loading="lazy"
+                style={{ borderRadius: "0.375rem" }}
+              />
+            ) : (
+              <div
+                className="w-full h-full bg-neutral-900 flex items-center justify-center rounded-md"
+                style={{ borderRadius: "0.375rem" }}>
+                <p className="text-neutral-500 text-sm">No poster</p>
+              </div>
+            )}
             <div
-              className="w-full h-full bg-neutral-900 flex items-center justify-center rounded-md"
+              className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
               style={{ borderRadius: "0.375rem" }}>
-              <p className="text-neutral-500 text-sm">No poster</p>
+              <h3 className="text-white text-xs font-semibold text-left line-clamp-2 geist-bold">
+                <span className="font-bold text-lg">{index + 1}</span> -{" "}
+                {movie.title || "Unknown"}
+              </h3>
+            </div>
+          </button>
+          {auth?.currentUser && (
+            <div
+              className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity rounded-md"
+              style={{ borderRadius: "0.375rem" }}>
+              {bookmarks?.includes(movie.id.toString()) ? (
+                <button
+                  className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200"
+                  onClick={() =>
+                    removeBookmarkMutation.mutate(movie.id.toString())
+                  }
+                  disabled={removeBookmarkMutation.isPending}
+                  aria-label={`Remove ${movie.title || "Unknown"} from bookmarks`}>
+                  <BookmarkMinus size={20} />
+                </button>
+              ) : (
+                <button
+                  className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                  onClick={() =>
+                    addBookmarkMutation.mutate({
+                      id: movie.id,
+                      title: movie.title,
+                      poster_path: movie.poster_path,
+                      vote_average: movie.vote_average,
+                      release_date: movie.release_date,
+                      category,
+                    })
+                  }
+                  disabled={addBookmarkMutation.isPending || !movie.poster_path}
+                  aria-label={`Add ${movie.title || "Unknown"} to bookmarks`}>
+                  <BookmarkPlus size={20} />
+                </button>
+              )}
             </div>
           )}
-          <div
-            className="absolute inset-0 bg-black/50 flex flex-col justify-end p-2 rounded-md"
-            style={{ borderRadius: "0.375rem" }}>
-            <h3 className="text-white text-xs font-semibold text-left line-clamp-2 geist-bold">
-              <span className="font-bold text-lg">{index + 1}</span> -{" "}
-              {movie.title || "Unknown"}
-            </h3>
-          </div>
-        </button>
-        {auth?.currentUser && (
-          <div
-            className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity rounded-md"
-            style={{ borderRadius: "0.375rem" }}>
-            {bookmarks?.includes(movie.id.toString()) ? (
-              <button
-                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200"
-                onClick={() =>
-                  removeBookmarkMutation.mutate(movie.id.toString())
-                }
-                disabled={removeBookmarkMutation.isPending}
-                aria-label={`Remove ${movie.title || "Unknown"} from bookmarks`}>
-                <BookmarkMinus size={20} />
-              </button>
-            ) : (
-              <button
-                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                onClick={() =>
-                  addBookmarkMutation.mutate({
-                    id: movie.id,
-                    title: movie.title,
-                    poster_path: movie.poster_path,
-                    vote_average: movie.vote_average,
-                    release_date: movie.release_date,
-                    category,
-                  })
-                }
-                disabled={addBookmarkMutation.isPending || !movie.poster_path}
-                aria-label={`Add ${movie.title || "Unknown"} to bookmarks`}>
-                <BookmarkPlus size={20} />
-              </button>
-            )}
-          </div>
-        )}
-      </Suspense>
-    </div>
-  );
-};
+        </Suspense>
+      </div>
+    );
+  }
+);
 
-// Skeleton loading component for the main display area
+// Skeleton loading component for the main display area (improved colors)
 const DisplaySkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
   const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
@@ -204,29 +207,29 @@ const DisplaySkeleton: React.FC = () => {
   return (
     <div className="relative w-full h-screen flex flex-col md:flex animate-pulse">
       {/* Featured Movie Background Skeleton */}
-      <div className="absolute inset-0 w-full h-full bg-neutral-900"></div>
+      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900"></div>
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
 
       {/* Featured Movie Content Skeleton */}
       <div className="relative flex-grow flex items-center justify-end z-20">
         <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
-          <div className="h-10 bg-neutral-700 rounded w-3/4 mb-4"></div>
-          <div className="h-6 bg-red-600 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-neutral-700 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-neutral-700 rounded w-1/3 mb-4"></div>
-          <div className="h-20 bg-neutral-700 rounded w-full mb-4"></div>
+          <div className="h-10 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-4"></div>
+          <div className="h-6 bg-blue-400 dark:bg-blue-700 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2 mb-2"></div>
+          <div className="h-4 bg-neutral-100 dark:bg-neutral-700 rounded w-1/3 mb-4"></div>
+          <div className="h-20 bg-neutral-200 dark:bg-neutral-800 rounded w-full mb-4"></div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
-            <div className="bg-blue-600 rounded w-32 h-10"></div>
-            <div className="bg-neutral-700 rounded w-10 h-10"></div>
+            <div className="bg-blue-400 dark:bg-blue-700 rounded w-32 h-10"></div>
+            <div className="bg-neutral-200 dark:bg-neutral-700 rounded w-10 h-10"></div>
           </div>
-          <div className="h-4 bg-neutral-700 rounded w-2/3 mt-2"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-2/3 mt-2"></div>
         </div>
       </div>
 
       {/* Scrollable Movie List Skeleton */}
-      <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20 flex overflow-hidden">
+      <div className="w-full h-[230px] bg-gradient-to-t from-black/70 via-black/30 to-transparent py-2 sm:py-4 z-20 flex overflow-hidden">
         {Array.from({ length: visibleItems }).map((_, index) => (
           <MovieCardSkeleton
             key={index}
@@ -241,8 +244,8 @@ const DisplaySkeleton: React.FC = () => {
 
       {/* Scroll Buttons Skeleton */}
       <div className="absolute bottom-58 right-2 flex gap-2 z-20">
-        <div className="bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
-        <div className="bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
       </div>
     </div>
   );
@@ -260,6 +263,8 @@ const Display: React.FC<DisplayProps> = ({
   const queryClient = useQueryClient();
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
+  // Use a ref to avoid double render on initial mount
+  const hasSetInitialFeatured = useRef(false);
   const [featuredMovieId, setFeaturedMovieId] = useState<number | null>(null);
 
   const { width: windowWidth } = useWindowSize(); // Get dynamic window width
@@ -301,10 +306,11 @@ const Display: React.FC<DisplayProps> = ({
 
   // Set default featured movie to the first in the list
   useEffect(() => {
-    if (!featuredMovieId && otherMovies.length > 0) {
+    if (!hasSetInitialFeatured.current && otherMovies.length > 0) {
       setFeaturedMovieId(otherMovies[0].id);
+      hasSetInitialFeatured.current = true;
     }
-  }, [featuredMovieId, otherMovies]);
+  }, [otherMovies]);
 
   // Calculate visible items and max scroll offset dynamically
   const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
@@ -431,14 +437,14 @@ const Display: React.FC<DisplayProps> = ({
   );
 
   // Direct check for initial loading state
-  if (isLoading || isDetailsLoading || !featuredMovie) {
+  if (isLoading || !featuredMovie) {
     return <DisplaySkeleton />;
   }
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <section
-        className="relative -mt-10 w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex"
+        className="relative  w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex"
         style={{
           boxShadow:
             "inset 60px 0 60px -30px rgba(0,0,0,0.8), inset -60px 0 60px -30px rgba(0,0,0,0.8)",
@@ -474,10 +480,10 @@ const Display: React.FC<DisplayProps> = ({
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
 
-        {/* Featured Movie Content */}
-        <Suspense
-          fallback={
-            <div className="relative flex-grow flex items-center justify-center z-20">
+        {/* Featured Movie Content (Suspense boundary only for details) */}
+        <div className="relative flex-grow flex items-center justify-end z-20">
+          <Suspense
+            fallback={
               <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl animate-pulse">
                 <div className="h-10 bg-neutral-700 rounded w-3/4 mb-4"></div>
                 <div className="h-6 bg-red-600 rounded w-1/4 mb-2"></div>
@@ -490,9 +496,7 @@ const Display: React.FC<DisplayProps> = ({
                 </div>
                 <div className="h-4 bg-neutral-700 rounded w-2/3 mt-2"></div>
               </div>
-            </div>
-          }>
-          <div className="relative flex-grow flex items-center justify-end z-20">
+            }>
             {(featuredMovie || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
                 <h3 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl geist-bold capitalize">
@@ -587,10 +591,10 @@ const Display: React.FC<DisplayProps> = ({
                 </p>
               </div>
             )}
-          </div>
-        </Suspense>
+          </Suspense>
+        </div>
 
-        {/* Scrollable Movie List */}
+        {/* Scrollable Movie List (no suspense boundary here) */}
         <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
           {isError && (
             <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
@@ -602,9 +606,9 @@ const Display: React.FC<DisplayProps> = ({
             <FixedSizeList
               ref={listRef}
               height={220}
-              width={windowWidth} // Use dynamic window width
+              width={windowWidth}
               itemCount={otherMovies.length}
-              itemSize={ITEM_SIZE} // Use constant item size
+              itemSize={ITEM_SIZE}
               layout="horizontal"
               className="px-4 sm:px-6">
               {({ index, style }: ListChildComponentProps) => (
@@ -612,7 +616,7 @@ const Display: React.FC<DisplayProps> = ({
                   <MovieCard
                     movie={otherMovies[index]}
                     index={index}
-                    style={{ width: `${ITEM_WIDTH}px`, height: "210px" }} // Use ITEM_WIDTH
+                    style={{ width: `${ITEM_WIDTH}px`, height: "210px" }}
                     isSelected={otherMovies[index].id === featuredMovieId}
                     onClick={handleMovieClick}
                     bookmarks={bookmarks}
@@ -622,7 +626,6 @@ const Display: React.FC<DisplayProps> = ({
               )}
             </FixedSizeList>
           ) : (
-            // Skeleton for the movie list when data is not yet available or error
             <div className="flex overflow-hidden px-4 sm:px-6">
               {Array.from({ length: visibleItems }).map((_, index) => (
                 <MovieCardSkeleton

@@ -102,7 +102,7 @@ const useWindowSize = () => {
   return windowSize;
 };
 
-// Skeleton loading component for a single TV show card
+// Skeleton loading component for a single TV show card (improved colors)
 const TVCardSkeleton: React.FC<{ style: React.CSSProperties }> = ({
   style,
 }) => (
@@ -110,11 +110,11 @@ const TVCardSkeleton: React.FC<{ style: React.CSSProperties }> = ({
     style={style}
     className="relative group inline-block animate-pulse rounded-md">
     <div
-      className="w-[140px] h-[210px] bg-neutral-800 rounded-md"
+      className="w-[140px] h-[210px] bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900 rounded-md"
       style={{ borderRadius: "0.375rem" }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/50 to-transparent flex flex-col justify-end p-2 rounded-md">
-        <div className="h-4 bg-neutral-700 rounded w-3/4 mb-2"></div>
-        <div className="h-3 bg-neutral-700 rounded w-1/2"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-white/20 to-transparent dark:from-neutral-900/80 dark:via-neutral-900/40 dark:to-transparent flex flex-col justify-end p-2 rounded-md">
+        <div className="h-4 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-2"></div>
+        <div className="h-3 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2"></div>
       </div>
     </div>
   </div>
@@ -214,7 +214,7 @@ const TVCard: React.FC<{
   );
 };
 
-// Skeleton loading component for the main display area
+// Skeleton loading component for the main display area (improved colors)
 const TvDisplaySkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
   const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
@@ -222,29 +222,29 @@ const TvDisplaySkeleton: React.FC = () => {
   return (
     <div className="relative w-full h-screen flex flex-col md:flex animate-pulse">
       {/* Featured TV Background Skeleton */}
-      <div className="absolute inset-0 w-full h-full bg-neutral-900"></div>
+      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900"></div>
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
 
       {/* Featured TV Content Skeleton */}
       <div className="relative flex-grow flex items-center justify-end z-20">
         <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
-          <div className="h-10 bg-neutral-700 rounded w-3/4 mb-4"></div>
-          <div className="h-6 bg-red-600 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-neutral-700 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-neutral-700 rounded w-1/3 mb-4"></div>
-          <div className="h-20 bg-neutral-700 rounded w-full mb-4"></div>
+          <div className="h-10 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-4"></div>
+          <div className="h-6 bg-blue-400 dark:bg-blue-700 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2 mb-2"></div>
+          <div className="h-4 bg-neutral-100 dark:bg-neutral-700 rounded w-1/3 mb-4"></div>
+          <div className="h-20 bg-neutral-200 dark:bg-neutral-800 rounded w-full mb-4"></div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
-            <div className="bg-blue-600 rounded w-32 h-10"></div>
-            <div className="bg-neutral-700 rounded w-10 h-10"></div>
+            <div className="bg-blue-400 dark:bg-blue-700 rounded w-32 h-10"></div>
+            <div className="bg-neutral-200 dark:bg-neutral-700 rounded w-10 h-10"></div>
           </div>
-          <div className="h-4 bg-neutral-700 rounded w-2/3 mt-2"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-2/3 mt-2"></div>
         </div>
       </div>
 
       {/* Scrollable TV List Skeleton */}
-      <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20 flex overflow-hidden">
+      <div className="w-full h-[230px] bg-gradient-to-t from-black/70 via-black/30 to-transparent py-2 sm:py-4 z-20 flex overflow-hidden">
         {Array.from({ length: visibleItems }).map((_, index) => (
           <TVCardSkeleton
             key={index}
@@ -259,8 +259,8 @@ const TvDisplaySkeleton: React.FC = () => {
 
       {/* Scroll Buttons Skeleton */}
       <div className="absolute bottom-58 right-2 flex gap-2 z-20">
-        <div className="bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
-        <div className="bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
       </div>
     </div>
   );
@@ -278,6 +278,8 @@ const TvDisplay: React.FC<DisplayProps> = ({
   const queryClient = useQueryClient();
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
+  // Use a ref to avoid double render on initial mount
+  const hasSetInitialFeatured = useRef(false);
   const [featuredTVId, setFeaturedTVId] = useState<number | null>(null);
   const { width: windowWidth } = useWindowSize();
 
@@ -318,10 +320,11 @@ const TvDisplay: React.FC<DisplayProps> = ({
 
   // Set default featured TV show to the first in the list
   useEffect(() => {
-    if (!featuredTVId && otherTVShows.length > 0) {
+    if (!hasSetInitialFeatured.current && otherTVShows.length > 0) {
       setFeaturedTVId(otherTVShows[0].id);
+      hasSetInitialFeatured.current = true;
     }
-  }, [featuredTVId, otherTVShows]);
+  }, [otherTVShows]);
 
   // Calculate visible items and max scroll offset
   const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
@@ -474,14 +477,14 @@ const TvDisplay: React.FC<DisplayProps> = ({
   );
 
   // Use combined loading states to show the skeleton
-  if (isLoading || isDetailsLoading || !featuredTV) {
+  if (isLoading || !featuredTV) {
     return <TvDisplaySkeleton />;
   }
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <section
-        className="relative -mt-10 w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex"
+        className="relative  w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex"
         style={{
           boxShadow:
             "inset 60px 0 60px -30px rgba(0,0,0,0.8), inset -60px 0 60px -30px rgba(0,0,0,0.8)",
@@ -517,10 +520,10 @@ const TvDisplay: React.FC<DisplayProps> = ({
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
 
-        {/* Featured TV Content */}
-        <Suspense
-          fallback={
-            <div className="relative flex-grow flex items-center justify-center z-20">
+        {/* Featured TV Content (Suspense boundary only for details) */}
+        <div className="relative flex-grow flex items-center justify-end z-20">
+          <Suspense
+            fallback={
               <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl animate-pulse">
                 <div className="h-10 bg-neutral-700 rounded w-3/4 mb-4"></div>
                 <div className="h-6 bg-red-600 rounded w-1/4 mb-2"></div>
@@ -533,9 +536,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                 </div>
                 <div className="h-4 bg-neutral-700 rounded w-2/3 mt-2"></div>
               </div>
-            </div>
-          }>
-          <div className="relative flex-grow flex items-center justify-end z-20">
+            }>
             {(featuredTV || isDetailsLoading) && (
               <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
                 <h3 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl geist-bold capitalize">
@@ -628,10 +629,10 @@ const TvDisplay: React.FC<DisplayProps> = ({
                 </p>
               </div>
             )}
-          </div>
-        </Suspense>
+          </Suspense>
+        </div>
 
-        {/* Scrollable TV List */}
+        {/* Scrollable TV List (no suspense boundary here) */}
         <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
           {isError && (
             <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
@@ -663,7 +664,6 @@ const TvDisplay: React.FC<DisplayProps> = ({
               )}
             </FixedSizeList>
           ) : (
-            // Skeleton for the TV show list when data is not yet available or error
             <div className="flex overflow-hidden px-4 sm:px-6">
               {Array.from({ length: visibleItems }).map((_, index) => (
                 <TVCardSkeleton
