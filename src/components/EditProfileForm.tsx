@@ -230,7 +230,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
               type="submit"
               disabled={profileMutation.isPending}
               className="bg-white text-black font-semibold px-5 py-2 rounded-full hover:opacity-90 transition-all">
-              {profileMutation.isPending ? "Updating..." : "Done"}
+              {profileMutation.isPending ? "Updating..." : "Save"}
             </motion.button>
             <motion.button
               variants={itemVariants}

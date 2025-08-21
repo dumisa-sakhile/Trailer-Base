@@ -500,7 +500,7 @@ function Profile() {
         onConfirm={async () => {
           setShowSignOutModal(false);
           await auth.signOut();
-          navigate({ to: "/auth" });
+          navigate({ to: "/" });
         }}
       />
     </>

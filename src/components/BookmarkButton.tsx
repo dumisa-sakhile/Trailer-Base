@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { doc, setDoc, deleteDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { BookmarkIcon } from "lucide-react";
 import { db } from "@/config/firebase";
+import AuthDrawer from "./AuthDrawer";
 
 interface BookmarkButtonProps {
   user: import("firebase/auth").User | null;
@@ -27,6 +28,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
   mediaType,
 }) => {
   const queryClient = useQueryClient();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
@@ -54,9 +56,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
   const handleBookmark = () => {
     if (!user) {
-      toast.error(
-        `Please login to bookmark ${mediaType === "movie" ? "movies" : "TV shows"}`
-      );
+      toast.error("Please sign in to bookmark!");
+      setDrawerOpen(true);
       return;
     }
     bookmarkMutation.mutate();
@@ -66,22 +67,25 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
   const colorClass = isBookmarked ? "text-red-600" : "text-yellow-600";
 
   return (
-    <button
-      onClick={handleBookmark}
-      disabled={bookmarkMutation.isPending}
-      aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-      className={`button-style ${colorClass}`}>
-      {bookmarkMutation.isPending ? (
-        <span className="loading loading-spinner loading-sm"></span>
-      ) : (
-        <>
-          <BookmarkIcon className={colorClass} />
-          <span className="text-md capitalize">
-            {isBookmarked ? "Remove Bookmark" : "Bookmark"}
-          </span>
-        </>
-      )}
-    </button>
+    <>
+      <button
+        onClick={handleBookmark}
+        disabled={bookmarkMutation.isPending}
+        aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+        className={`button-style ${colorClass}`}>
+        {bookmarkMutation.isPending ? (
+          <span className="loading loading-spinner loading-sm"></span>
+        ) : (
+          <>
+            <BookmarkIcon className={colorClass} />
+            <span className="text-md capitalize">
+              {isBookmarked ? "Remove Bookmark" : "Bookmark"}
+            </span>
+          </>
+        )}
+      </button>
+      <AuthDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+    </>
   );
 };
 

@@ -1,11 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-// Array of background images (same as auth page)
-const bgImages = [
-  "https://image.tmdb.org/t/p/w780/pN3eaCl3sqwrerU8UNdp40F2mK0.jpg",
-  "https://image.tmdb.org/t/p/original//euYIwmwkmz95mnXvufEmbL6ovhZ.jpg",
-  "https://image.tmdb.org/t/p/original//tpiqEVTLRz2Mq7eLq5DT8jSrp71.jpg",
-];
 import { auth, db } from "../../config/firebase";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -20,10 +14,6 @@ function VerifyMagicLink() {
   const [error, setError] = useState<string | null>(null);
   const [manualEmail, setManualEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [bgUrl] = useState(() => {
-    // Pick a random image on mount
-    return bgImages[Math.floor(Math.random() * bgImages.length)];
-  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -144,50 +134,50 @@ function VerifyMagicLink() {
   return (
     <>
       <title>Trailer Base - Verify</title>
-      {/* Background Image + Gradients/Effects */}
-      <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
-        {/* Random background image */}
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{ backgroundImage: `url('${bgUrl}')` }}></div>
-        {/* Transparent blurred overlay for readability */}
-        <div
-          className="absolute inset-0 w-full h-full "
-          style={{
-            background: "rgba(20,20,30,0.35)",
-            pointerEvents: "none",
-          }}></div>
-        {/* Blob gradients for extra effect */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob pointer-events-none" />
-        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 pointer-events-none" />
-        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 pointer-events-none" />
-      </div>
       <motion.section
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 w-full h-lvh flex items-center justify-center text-white">
+        className="relative z-10 w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-[#181a20] via-[#23272f] to-[#181a20]">
         <motion.div
           variants={containerVariants}
-          className="bg-[#222] backdrop-blur-sm ring-1 ring-[rgba(255,255,255,0.1)] p-8 rounded-lg shadow-lg w-full max-w-[400px]">
+          className="bg-[#23272f] border border-white/10 shadow-2xl p-8 rounded-2xl w-full max-w-[400px] flex flex-col items-center">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center justify-center mb-6">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="12" fill="#2563eb" />
+              <path
+                d="M8 12l2.5 2.5L16 9"
+                stroke="#fff"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </motion.div>
           <motion.h2
             variants={itemVariants}
-            className="text-2xl font-bold mb-6">
+            className="text-2xl font-bold mb-4 text-white text-center">
             Verifying Your Sign-In
           </motion.h2>
           {isLoading ? (
-            <motion.div variants={itemVariants}>
+            <motion.div
+              variants={itemVariants}
+              className="text-blue-400 text-center">
               Verifying your sign-in link...
             </motion.div>
           ) : error ? (
             <>
               <motion.div
                 variants={itemVariants}
-                className="text-red-500 text-sm mb-4">
+                className="text-red-500 text-sm mb-4 text-center">
                 {error}
               </motion.div>
-              <motion.div variants={itemVariants} className="mb-4">
-                <label className="block text-sm mb-2" htmlFor="email">
+              <motion.div variants={itemVariants} className="mb-4 w-full">
+                <label
+                  className="block text-sm mb-2 text-white"
+                  htmlFor="email">
                   Enter your email to continue
                 </label>
                 <input
@@ -196,19 +186,21 @@ function VerifyMagicLink() {
                   placeholder="Enter your email"
                   value={manualEmail}
                   onChange={(e) => setManualEmail(e.target.value)}
-                  className="w-full bg-[rgba(255,255,255,0.1)] text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)]"
+                  className="w-full bg-white/10 text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </motion.div>
               <motion.button
                 variants={itemVariants}
                 onClick={handleManualSignIn}
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg disabled:opacity-50">
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50">
                 {isLoading ? "Verifying..." : "Verify Email"}
               </motion.button>
             </>
           ) : (
-            <motion.div variants={itemVariants}>
+            <motion.div
+              variants={itemVariants}
+              className="text-green-400 text-center">
               Sign-in successful! Redirecting...
             </motion.div>
           )}

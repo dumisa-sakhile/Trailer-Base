@@ -9,6 +9,7 @@ import { Popcorn, Tv, AtSign, Search, LogIn } from "lucide-react";
 import logo from "../logo.svg?url";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
+import AuthDrawer from "./AuthDrawer"; // <-- import the drawer
 
 interface NavItem {
   icon: React.ComponentType<{ size: number; className?: string }>;
@@ -22,6 +23,7 @@ const Header = () => {
   const location = useLocation();
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false); // <-- state for drawer
 
   // Define the allowed exact routes for the header to be visible
   const allowedExactRoutes = ["/", "/tv", "/people", "/auth", "/search"];
@@ -59,7 +61,7 @@ const Header = () => {
   const getSearchForPath = (path: string) => {
     switch (path) {
       case "/":
-        return
+        return;
       case "/tv":
         return;
       case "/people":
@@ -189,12 +191,12 @@ const Header = () => {
             </Link>
           ) : (
             // Login button for logged out state
-            <Link
-              to="/auth"
+            <button
               aria-label="Login"
-              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-600 transition-all duration-200 text-white shadow-lg">
+              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-600 transition-all duration-200 text-white shadow-lg"
+              onClick={() => setDrawerOpen(true)}>
               <LogIn size={20} />
-            </Link>
+            </button>
           )}
         </div>
       </aside>
@@ -222,11 +224,12 @@ const Header = () => {
                 />
               </Link>
             ) : (
-              <Link
-                to="/auth"
-                className="w-16 h-16 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-xl hover:scale-105">
+              <button
+                className="w-16 h-16 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-xl hover:scale-105"
+                onClick={() => setDrawerOpen(true)}
+                aria-label="Login">
                 <LogIn size={28} />
-              </Link>
+              </button>
             )}
           </div>
 
@@ -235,6 +238,9 @@ const Header = () => {
           ))}
         </div>
       </nav>
+
+      {/* Auth Drawer - Add this section */}
+      <AuthDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </>
   );
 };
