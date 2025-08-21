@@ -5,6 +5,7 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { searchMovies, discoverMovies } from "@/api/movie";
 import { searchTV, discoverTV } from "@/api/tv";
@@ -15,12 +16,7 @@ import movieGenres from "@/data/movieGenres";
 import tvGenres from "@/data/tvGenres";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
-import {
-  Search as SearchIconLucide,
-  ChevronDown,
-  Frown,
-  X,
-} from "lucide-react";
+import { Search as SearchIconLucide, ChevronDown, Frown } from "lucide-react";
 
 // Route and Interfaces remain the same
 export const Route = createFileRoute("/search")({
@@ -170,54 +166,53 @@ const BottomDrawer: React.FC<BottomDrawerProps> = ({
       }
     },
   };
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            className="fixed inset-0 bg-black/70 z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-          <motion.div
-            ref={drawerRef}
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-[#181a20] shadow-[0_-8px_32px_0_rgba(0,0,0,0.45)] border-t-2 border-blue-700 flex flex-col max-h-[90vh] overflow-hidden"
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 28, stiffness: 180 }}
-            drag="y"
-            dragElastic={0.18}
-            dragMomentum={false}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            {...dragHandlers}>
-            <div className="flex flex-col items-center pt-3 pb-2 cursor-grab touch-none select-none">
-              <div className="w-12 h-1.5 rounded-full bg-blue-600 mb-2 shadow-md border border-blue-400" />
-             
-            </div>
-            <div className="p-6 pt-0 text-center">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-semibold text-white">{title}</h2>
-                  <p className="text-sm text-neutral-400 mt-1">{description}</p>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="p-1 text-neutral-400 hover:text-white rounded-full transition-colors">
-                  <X size={24} />
-                </button>
+  return isOpen
+    ? ReactDOM.createPortal(
+        <AnimatePresence>
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/70 z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+            />
+            <motion.div
+              ref={drawerRef}
+              className="fixed inset-x-0 bottom-0 z-[100] rounded-t-2xl bg-[#181a20] shadow-[0_-8px_32px_0_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] overflow-hidden"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 180 }}
+              drag="y"
+              dragElastic={0.18}
+              dragMomentum={false}
+              dragConstraints={{ top: 0, bottom: 0 }}
+              {...dragHandlers}>
+              <div className="flex flex-col items-center pt-3 pb-2 cursor-grab touch-none select-none">
+                <div className="w-12 h-1.5 rounded-full bg-neutral-600 mb-2 shadow-md border border-neutral-500" />
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
-              {children}
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
+              <div className="p-6 pt-0 text-center">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-white">
+                      {title}
+                    </h2>
+                    <p className="text-sm text-neutral-400 mt-1">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
+                {children}
+              </div>
+            </motion.div>
+          </>
+        </AnimatePresence>,
+        document.body
+      )
+    : null;
 };
 
 // --- Desktop-specific Modal Component (Refined) ---
@@ -236,47 +231,41 @@ const Modal: React.FC<ModalProps> = ({
   description,
   children,
 }) => {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <motion.div
-            className="absolute inset-0 bg-black/70"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-          <motion.div
-            className="relative rounded-2xl bg-[#1a1a1a] shadow-2xl flex flex-col max-h-[90vh] w-full max-w-md border border-neutral-800"
-            initial={{ scale: 0.98, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.98, opacity: 0 }}
-            transition={{ type: "spring", damping: 20, stiffness: 100 }}>
-            <div className="flex flex-col items-center pt-3 pb-2 cursor-default">
-              <div className="w-10 h-1.5 rounded-full bg-neutral-500 mb-2" />
-            </div>
-            <div className="p-6 pt-0 text-center">
-              <div className="flex items-center justify-between">
-                <div>
+  return isOpen
+    ? ReactDOM.createPortal(
+        <AnimatePresence>
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <motion.div
+              className="absolute inset-0 bg-black/70"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+            />
+            <motion.div
+              className="relative rounded-2xl bg-[#1a1a1a] shadow-2xl flex flex-col max-h-[90vh] w-full max-w-md border border-neutral-800 z-[100]"
+              initial={{ scale: 0.98, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 100 }}>
+              <div className="flex flex-col items-center pt-3 pb-2 cursor-default">
+                <div className="w-10 h-1.5 rounded-full bg-neutral-500 mb-2" />
+              </div>
+              <div className="p-6 pt-0 text-center">
+                <div className="flex flex-col items-center justify-center">
                   <h2 className="text-2xl font-semibold text-white">{title}</h2>
                   <p className="text-sm text-neutral-400 mt-1">{description}</p>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="p-1 text-neutral-400 hover:text-white rounded-full transition-colors">
-                  <X size={24} />
-                </button>
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
-              {children}
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
-  );
+              <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
+                {children}
+              </div>
+            </motion.div>
+          </div>
+        </AnimatePresence>,
+        document.body
+      )
+    : null;
 };
 
 // --- Main Search Component ---
