@@ -293,7 +293,11 @@ function MovieDetails() {
         {/* Centered logo above tagline on mobile */}
         {selectedLogo && (
           <div className="flex md:hidden justify-center mb-4">
-            <img src={`https://image.tmdb.org/t/p/w500/${selectedLogo?.file_path}`} alt={`${data?.title || "Movie logo"} Logo`} className="w-[150px] h-auto object-contain" />
+            <img
+              src={`https://image.tmdb.org/t/p/w500/${selectedLogo?.file_path}`}
+              alt={`${data?.title || "Movie logo"} Logo`}
+              className="w-[150px] h-auto object-contain"
+            />
           </div>
         )}
 
@@ -306,7 +310,9 @@ function MovieDetails() {
 
         {/* play trailer fixed bottom button on mobile */}
         <div className="relative w-full flex items-center justify-center">
-          <button className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-5 capitalize z-10 min-w-[300px]" onClick={() => setShowMobileModal(true)}>
+          <button
+            className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-5 capitalize z-10 min-w-[300px]"
+            onClick={() => setShowMobileModal(true)}>
             <svg
               className="w-5 h-5 sm:w-6 sm:h-6 inline-block mr-2"
               fill="currentColor"
@@ -355,6 +361,7 @@ function MovieDetails() {
             </a>
           )}
           <BookmarkButton
+            mediaType="movie"
             user={user}
             movieId={movieId}
             movieData={{
@@ -366,8 +373,6 @@ function MovieDetails() {
             }}
             isBookmarked={!!isBookmarked}
           />
-
-  
         </section>
 
         {/* Description */}
@@ -379,6 +384,7 @@ function MovieDetails() {
 
         {data?.spoken_languages && (
           <InfoSection
+            mediaType="movie"
             title="Languages"
             items={data?.spoken_languages?.map(
               ({ english_name, iso_639_1 }) => ({
@@ -392,6 +398,7 @@ function MovieDetails() {
 
         {data?.genres && (
           <InfoSection
+            mediaType="movie"
             title="Genre"
             items={data?.genres?.map(({ name, id }) => ({ id, name }))}
             typeKey="with_genres"
@@ -400,6 +407,7 @@ function MovieDetails() {
 
         {data?.production_companies && (
           <InfoSection
+            mediaType="movie"
             title="Production Companies"
             items={data?.production_companies?.map(({ name, id }) => ({
               id,
@@ -411,6 +419,7 @@ function MovieDetails() {
 
         {data?.production_countries && (
           <InfoSection
+            mediaType="movie"
             title="Production Countries"
             items={data?.production_countries?.map(({ name, iso_3166_1 }) => ({
               id: iso_3166_1,
@@ -463,8 +472,6 @@ function MovieDetails() {
           </div>
         </section>
       </div>
-
-    
 
       {/* Mobile Video Modal */}
       <MobileVideoModal

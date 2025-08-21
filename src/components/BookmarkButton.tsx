@@ -16,6 +16,7 @@ interface BookmarkButtonProps {
     release_date: string;
   };
   isBookmarked: boolean;
+  mediaType: "movie" | "tv";
 }
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
@@ -23,6 +24,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
   movieId,
   movieData,
   isBookmarked,
+  mediaType,
 }) => {
   const queryClient = useQueryClient();
 
@@ -36,7 +38,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
       } else {
         await setDoc(bookmarkRef, {
           ...movieData,
-          category: "movie",
+          category: mediaType,
           addedAt: new Date().toISOString(),
         });
       }
@@ -52,16 +54,16 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
   const handleBookmark = () => {
     if (!user) {
-      toast.error("Please login to bookmark movies");
+      toast.error(
+        `Please login to bookmark ${mediaType === "movie" ? "movies" : "TV shows"}`
+      );
       return;
     }
     bookmarkMutation.mutate();
   };
 
   // Color logic
-  const colorClass = isBookmarked
-    ? "text-red-600"
-    : "text-yellow-600";
+  const colorClass = isBookmarked ? "text-red-600" : "text-yellow-600";
 
   return (
     <button

@@ -10,6 +10,7 @@ interface TypeLinkProps {
   typeName: string;
   typeId: string | number;
   page: number;
+  mediaType: "movie" | "tv";
 }
 
 const TypeLink: React.FC<TypeLinkProps> = ({
@@ -17,13 +18,14 @@ const TypeLink: React.FC<TypeLinkProps> = ({
   typeName,
   typeId,
   page,
+  mediaType,
 }) => {
   return (
     <Link
-      to="/movie/$type/$typeName/$typeId"
-      params={{ type: type, typeId: String(typeId), typeName: typeName }}
-      search={{ page: page }}
-      className=" button-style">
+      to={`/${mediaType}/$type/$typeName/$typeId`}
+      params={{ type, typeName, typeId: String(typeId) }}
+      search={{ page }}
+      className="button-style">
       {typeName}
     </Link>
   );
