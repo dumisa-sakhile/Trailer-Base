@@ -33,7 +33,7 @@ const LogoDisplay: React.FC<LogoDisplayProps> = ({
         <img
           src={`https://image.tmdb.org/t/p/w500/${selectedLogo.file_path}`}
           alt={`${title} Logo`}
-          className="hidden md:flex w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
+          className="flex w-[150px] md:w-[200px] lg:w-[250px] h-auto object-contain"
         />
       ) : (
         <div className="w-[150px] md:w-[200px] lg:w-[250px] h-[60px]  rounded flex items-center justify-center">

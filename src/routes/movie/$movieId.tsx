@@ -17,17 +17,18 @@ import CastCard from "@/components/CastCard";
 import MediaCard from "@/components/MediaCard";
 import Credits from "@/components/Credit";
 import InfoSection from "@/components/InfoSection";
-import {
-  MuteIcon,
-  ReplayIcon,
-  UnMuteIcon,
-  VoteIcon,
-  WebsiteIcon,
-  YouTubeIcon,
-} from "@/components/icons/Icons";
 import BookmarkButton from "@/components/BookmarkButton";
 import LogoDisplay from "@/components/LogoDisplay";
 import BackgroundMedia from "@/components/BackgroundMedia";
+import MobileVideoModal from "@/components/MobileVideoModal";
+import {
+  Volume2,
+  VolumeX,
+  RotateCcw,
+  ThumbsUp,
+  Globe,
+  Youtube,
+} from "lucide-react";
 import type {
   Video,
   MovieDetails,
@@ -52,6 +53,8 @@ function MovieDetails() {
   const [showVideo, setShowVideo] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [showReplay, setShowReplay] = useState(false);
+  const [showMobileModal, setShowMobileModal] = useState(false);
+  const [modalMuted, setModalMuted] = useState(true);
 
   // Handle mute toggle
   const onToggleMute = useCallback(() => {
@@ -232,30 +235,35 @@ function MovieDetails() {
 
       {/* Control Buttons */}
       {videoUrl && (
-        <div className="absolute bottom-24 right-4 hidden md:flex gap-2 z-20 group">
+        <div className="absolute bottom-16 right-6 hidden md:flex gap-3 z-20 group">
           {showVideo && (
             <button
               onClick={onToggleMute}
-              className="text-md  capitalize backdrop-blur-md bg-black text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10 "
+              className="backdrop-blur-md bg-black/80 text-base text-gray-100 rounded-full h-12 w-12 flex items-center justify-center hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label={isMuted ? "Unmute video" : "Mute video"}
               tabIndex={0}>
-              {isMuted ? <MuteIcon /> : <UnMuteIcon />}
+              {isMuted ? <VolumeX size={28} /> : <Volume2 size={28} />}
             </button>
           )}
           {showReplay && !showVideo && (
             <button
               onClick={onReplay}
-              className="text-md  capitalize backdrop-blur-md text-base text-gray-100 rounded-full h-10 px-4 py-6 flex items-center gap-2 hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
+              className="backdrop-blur-md bg-black/80 text-base text-gray-100 rounded-full h-12 w-12 flex items-center justify-center hover:grayscale-50 transition duration-300 ease-in-out transform hover:scale-95 ring-1 ring-white/10"
               aria-label="Replay video"
               tabIndex={0}>
-              <ReplayIcon />
+              <RotateCcw size={28} />
             </button>
           )}
         </div>
       )}
 
       {/* Movie details */}
-      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[170px] md:pt-[45%]  p-4 md:pl-20 lg:pl-20 flex flex-col gap-8  overflow-auto poppins-light">
+      <div
+        className={
+          `fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[170px] ` +
+          `${showVideo ? "md:pt-[45%]" : "md:pt-[15%]"} ` +
+          `p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 overflow-auto poppins-light`
+        }>
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
@@ -273,7 +281,7 @@ function MovieDetails() {
         )}
 
         {/* Logo */}
-        <div>
+        <div className="hidden md:flex">
           <LogoDisplay
             isVideoPlaying={showVideo}
             logosLoading={logosLoading}
@@ -283,10 +291,17 @@ function MovieDetails() {
           />
         </div>
 
+        {/* Centered logo above tagline on mobile */}
+        {selectedLogo && (
+          <div className="flex md:hidden justify-center mb-4">
+            <img src={`https://image.tmdb.org/t/p/w500/${selectedLogo?.file_path}`} alt={`${data?.title || "Movie logo"} Logo`} className="w-[150px] h-auto object-contain" />
+          </div>
+        )}
+
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-white text-center md:text-left text-lg  w-full md:w-1/2 lg:w-1/3">
-            {data?.tagline}
+          <p className="text-center md:text-left text-gray-300 text-base mb-4">
+            {data.tagline}
           </p>
         )}
 
@@ -316,7 +331,7 @@ function MovieDetails() {
           )}
           {(data?.vote_average as number) > 1 && (
             <p className="flex items-center gap-2 button-style">
-              <VoteIcon />
+              <ThumbsUp />
               <span className="font-bold">
                 {data?.vote_average?.toFixed(1)}/10
               </span>
@@ -336,7 +351,7 @@ function MovieDetails() {
               target="_blank"
               rel="noopener noreferrer"
               className="button-style">
-              <WebsiteIcon />
+              <Globe />
               <span className="text-md  capitalize">website</span>
             </a>
           )}
@@ -356,7 +371,7 @@ function MovieDetails() {
           {/* YouTube link */}
           {videoUrl && (
             <a href={videoUrl || ""} target="_blank" className="button-style">
-              <YouTubeIcon />
+              <Youtube />
               YouTube
             </a>
           )}
@@ -455,6 +470,31 @@ function MovieDetails() {
           </div>
         </section>
       </div>
+
+      <div className="relative w-full flex items-center justify-center">
+        <button
+          className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-5 z-10 min-w-[300px]"
+          onClick={() => setShowMobileModal(true)}>
+          <svg
+            className="w-5 h-5 sm:w-6 sm:h-6 inline-block mr-2"
+            fill="currentColor"
+            viewBox="0 0 24 24">
+            <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z" />
+          </svg>
+          Watch Now
+        </button>
+      </div>
+
+      {/* Mobile Video Modal */}
+      <MobileVideoModal
+        open={showMobileModal}
+        onClose={() => setShowMobileModal(false)}
+        videoUrl={videoUrl ?? ""}
+        isMuted={modalMuted}
+        onToggleMute={() => setModalMuted((m) => !m)}
+      />
     </>
   );
 }
+
+export default MovieDetails;
