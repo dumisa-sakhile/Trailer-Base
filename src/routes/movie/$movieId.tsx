@@ -27,7 +27,6 @@ import {
   RotateCcw,
   ThumbsUp,
   Globe,
-  Youtube,
 } from "lucide-react";
 import type {
   Video,
@@ -307,14 +306,14 @@ function MovieDetails() {
 
         {/* play trailer fixed bottom button on mobile */}
         <div className="relative w-full flex items-center justify-center">
-          <button className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-5 z-10 min-w-[300px]">
+          <button className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-5 capitalize z-10 min-w-[300px]" onClick={() => setShowMobileModal(true)}>
             <svg
               className="w-5 h-5 sm:w-6 sm:h-6 inline-block mr-2"
               fill="currentColor"
               viewBox="0 0 24 24">
               <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z" />
             </svg>
-            Watch Now
+            Watch Trailer
           </button>
         </div>
 
@@ -368,13 +367,7 @@ function MovieDetails() {
             isBookmarked={!!isBookmarked}
           />
 
-          {/* YouTube link */}
-          {videoUrl && (
-            <a href={videoUrl || ""} target="_blank" className="button-style">
-              <Youtube />
-              YouTube
-            </a>
-          )}
+  
         </section>
 
         {/* Description */}
@@ -471,19 +464,7 @@ function MovieDetails() {
         </section>
       </div>
 
-      <div className="relative w-full flex items-center justify-center">
-        <button
-          className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-5 z-10 min-w-[300px]"
-          onClick={() => setShowMobileModal(true)}>
-          <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 inline-block mr-2"
-            fill="currentColor"
-            viewBox="0 0 24 24">
-            <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z" />
-          </svg>
-          Watch Now
-        </button>
-      </div>
+    
 
       {/* Mobile Video Modal */}
       <MobileVideoModal
