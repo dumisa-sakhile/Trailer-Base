@@ -20,7 +20,6 @@ import {
   ChevronDown,
   Frown,
   X,
-  GripHorizontal,
 } from "lucide-react";
 
 // Route and Interfaces remain the same
@@ -50,8 +49,6 @@ type SearchCardUnifiedProps =
       type: "person";
       url: string;
     };
-
-
 
 // --- Utility Hooks & Skeleton Components ---
 const useWindowSize = () => {
@@ -178,7 +175,7 @@ const BottomDrawer: React.FC<BottomDrawerProps> = ({
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 bg-black/70 z-40"
+            className="fixed inset-0 bg-black/70 z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -186,16 +183,19 @@ const BottomDrawer: React.FC<BottomDrawerProps> = ({
           />
           <motion.div
             ref={drawerRef}
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-[#1a1a1a] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+            className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-[#181a20] shadow-[0_-8px_32px_0_rgba(0,0,0,0.45)] border-t-2 border-blue-700 flex flex-col max-h-[90vh] overflow-hidden"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 20, stiffness: 100 }}
+            transition={{ type: "spring", damping: 28, stiffness: 180 }}
             drag="y"
+            dragElastic={0.18}
+            dragMomentum={false}
             dragConstraints={{ top: 0, bottom: 0 }}
             {...dragHandlers}>
-            <div className="flex flex-col items-center pt-3 pb-2 cursor-grab touch-none">
-              <GripHorizontal className="text-neutral-500 w-10 h-1.5" />
+            <div className="flex flex-col items-center pt-3 pb-2 cursor-grab touch-none select-none">
+              <div className="w-12 h-1.5 rounded-full bg-blue-600 mb-2 shadow-md border border-blue-400" />
+             
             </div>
             <div className="p-6 pt-0 text-center">
               <div className="flex items-center justify-between">
