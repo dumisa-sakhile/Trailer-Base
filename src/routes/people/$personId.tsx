@@ -7,7 +7,9 @@ import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import Atropos from "atropos/react";
 import "atropos/atropos.css";
-import PersonDetailsSkeleton from "@/components/PersonDetailsSkeleton"; // Import the new skeleton component
+import PersonDetailsSkeleton from "@/components/PersonDetailsSkeleton";
+import { Link } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 export const Route = createFileRoute("/people/$personId")({
   loader: async ({ params }) => {
@@ -81,6 +83,80 @@ function PersonDetailsPage() {
     },
   };
 
+  // Animation variants for biography expansion
+  const bioVariants = {
+    collapsed: (height: number) => ({
+      height: height || "auto",
+      opacity: 1,
+      transition: { duration: 0.4, ease: "easeInOut" },
+    }),
+    expanded: (height: number) => ({
+      height: height || "auto",
+      opacity: 1,
+      transition: { duration: 0.4, ease: "easeInOut" },
+    }),
+  };
+
+  // Add state for biography expansion
+  const [bioExpanded, setBioExpanded] = useState(false);
+  const [collapsedHeight, setCollapsedHeight] = useState<number | null>(null);
+  const [expandedHeight, setExpandedHeight] = useState<number | null>(null);
+  const bioRef = useRef<HTMLDivElement>(null);
+
+  // Set a character limit for collapsed state
+  const BIO_CHAR_LIMIT = 600;
+
+  // Function to format biography text with line breaks
+  const formatBiography = (biography: string, expanded: boolean) => {
+    if (!biography) return null;
+    const displayText =
+      !expanded && biography.length > BIO_CHAR_LIMIT
+        ? biography.slice(0, BIO_CHAR_LIMIT) + "..."
+        : biography;
+    const paragraphs = displayText.split("\n");
+    return paragraphs.map((para: string, index: number) => (
+      <motion.p
+        key={index}
+        variants={itemVariants}
+        className="mb-4 text-neutral-100 text-md">
+        {para}
+      </motion.p>
+    ));
+  };
+
+  // Measure heights for collapsed and expanded states
+  useEffect(() => {
+    if (bioRef.current && person?.biography) {
+      // Measure collapsed height
+      setBioExpanded(false);
+      const measureCollapsed = () => {
+        if (bioRef.current) {
+          setCollapsedHeight(bioRef.current.getBoundingClientRect().height);
+        }
+      };
+
+      // Measure expanded height
+      const measureExpanded = () => {
+        if (bioRef.current) {
+          setBioExpanded(true);
+          setExpandedHeight(bioRef.current.getBoundingClientRect().height);
+          // Reset to initial state after measurement
+          setBioExpanded(false);
+        }
+      };
+
+      // Ensure DOM is updated before measuring
+      requestAnimationFrame(() => {
+        measureCollapsed();
+        requestAnimationFrame(measureExpanded);
+      });
+    } else {
+      // Reset heights if no biography
+      setCollapsedHeight(null);
+      setExpandedHeight(null);
+    }
+  }, [personId, person?.biography]);
+
   if (isPersonLoading || isCreditsLoading) {
     // Display custom skeleton while loading
     return <PersonDetailsSkeleton />;
@@ -105,7 +181,7 @@ function PersonDetailsPage() {
 
   if (!person) {
     return (
-      <div className="flex justify-center items-center h-screen bg-black text-white">
+      <div className="flex justify-center items-center h-screen text-white">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -118,25 +194,12 @@ function PersonDetailsPage() {
     );
   }
 
-  // Function to format biography text with line breaks
-  const formatBiography = (biography: string) => {
-    const paragraphs = biography?.split("\n") || [];
-    return paragraphs.map((para: string, index: number) => (
-      <motion.p
-        key={index}
-        variants={itemVariants}
-        className="mb-4 text-neutral-100 text-md">
-        {para}
-      </motion.p>
-    ));
-  };
-
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="relative w-full min-h-screen bg-black">
+      className="relative w-full min-h-screen">
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col gap-8">
         <motion.div variants={itemVariants}>
@@ -148,11 +211,8 @@ function PersonDetailsPage() {
         <motion.div
           variants={containerVariants}
           className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-          {" "}
-          {/* Added items-center for mobile, items-start for desktop */}
           {/* Profile Image */}
           <div className="flex-shrink-0 mx-auto md:mx-0 group">
-            {/* Removed Suspense as react-query handles loading */}
             <Atropos
               className="w-64 h-auto rounded-2xl overflow-hidden"
               activeOffset={30}
@@ -177,8 +237,6 @@ function PersonDetailsPage() {
           <motion.div
             variants={containerVariants}
             className="flex flex-col gap-6 text-center md:text-left flex-grow">
-            {" "}
-            {/* Added text-center for mobile, text-left for desktop */}
             <motion.h1
               variants={itemVariants}
               className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight text-white">
@@ -188,37 +246,20 @@ function PersonDetailsPage() {
             <motion.div
               variants={containerVariants}
               className="flex flex-wrap gap-3 justify-center md:justify-start">
-              {" "}
-              {/* Added justify-center for mobile, justify-start for desktop */}
               {person?.homepage && (
                 <motion.a
                   variants={itemVariants}
                   href={person?.homepage}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-200 rounded-full text-sm font-medium transition-colors hover:bg-blue-600 hover:text-white ring-1 ring-neutral-700"
+                  className="button-style"
                   aria-label="Visit website">
-                  <svg
-                    className="w-5 h-5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24">
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1"
-                      d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"
-                    />
-                  </svg>
+                  <Link className="w-5 h-5" />
                   <span>Website</span>
                 </motion.a>
               )}
               {person?.birthday && (
-                <motion.span
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-200 rounded-full text-sm font-medium ring-1 ring-neutral-700">
+                <motion.span variants={itemVariants} className="button-style">
                   <span className="font-semibold">Born:</span>
                   {new Date(person?.birthday).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -230,9 +271,7 @@ function PersonDetailsPage() {
               {person?.gender !== undefined &&
                 person?.gender !== null &&
                 person?.gender !== 0 && (
-                  <motion.span
-                    variants={itemVariants}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-200 rounded-full text-sm font-medium ring-1 ring-neutral-700">
+                  <motion.span variants={itemVariants} className="button-style">
                     <span className="font-semibold">Gender: </span>
                     {person.gender === 1
                       ? "Female"
@@ -242,25 +281,19 @@ function PersonDetailsPage() {
                   </motion.span>
                 )}
               {person?.popularity && (
-                <motion.span
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-200 rounded-full text-sm font-medium ring-1 ring-neutral-700">
+                <motion.span variants={itemVariants} className="button-style">
                   <span className="font-semibold">Popularity:</span>
                   {person?.popularity.toFixed(2)}%
                 </motion.span>
               )}
               {person?.place_of_birth && (
-                <motion.span
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-200 rounded-full text-sm font-medium ring-1 ring-neutral-700">
+                <motion.span variants={itemVariants} className="button-style">
                   <span className="font-semibold">Born in:</span>
                   {person?.place_of_birth}
                 </motion.span>
               )}
               {person?.deathday && (
-                <motion.span
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-800 text-neutral-200 rounded-full text-sm font-medium ring-1 ring-neutral-700">
+                <motion.span variants={itemVariants} className="button-style">
                   <span className="font-semibold">Died:</span>
                   {new Date(person?.deathday).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -280,7 +313,23 @@ function PersonDetailsPage() {
                 Biography
               </motion.h2>
               {person?.biography ? (
-                formatBiography(person?.biography)
+                <motion.div
+                  variants={bioVariants}
+                  custom={bioExpanded ? expandedHeight : collapsedHeight}
+                  initial={{ height: collapsedHeight || "auto" }}
+                  animate={bioExpanded ? "expanded" : "collapsed"}
+                  className="overflow-hidden">
+                  <div ref={bioRef}>
+                    {formatBiography(person.biography, bioExpanded)}
+                    {person.biography.length > BIO_CHAR_LIMIT && (
+                      <button
+                        className="mt-2 text-blue-400 hover:underline focus:outline-none"
+                        onClick={() => setBioExpanded((v) => !v)}>
+                        {bioExpanded ? "Show less" : "Read more"}
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
               ) : (
                 <motion.p
                   variants={itemVariants}
