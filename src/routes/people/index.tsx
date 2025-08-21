@@ -274,7 +274,7 @@ function People() {
   };
 
   return (
-    <div className="w-full md:pt-16 flex flex-col bg-gradient-to-br from-neutral-950 to-black text-white">
+    <div className="w-full md:pt-16 flex flex-col  text-white poppins-light">
       <title>Trailer Base - People</title>
 
       {/* Mobile-only search section: Only visible on smaller screens */}
@@ -503,6 +503,7 @@ function People() {
                 Next <RightIcon />
               </Link>
             </motion.div>
+            
           </>
         )}
       </section>

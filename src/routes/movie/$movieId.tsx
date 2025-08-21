@@ -255,7 +255,7 @@ function MovieDetails() {
       )}
 
       {/* Movie details */}
-      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8  overflow-auto">
+      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8  overflow-auto poppins-light">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
@@ -300,7 +300,7 @@ function MovieDetails() {
 
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-white text-lg  w-full md:w-1/2 lg:w-1/3">
+          <p className="text-white text-sm  w-full md:w-1/2 lg:w-1/3">
             {data?.tagline}
           </p>
         )}
@@ -366,7 +366,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-lg  w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
+          <p className="text-white text-sm  w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}

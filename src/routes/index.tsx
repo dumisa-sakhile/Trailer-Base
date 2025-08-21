@@ -110,7 +110,7 @@ function App() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen">
+    <div className="w-full flex flex-col gap-4 md:gap-6 min-h-screen poppins-light">
       {/* Mobile-only search section */}
       <section className="md:hidden px-4 pt-6">
         <h1 className="text-3xl text-white text-center font-extrabold tracking-tight mb-4">
