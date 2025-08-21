@@ -425,7 +425,7 @@ function People() {
       </section>
 
       {/* Popular People Section: Conditionally renders skeleton or actual content */}
-      <section className="py-4 bg-black flex flex-col items-center justify-center -mt-28">
+      <section className="py-4 bg-black flex flex-col items-center justify-center -mt-28 mb-10">
         {popularLoading ? (
           // Show skeleton when popular data is loading
           <PeopleSectionSkeleton

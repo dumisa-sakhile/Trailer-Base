@@ -158,7 +158,7 @@ const MediaList: React.FC<MediaListProps> = ({
       {!isLoading && (
         <div className="w-full flex items-center justify-between">
           {/* Section title */}
-          <h2 className="text-2xl max-sm:text-xl lg:text-4xl text-neutral-100 font-medium capitalize tracking-tight">
+          <h2 className="text-2xl max-sm:text-xl lg:text-3xl text-neutral-100 font-medium capitalize tracking-tight">
             {title}
           </h2>
           {/* Link to view all items in the category */}
@@ -184,7 +184,7 @@ const MediaList: React.FC<MediaListProps> = ({
       {/* Render actual media cards if not loading, no error, and data is available */}
       {!isLoading && !isError && data?.results && data.results.length > 0 && (
         <motion.div
-          className="w-full flex flex-wrap justify-center sm:justify-center gap-4 lg:gap-6"
+          className="w-full flex flex-wrap justify-center sm:justify-center gap-4 "
           initial="hidden"
           // Animate children with a slight stagger effect
           animate="visible"

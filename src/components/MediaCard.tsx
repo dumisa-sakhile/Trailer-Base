@@ -45,7 +45,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
   });
 
   return (
-    <div className="relative group w-[260px] h-[390px] max-sm:w-[120px] max-sm:h-[180px]">
+    <div className="relative group w-[180px] h-[270px] max-sm:w-[120px] max-sm:h-[180px]">
       <Link
         to={type === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
         params={
@@ -81,9 +81,9 @@ const MediaCard: React.FC<MediaCardProps> = ({
           <p className="text-xs text-gray-400 max-sm:text-[9px]">
             {release_date ?? "N/A"}
           </p>
-          <h3 className="text-base font-bold text-white line-clamp-2 max-sm:text-[11px] roboto-condensed-bold">
+          <h4 className="text-base font-bold text-white line-clamp-2 max-sm:text-[11px] md:text-sm poppins-regular">
             {title ?? "Untitled"}
-          </h3>
+          </h4>
         </div>
       </Link>
       {auth?.currentUser && (

@@ -192,9 +192,9 @@ const BottomDrawer: React.FC<BottomDrawerProps> = ({
               <div className="flex flex-col items-center pt-3 pb-2 cursor-grab touch-none select-none">
                 <div className="w-12 h-1.5 rounded-full bg-neutral-600 mb-2 shadow-md border border-neutral-500" />
               </div>
-              <div className="p-6 pt-0 text-center">
-                <div className="flex items-center justify-between">
-                  <div>
+              <div className="w-full  p-6 pt-0 ">
+                <div className="flex items-center justify-center">
+                  <div className="flex flex-col items-center justify-center ">
                     <h2 className="text-2xl font-semibold text-white">
                       {title}
                     </h2>
@@ -204,7 +204,7 @@ const BottomDrawer: React.FC<BottomDrawerProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
+              <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6 text-sm">
                 {children}
               </div>
             </motion.div>
@@ -440,7 +440,7 @@ function Search() {
   };
 
   const modalOrDrawerContent = (
-    <div className="flex flex-row flex-wrap gap-2 justify-center items-center">
+    <div className="flex flex-row flex-wrap gap-2 justify-center items-center poppins-light">
       {currentGenreList.length > 0 ? (
         currentGenreList.map((genre) => (
           <Link
@@ -504,14 +504,14 @@ function Search() {
               <AnimatePresence>
                 {isSearchTypeDropdownOpen && (
                   <motion.div
-                    className="absolute right-0 mt-2 w-56 bg-[#23263a] rounded-xl border border-[#141414] shadow-2xl z-30 flex flex-col overflow-hidden py-2 px-1"
+                    className="absolute right-0 mt-2 min-w-[140px] max-w-[80vw] bg-[#181a20] rounded-2xl border border-white/10 shadow-[0_4px_32px_0_rgba(0,0,0,0.45)] z-30 flex flex-col overflow-hidden py-1.5 px-0.5"
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}>
                     <button
                       onClick={() => handleCategoryChange("movies")}
-                      className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-lg transition-all text-base font-medium mb-1 text-neutral-300 hover:bg-blue-900/30 hover:text-blue-400"
+                      className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-lg transition-all text-base font-medium mb-1 text-neutral-300  hover:text-white"
                       style={{
                         position: "relative",
                         fontWeight: type === "movies" ? 600 : 400,
@@ -536,7 +536,7 @@ function Search() {
                     </button>
                     <button
                       onClick={() => handleCategoryChange("tv")}
-                      className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-lg transition-all text-base font-medium mb-1 text-neutral-300 hover:bg-blue-900/30 hover:text-blue-400"
+                      className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-lg transition-all text-base font-medium mb-1 text-neutral-300 hover:text-white"
                       style={{
                         position: "relative",
                         fontWeight: type === "tv" ? 600 : 400,
@@ -561,7 +561,7 @@ function Search() {
                     </button>
                     <button
                       onClick={() => handleCategoryChange("people")}
-                      className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-lg transition-all text-base font-medium text-neutral-300 hover:bg-blue-900/30 hover:text-blue-400"
+                      className="flex items-center gap-2 w-full text-left px-4 py-3 rounded-lg transition-all text-base font-medium text-neutral-300 hover:text-white"
                       style={{
                         position: "relative",
                         fontWeight: type === "people" ? 600 : 400,
@@ -639,14 +639,14 @@ function Search() {
             {modalOrDrawerContent}
           </Modal>
         ))}
-      <main className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 py-8">
+      <main className="-mt-10 md:mt-0 flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 py-8 poppins-light">
         <div className="max-w-7xl mx-auto">
-          <h3 className="text-xl sm:text-2xl text-white mb-6 font-semibold border-b border-neutral-800 pb-3">
+          <h3 className="text-lg text-white mb-6 font-semibold border-b border-neutral-800 pb-3">
             {query
               ? `Results for "${query}" in ${label}`
-              : `Browse Popular ${label}`}
+              : `Here are some popular ${label.toLowerCase()} you might enjoy!`}
           </h3>
-          <section className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
+          <section className="flex  flex-wrap items-center justify-center gap-6">
             {isLoading ? (
               <SearchResultsSkeleton
                 type={type as "movies" | "tv" | "people"}
