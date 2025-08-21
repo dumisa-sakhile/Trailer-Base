@@ -1,13 +1,12 @@
-
-import React from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { toast } from 'react-hot-toast';
-import { BookmarkIcon } from '@/components/icons/Icons';
-import { db } from '@/config/firebase';
+import React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { doc, setDoc, deleteDoc } from "firebase/firestore";
+import { toast } from "react-hot-toast";
+import { BookmarkIcon } from "lucide-react";
+import { db } from "@/config/firebase";
 
 interface BookmarkButtonProps {
-  user: import('firebase/auth').User | null;
+  user: import("firebase/auth").User | null;
   movieId: string;
   movieData: {
     id: number;
@@ -29,23 +28,23 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error('Not authenticated');
-      const bookmarkRef = doc(db, 'users', user.uid, 'bookmarks', movieId);
+      if (!user) throw new Error("Not authenticated");
+      const bookmarkRef = doc(db, "users", user.uid, "bookmarks", movieId);
 
       if (isBookmarked) {
         await deleteDoc(bookmarkRef);
       } else {
         await setDoc(bookmarkRef, {
           ...movieData,
-          category: 'movie',
+          category: "movie",
           addedAt: new Date().toISOString(),
         });
       }
     },
     onSuccess: () => {
-      toast.success(isBookmarked ? 'Bookmark removed!' : 'Bookmark added!');
+      toast.success(isBookmarked ? "Bookmark removed!" : "Bookmark added!");
       queryClient.invalidateQueries({
-        queryKey: ['bookmarks', movieId, user?.uid],
+        queryKey: ["bookmarks", movieId, user?.uid],
       });
     },
     onError: (error: Error) => toast.error(error.message),
@@ -53,24 +52,29 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
   const handleBookmark = () => {
     if (!user) {
-      toast.error('Please login to bookmark movies');
+      toast.error("Please login to bookmark movies");
       return;
     }
     bookmarkMutation.mutate();
   };
+
+  // Color logic
+  const colorClass = isBookmarked
+    ? "text-red-600"
+    : "text-yellow-600";
 
   return (
     <button
       onClick={handleBookmark}
       disabled={bookmarkMutation.isPending}
       aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-      className="button-style">
+      className={`button-style ${colorClass}`}>
       {bookmarkMutation.isPending ? (
         <span className="loading loading-spinner loading-sm"></span>
       ) : (
         <>
-          <BookmarkIcon isBookmarked={!!isBookmarked} />
-          <span className="text-md  capitalize">
+          <BookmarkIcon className={colorClass} />
+          <span className="text-md capitalize">
             {isBookmarked ? "Remove Bookmark" : "Bookmark"}
           </span>
         </>
