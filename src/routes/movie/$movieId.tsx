@@ -255,7 +255,7 @@ function MovieDetails() {
       )}
 
       {/* Movie details */}
-      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[25%] p-4 md:pl-20 lg:pl-20 flex flex-col gap-8  overflow-auto poppins-light">
+      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[170px] md:pt-[45%]  p-4 md:pl-20 lg:pl-20 flex flex-col gap-8  overflow-auto poppins-light">
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
         {(videosLoading || !videoUrl || !showVideo) && data?.poster_path && (
@@ -272,21 +272,7 @@ function MovieDetails() {
           </div>
         )}
 
-        {/* Poster image: Show on mobile as a result of the video hidden by default */}
-        {data?.poster_path && (
-          <div className="md:hidden relative md:static group">
-            <img
-              src={
-                data?.poster_path
-                  ? `https://image.tmdb.org/t/p/w500/${data?.poster_path}`
-                  : FALLBACK_POSTER
-              }
-              alt={data?.title || "Movie Poster"}
-              className="w-[250px] object-cover rounded-2xl relative left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:translate-none md:static transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
-            />
-          </div>
-        )}
-
+       
         {/* Logo */}
         <div>
           <LogoDisplay
@@ -300,13 +286,13 @@ function MovieDetails() {
 
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-white text-sm  w-full md:w-1/2 lg:w-1/3">
+          <p className="text-white text-center md:text-left text-lg  w-full md:w-1/2 lg:w-1/3">
             {data?.tagline}
           </p>
         )}
 
         {/* Website, bookmark, and release date */}
-        <section className="flex gap-2 flex-wrap">
+        <section className="flex gap-2 flex-wrap items-center justify-center md:justify-start md:items-start">
           {data?.release_date && (
             <span className="button-style">
               {new Date(data.release_date).toLocaleDateString("en-US", {
@@ -366,7 +352,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-sm  w-full md:w-1/2 lg:w-1/2  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
+          <p className="text-white text-lg  w-full lg:max-w-[800px] text-center md:text-left  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}
