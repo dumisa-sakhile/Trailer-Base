@@ -299,7 +299,7 @@ function MovieDetails() {
 
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-center md:text-left text-gray-300 text-base mb-4">
+          <p className="text-center md:text-left text-gray-white text-base mb-4">
             {data.tagline}
           </p>
         )}
