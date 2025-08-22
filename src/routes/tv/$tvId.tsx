@@ -312,7 +312,7 @@ function TVDetails() {
 
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-center md:text-left text-gray-white text-base mb-4">
+          <p className="text-center md:text-left text-gray-white text-xs md:text-base mb-4">
             {data.tagline}
           </p>
         )}
@@ -335,7 +335,7 @@ function TVDetails() {
         {/* Website, bookmark, and metadata */}
         <section className="flex gap-2 flex-wrap items-center justify-center md:justify-start md:items-start">
           {data?.first_air_date && (
-            <span className="button-style">
+            <span className="button-style text-xs md:text-base">
               {new Date(data.first_air_date).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -343,32 +343,50 @@ function TVDetails() {
               })}
             </span>
           )}
+
           {(data?.vote_average as number) > 1 && (
-            <p className="flex items-center gap-2 button-style">
+            <p className="flex items-center gap-2 button-style text-xs md:text-base">
               <ThumbsUp />
               <span className="font-bold">
                 {data?.vote_average?.toFixed(1)}/10
               </span>
             </p>
           )}
+
+          {data?.number_of_seasons && (
+            <p className="button-style text-xs md:text-base">
+              Seasons:{" "}
+              <span className="font-bold">{data.number_of_seasons}</span>
+            </p>
+          )}
+
+          {data?.number_of_episodes && (
+            <p className="button-style text-xs md:text-base">
+              Episodes:{" "}
+              <span className="font-bold">{data.number_of_episodes}</span>
+            </p>
+          )}
+
           {data?.episode_run_time && data.episode_run_time.length > 0 && (
-            <p className="button-style">
+            <p className="button-style text-xs md:text-base">
               Episode Duration:{" "}
               <span className="font-bold">
                 {formatRuntime(data?.episode_run_time)}
               </span>
             </p>
           )}
+
           {data?.homepage && (
             <a
               href={data?.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="button-style">
+              className="button-style text-xs md:text-base">
               <Globe />
               <span className="text-md capitalize">website</span>
             </a>
           )}
+
           <BookmarkButton
             mediaType="tv"
             user={user}
@@ -386,7 +404,7 @@ function TVDetails() {
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-lg w-full lg:max-w-[800px] text-center md:text-left backdrop-blur-sm rounded px-4 py-6 transition duration-300 ease-in-out transform">
+          <p className="text-white text-xs md:text-base w-full lg:max-w-[800px] text-center md:text-left backdrop-blur-sm rounded px-4 py-6 transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}
@@ -442,7 +460,9 @@ function TVDetails() {
         {data?.created_by?.length > 0 && (
           <section className="flex items-center justify-center md:justify-start gap-2 flex-wrap">
             <span className="button-style">
-              <span className="text-md capitalize">created by</span>
+              <span className="text-xs md:text-base capitalize">
+                created by
+              </span>
             </span>
             |
             {data?.created_by?.map(({ name, id }) => (
@@ -451,7 +471,7 @@ function TVDetails() {
                 to="/people/$personId"
                 params={{ personId: id.toString() }}
                 aria-label={`View details for ${name}`}
-                className="text-[#FACC15] hover:underline">
+                className="text-[#FACC15] hover:underline text-xs md:text-base">
                 {name}
               </Link>
             ))}

@@ -78,7 +78,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         ) : (
           <>
             <BookmarkIcon className={colorClass} />
-            <span className="text-md capitalize">
+            <span className="text-xs md:text-base capitalize">
               {isBookmarked ? "Remove Bookmark" : "Bookmark"}
             </span>
           </>

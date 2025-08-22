@@ -308,7 +308,7 @@ function MovieDetails() {
 
         {/* Tagline */}
         {data?.tagline && (
-          <p className="text-center md:text-left text-gray-white text-base mb-4">
+          <p className="text-center md:text-left text-gray-white text-xs md:text-base mb-4">
             {data.tagline}
           </p>
         )}
@@ -331,7 +331,7 @@ function MovieDetails() {
         {/* Website, bookmark, and release date */}
         <section className="flex gap-2 flex-wrap items-center justify-center md:justify-start md:items-start">
           {data?.release_date && (
-            <span className="button-style">
+            <span className="button-style text-xs md:text-base">
               {new Date(data.release_date).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -340,7 +340,7 @@ function MovieDetails() {
             </span>
           )}
           {(data?.vote_average as number) > 1 && (
-            <p className="flex items-center gap-2 button-style">
+            <p className="flex items-center gap-2 button-style text-xs md:text-base">
               <ThumbsUp />
               <span className="font-bold">
                 {data?.vote_average?.toFixed(1)}/10
@@ -349,7 +349,7 @@ function MovieDetails() {
           )}
 
           {(data?.runtime as number) > 1 && (
-            <p className="button-style">
+            <p className="button-style text-xs md:text-base">
               Duration:{" "}
               <span className="font-bold">{formatRuntime(data?.runtime)}</span>
             </p>
@@ -360,7 +360,7 @@ function MovieDetails() {
               href={data?.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="button-style">
+              className="button-style text-xs md:text-base">
               <Globe />
               <span className="text-md  capitalize">website</span>
             </a>
@@ -382,7 +382,7 @@ function MovieDetails() {
 
         {/* Description */}
         {data?.overview && (
-          <p className="text-white text-lg  w-full lg:max-w-[800px] text-center md:text-left  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
+          <p className="text-white text-sm md:text-lg  w-full lg:max-w-[800px] text-center md:text-left  backdrop-blur-sm rounded px-4 py-6  transition duration-300 ease-in-out transform">
             <span className="font-bold">Description: </span> {data?.overview}
           </p>
         )}

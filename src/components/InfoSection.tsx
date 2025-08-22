@@ -61,7 +61,7 @@ export default function InfoSection({
     <section className="flex items-center gap-2 flex-wrap px-4 max-sm:px-2 w-full justify-center md:justify-start md:items-start">
       <button className="button-style" aria-label={title}>
         {icons[title]}
-        <span className="text-md capitalize">{title}</span>
+        <span className="text-xs md:text-base capitalize">{title}</span>
       </button>
       <span className="text-white">|</span>
       {items.map(({ id, name }) => (

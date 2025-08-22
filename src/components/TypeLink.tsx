@@ -25,7 +25,7 @@ const TypeLink: React.FC<TypeLinkProps> = ({
       to={`/${mediaType}/$type/$typeName/$typeId`}
       params={{ type, typeName, typeId: String(typeId) }}
       search={{ page }}
-      className="button-style">
+      className="button-style text-xs md:text-base">
       {typeName}
     </Link>
   );
