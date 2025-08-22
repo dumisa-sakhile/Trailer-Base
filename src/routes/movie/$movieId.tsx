@@ -261,7 +261,7 @@ function MovieDetails() {
         className={
           `fixed top-0 left-0 w-full h-full bg-gradient-to-t from-black via-black/60 to-transparent pt-[170px] ` +
           `${showVideo ? "md:pt-[45%]" : "md:pt-[15%]"} ` +
-          `p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 overflow-auto poppins-light`
+          `p-4 md:pl-20 lg:pl-20 flex flex-col gap-8 overflow-auto md:poppins-light`
         }>
         <BackHomeBtn />
         {/* Poster image: Show on mobile, or when video is not playing/unavailable */}
