@@ -24,14 +24,12 @@ const CastCard: React.FC<CastCardProps> = ({
         src={
           profile_path
             ? `https://image.tmdb.org/t/p/w185/${profile_path}`
-            : "https://novalin.se/wp-content/uploads/2020/03/Sveagarden-1010-.jpg"
+            : import.meta.env.VITE_PERSON_PLACEHOLDER
         }
         alt={name}
         className="w-24 h-24 rounded-full object-cover mb-2"
       />
-      <h3 className="text-white text-md  capitalize">
-        {name}
-      </h3>
+      <h3 className="text-white text-md  capitalize">{name}</h3>
       <p className="text-gray-400 text-sm">{character}</p>
     </Link>
   );

@@ -20,7 +20,7 @@ const PersonSearchCard: React.FC<PersonSearchCardProps> = ({
   // Use a generic placeholder if profile_path is null
   const imageSrc = profile_path
     ? `https://image.tmdb.org/t/p/w500/${profile_path}` // Larger image for better quality
-    : "https://placehold.co/500x750/333333/FFFFFF?text=No+Image"; // Generic placeholder
+    : import.meta.env.VITE_PERSON_PLACEHOLDER; // Generic placeholder
 
   return (
     // Adjust dimensions to be similar to MediaCard for grid consistency
@@ -46,8 +46,7 @@ const PersonSearchCard: React.FC<PersonSearchCardProps> = ({
             }}
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src =
-                "https://placehold.co/500x750/333333/FFFFFF?text=No+Image";
+              e.currentTarget.src = import.meta.env.VITE_PERSON_PLACEHOLDER;
               setIsImageLoaded(true);
             }}
           />
