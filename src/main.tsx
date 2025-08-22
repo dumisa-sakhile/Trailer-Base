@@ -6,8 +6,6 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SearchProvider } from './context/searchContext.tsx';
-import EscKeyHandler from './components/EscKeyHandler.tsx';
 import NotFound from './components/NotFound.tsx';
 import Loading from './components/Loading.tsx';
 import { Toaster } from 'react-hot-toast';
@@ -54,11 +52,10 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <SearchProvider>
-          <EscKeyHandler />
+       
           <RouterProvider router={router} />
           <Toaster position='bottom-right'/>
-        </SearchProvider>
+        
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>

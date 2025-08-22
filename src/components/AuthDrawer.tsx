@@ -49,9 +49,15 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     if (!isOpen) return;
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      // Automatically close the drawer when user signs in
+      if (currentUser) {
+        setTimeout(() => {
+          onClose();
+        }, 300); // short delay for UX
+      }
     });
     return () => unsubscribe();
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (!isOpen) return;

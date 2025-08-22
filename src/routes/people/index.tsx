@@ -1,13 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getTrendingPeople, getPopularPeople } from "@/api/people";
-import { useSearchContext } from "@/context/searchContext";
 import React, { useEffect, useRef, useState } from "react";
-import CastCard from "@/components/PeopleCastCard"; // Assuming this is the correct path
+import CastCard from "@/components/PeopleCastCard";
 import Footer from "@/components/Footer";
-import { LeftIcon, RightIcon } from "@/components/icons/Icons";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Search as SearchIconLucide,
+} from "lucide-react"; // <-- Lucide icons
 import { motion } from "framer-motion";
-import { Search as SearchIconLucide } from "lucide-react";
 
 // Interfaces for route search parameters
 interface pageProps {
@@ -150,7 +152,7 @@ const PeopleSectionSkeleton: React.FC<PeopleSectionSkeletonProps> = ({
 function People() {
   const search = Route.useSearch();
   const { page = 1 } = search;
-  const { setStatus } = useSearchContext();
+
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
 
@@ -202,10 +204,7 @@ function People() {
     staleTime: 60 * 60 * 1000, // Data considered fresh for 1 hour
   });
 
-  // Effect to set search status (likely for a global search bar)
-  useEffect(() => {
-    setStatus(false);
-  }, [setStatus]);
+  
 
   // Carousel functionality for Trending People section
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -377,7 +376,7 @@ function People() {
                       ? "opacity-80 hover:bg-blue-500 hover:scale-105 bg-[rgba(255,255,255,0.1)]"
                       : "opacity-20 cursor-not-allowed"
                   }`}>
-                  <LeftIcon />
+                  <ChevronLeft size={20} /> {/* Lucide icon */}
                 </button>
                 <button
                   onClick={() => scrollCarousel("right")}
@@ -387,7 +386,7 @@ function People() {
                       ? "opacity-80 hover:bg-blue-500 hover:scale-105 bg-[rgba(255,255,255,0.1)]"
                       : "opacity-20 cursor-not-allowed"
                   }`}>
-                  <RightIcon />
+                  <ChevronRight size={20} /> {/* Lucide icon */}
                 </button>
               </motion.div>
             </div>
@@ -481,11 +480,11 @@ function People() {
                 search={(prev) => ({ ...prev, page: page - 1 })}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-md transition-all duration-200 ${
                   page === 1
-                    ? "opacity-30 cursor-not-allowed" // Disabled state styling
-                    : "opacity-80 hover:bg-blue-500 hover:scale-105 " // Active state styling
+                    ? "opacity-30 cursor-not-allowed"
+                    : "opacity-80 hover:bg-blue-500 hover:scale-105 "
                 }`}
                 disabled={page === 1}>
-                <LeftIcon /> Prev
+                <ChevronLeft size={18} /> Prev {/* Lucide icon */}
               </Link>
               <span className="text-neutral-200 text-sm font-light px-3">
                 {page?.toLocaleString()} /{" "}
@@ -496,14 +495,13 @@ function People() {
                 search={(prev) => ({ ...prev, page: page + 1 })}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-md transition-all duration-200 ${
                   page === popularData?.total_pages
-                    ? "opacity-30 cursor-not-allowed" // Disabled state styling
-                    : "opacity-80 hover:bg-blue-500 hover:scale-105 " // Active state styling
+                    ? "opacity-30 cursor-not-allowed"
+                    : "opacity-80 hover:bg-blue-500 hover:scale-105 "
                 }`}
                 disabled={page === popularData?.total_pages}>
-                Next <RightIcon />
+                Next <ChevronRight size={18} /> {/* Lucide icon */}
               </Link>
             </motion.div>
-            
           </>
         )}
       </section>
