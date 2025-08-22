@@ -56,7 +56,6 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
   const handleBookmark = () => {
     if (!user) {
-      toast.error("Please sign in to bookmark!");
       setDrawerOpen(true);
       return;
     }
