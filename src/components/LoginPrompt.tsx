@@ -63,7 +63,7 @@ const LoginPrompt: FunctionComponent = () => {
             }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setDrawerOpen(true)}>
-            Go to Login / Sign Up
+            Login / Sign Up
           </motion.button>
         </motion.div>
       </motion.div>
