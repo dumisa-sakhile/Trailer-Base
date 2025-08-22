@@ -32,8 +32,7 @@ function PersonDetailsPage() {
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 
-  const FALLBACK_POSTER =
-    "https://img.freepik.com/premium-photo/clear-empty-photographer-studio-background-abstract-background-texture-beauty-dark-light-clear-blue-cold-gray-snowy-white-gradient-flat-wall-floor-empty-spacious-room-winter-interior_1008660-2183.jpg?semt=ais_hybrid&w=740";
+  const FALLBACK_POSTER = import.meta.env.VITE_PERSON_PLACEHOLDER;
 
   // Fetch combined credits
   const {
