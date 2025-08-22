@@ -596,7 +596,7 @@ function Search() {
           {(type === "movies" || type === "tv") && (
             <button
               type="button"
-              className="sm:hidden flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full hover:bg-neutral-700 hover:border-blue-500 transition-colors shadow-lg"
+              className="sm:hidden flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-transparent border-none text-base text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full hover:text-blue-400 transition-colors"
               aria-label="Open genre selection drawer"
               onClick={() => {
                 setIsGenreDrawerOpen(true);
