@@ -22,13 +22,7 @@ import BookmarkButton from "@/components/BookmarkButton";
 import LogoDisplay from "@/components/LogoDisplay";
 import BackgroundMedia from "@/components/BackgroundMedia";
 import MobileVideoModal from "@/components/MobileVideoModal";
-import {
-  Volume2,
-  VolumeX,
-  RotateCcw,
-  ThumbsUp,
-  Globe,
-} from "lucide-react";
+import { Volume2, VolumeX, RotateCcw, ThumbsUp, Globe } from "lucide-react";
 import type {
   Video,
   TVDetails,
@@ -79,6 +73,7 @@ function TVDetails() {
   const { data, isLoading, error } = useQuery<TVDetails>({
     queryKey: ["tv", tvId],
     queryFn: () => getTVDetails(tvId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Videos query
@@ -91,6 +86,7 @@ function TVDetails() {
   }>({
     queryKey: ["tv-videos", tvId],
     queryFn: () => getTVVideos(tvId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Credits query
@@ -99,6 +95,7 @@ function TVDetails() {
   }>({
     queryKey: ["tv-credits", tvId],
     queryFn: () => getTVCredits(tvId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Recommendations query
@@ -108,6 +105,7 @@ function TVDetails() {
     }>({
       queryKey: ["tv-recommendations", tvId],
       queryFn: () => getTVRecommendations(tvId),
+      staleTime: 1000 * 60 * 60, // 1 hour
     });
 
   // TV logos query
@@ -118,6 +116,7 @@ function TVDetails() {
   } = useQuery<MediaImage[]>({
     queryKey: ["tv-logos", tvId],
     queryFn: () => getTVImages(tvId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Bookmark query

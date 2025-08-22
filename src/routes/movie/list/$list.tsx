@@ -48,6 +48,7 @@ function List() {
         page,
         list as "top_rated" | "upcoming" | "now_playing" | "popular"
       ),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   const formattedTitle =

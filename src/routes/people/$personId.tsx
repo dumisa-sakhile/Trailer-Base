@@ -29,6 +29,7 @@ function PersonDetailsPage() {
   } = useQuery({
     queryKey: ["personDetails", personId],
     queryFn: () => getPersonDetails(personId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   const FALLBACK_POSTER =
@@ -42,6 +43,7 @@ function PersonDetailsPage() {
   } = useQuery({
     queryKey: ["personCombinedCredits", personId],
     queryFn: () => getPersonCredits(personId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Separate and sort movie and TV cast credits

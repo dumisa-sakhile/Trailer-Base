@@ -43,6 +43,7 @@ function List() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["tv", list, page],
     queryFn: () => getTVList(page, list as "top_rated" | "popular"),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   const formattedTitle =

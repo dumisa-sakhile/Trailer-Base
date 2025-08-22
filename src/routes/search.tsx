@@ -306,18 +306,21 @@ function Search() {
     queryFn: () => searchMovies(page, query),
     enabled: queryOptions.enabled && type === "movies",
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
   const tvQuery = useQuery({
     ...queryOptions,
     queryFn: () => searchTV(page, query),
     enabled: queryOptions.enabled && type === "tv",
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
   const personQuery = useQuery({
     ...queryOptions,
     queryFn: () => searchPerson(page, query),
     enabled: queryOptions.enabled && type === "people",
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
   const discoverMoviesQuery = useQuery({
     queryKey: ["discoverMovies"],

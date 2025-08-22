@@ -78,6 +78,7 @@ function MovieDetails() {
   const { data, isLoading, error } = useQuery<MovieDetails>({
     queryKey: ["movie", movieId],
     queryFn: () => getMovieDetails(movieId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Videos query
@@ -90,6 +91,7 @@ function MovieDetails() {
   }>({
     queryKey: ["movie-videos", movieId],
     queryFn: () => getMovieVideos(movieId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Credits query
@@ -98,6 +100,7 @@ function MovieDetails() {
   }>({
     queryKey: ["movie-credits", movieId],
     queryFn: () => getMovieCredits(movieId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Recommendations query
@@ -107,6 +110,7 @@ function MovieDetails() {
     }>({
       queryKey: ["movie-recommendations", movieId],
       queryFn: () => getMovieRecommendations(movieId),
+      staleTime: 1000 * 60 * 60, // 1 hour
     });
 
   // Movie logos query
@@ -117,6 +121,7 @@ function MovieDetails() {
   } = useQuery<MovieImage[]>({
     queryKey: ["movie-logos", movieId],
     queryFn: () => getMovieImages(movieId),
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // Bookmark query
