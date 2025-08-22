@@ -17,23 +17,31 @@ const MobileVideoModal: React.FC<MobileVideoModalProps> = ({
   open,
   onClose,
   videoUrl,
-  isMuted,
+  isMuted = false,
 }) => {
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
+      
+        console.clear();
+        // clear YouTube console warnings
+     
     } else {
       document.body.style.overflow = "";
+      console.clear();
+      // clear YouTube console warnings
     }
     return () => {
       document.body.style.overflow = "";
+      console.clear();
+      // clear YouTube console warnings
     };
   }, [open]);
 
   if (!open) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
       <button
         className="absolute top-4 right-4 text-white bg-black rounded-full p-2 z-10"
         onClick={onClose}

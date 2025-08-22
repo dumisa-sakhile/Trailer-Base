@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getMoviesType } from "@/api/movie";
-import { Link, HeadContent } from "@tanstack/react-router";
+import {  HeadContent } from "@tanstack/react-router";
 import BackHomeBtn from "@/components/BackHomeBtn";
 import MediaCard from "@/components/MediaCard";
 import MediaGridSkeleton from "@/components/MediaGridSkeleton"; // Import the new skeleton component
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import PaginationFooter from "@/components/PaginationFooter";
 
 interface MovieProps {
   id: number;
@@ -95,7 +95,6 @@ function TypeComponent() {
               {/* {empty div to provide spacing at the bottom of the section as this is the last element on the page} */}
             </div>
           </section>
-         
 
           {/* back & home button */}
           <BackHomeBtn />
@@ -104,45 +103,20 @@ function TypeComponent() {
 
       {/* Pagination footer - only show when not loading and no error */}
       {!isLoading && !isError && (
-        <footer className="fixed bottom-4 left-0 right-0 flex items-center justify-center w-full z-20 pointer-events-none">
-          <section className="flex items-center gap-3 bg-[rgba(24,24,28,0.85)] backdrop-blur-lg px-6 py-3 max-sm:px-3 max-sm:py-2 rounded-xl shadow-lg border border-gray-700/40 font-sans pointer-events-auto">
-            <Link
-              to="."
-              params={{ type, typeId: String(typeId), typeName }}
-              search={(prev) => ({ ...prev, page: page - 1 })}
-              className={`flex items-center gap-2 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-base max-sm:text-xs roboto-condensed-bold capitalize rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/60 ${
-                page === 1
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-blue-600/80 hover:text-white hover:shadow-lg hover:scale-[1.06] active:scale-100"
-              }`}
-              disabled={page === 1}
-              aria-label="Go to previous page"
-              tabIndex={page === 1 ? -1 : 0}>
-              <ChevronLeft className="w-5 h-5 max-sm:w-4 max-sm:h-4" />
-              <span className="max-sm:hidden">Previous</span>
-              <span className="sm:hidden">Prev</span>
-            </Link>
-            <span className="text-gray-100 font-semibold text-base max-sm:text-xs  px-4 max-sm:px-2 select-none">
-              {page?.toLocaleString()} /{" "}
-              {data?.total_pages?.toLocaleString() ?? "?"}
-            </span>
-            <Link
-              to="."
-              params={{ type, typeId: String(typeId), typeName }}
-              search={(prev) => ({ ...prev, page: page + 1 })}
-              className={`flex items-center gap-2 px-4 py-2 max-sm:px-3 max-sm:py-1.5 text-gray-200 font-medium text-base max-sm:text-xs roboto-condensed-bold capitalize rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400/60 ${
-                data?.total_pages === page
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-blue-600/80 hover:text-white hover:shadow-lg hover:scale-[1.06] active:scale-100"
-              }`}
-              disabled={data?.total_pages === page}
-              aria-label="Go to next page"
-              tabIndex={data?.total_pages === page ? -1 : 0}>
-              <span className="max-sm:hidden">Next</span>
-              <ChevronRight className="w-5 h-5 max-sm:w-4 max-sm:h-4" />
-            </Link>
-          </section>
-        </footer>
+        <PaginationFooter
+          page={page}
+          totalPages={data?.total_pages}
+          prevLinkProps={{
+            to: ".",
+            params: { type, typeId: String(typeId), typeName },
+            search: (prev: any) => ({ ...prev, page: page - 1 }),
+          }}
+          nextLinkProps={{
+            to: ".",
+            params: { type, typeId: String(typeId), typeName },
+            search: (prev: any) => ({ ...prev, page: page + 1 }),
+          }}
+        />
       )}
     </>
   );
