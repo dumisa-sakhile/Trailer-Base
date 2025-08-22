@@ -123,7 +123,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     setError(null);
     try {
       const actionCodeSettings = {
-        url: `${window.location.origin}/auth/verify`, // <-- restore this line
+        url: `${window.location.origin}/auth/verify`,
         handleCodeInApp: true,
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -173,7 +173,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     ? ReactDOM.createPortal(
         <AnimatePresence>
           <motion.div
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center poppins-light"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}>
@@ -186,7 +186,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
             {/* Drawer/Modal */}
             <motion.div
               ref={drawerRef}
-              className="relative w-full sm:w-[400px] bg-[#23272f] rounded-t-2xl sm:rounded-2xl shadow-2xl p-6 pt-4 flex flex-col max-h-[90vh] overflow-y-auto"
+              className="relative w-full sm:w-[400px] bg-black md:bg-[#23272f] rounded-t-2xl sm:rounded-2xl shadow-2xl p-6 pt-4 flex flex-col max-h-[90vh] overflow-y-auto"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -198,7 +198,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
               {...dragHandlers}>
               {/* Close Button */}
               <button
-                className="absolute top-3 right-3 p-2 rounded-full bg-neutral-700 hover:bg-neutral-600 transition-colors"
+                className="hidden md:block absolute top-3 right-3 p-2 rounded-full bg-neutral-700 hover:bg-neutral-600 transition-colors"
                 onClick={onClose}
                 aria-label="Close"
                 type="button">
@@ -211,12 +211,10 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
               {/* Title & Description */}
               <div className="mb-4 text-center">
                 <h2 className="text-xl font-bold text-white">
-                  {user ? "Sign Out" : "Log In or Create an Account"}
+                  Log In or Create an Account
                 </h2>
                 <p className="text-sm text-neutral-400 mt-1">
-                  {user
-                    ? "Sign out of your account."
-                    : "Sign in to bookmark favorites and get recommendations."}
+                  Sign in to bookmark favorites and get recommendations.
                 </p>
               </div>
               {/* Content */}
@@ -228,7 +226,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
                     {error}
                   </div>
                 )}
-                {user ? null : isLinkSent ? ( // REMOVE SIGN OUT UI
+                {user ? null : isLinkSent ? (
                   <div className="mb-4 text-center">
                     <div
                       className="mb-4 text-green-500 text-sm"
