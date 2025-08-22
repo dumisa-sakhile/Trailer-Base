@@ -35,7 +35,7 @@ const MobileVideoModal: React.FC<MobileVideoModalProps> = ({
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
       <button
-        className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-10"
+        className="absolute top-4 right-4 text-white bg-black rounded-full p-2 z-10"
         onClick={onClose}
         aria-label="Close">
         <X size={28} />
