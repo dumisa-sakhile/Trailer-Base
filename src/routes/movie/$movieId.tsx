@@ -301,7 +301,7 @@ function MovieDetails() {
             <img
               src={`https://image.tmdb.org/t/p/w500/${selectedLogo?.file_path}`}
               alt={`${data?.title || "Movie logo"} Logo`}
-              className="w-[150px] h-auto object-contain"
+              className="w-[200px] h-auto object-contain"
             />
           </div>
         )}
@@ -313,10 +313,12 @@ function MovieDetails() {
           </p>
         )}
 
-        {/* play trailer fixed bottom button on mobile */}
-        <div className="relative w-full flex items-center justify-center">
+        {/* Play trailer fixed bottom button on mobile */}
+        <div className="relative w-full flex items-center justify-center ">
           <button
-            className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-5 capitalize z-10 min-w-[300px]"
+            className="bg-blue-600 text-white px-6 sm:px-8 py-4 rounded hover:bg-blue-700 text-base sm:text-xl flex items-center justify-center md:hidden focus:ring-1 focus:ring-blue-500 fixed bottom-2 capitalize z-10 min-w-[300px]"
+            aria-label="Watch trailer"
+            style={{ borderRadius: "8px" }}
             onClick={() => setShowMobileModal(true)}>
             <svg
               className="w-5 h-5 sm:w-6 sm:h-6 inline-block mr-2"
