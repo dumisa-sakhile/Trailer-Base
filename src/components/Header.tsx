@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import type { User as FirebaseUser } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
-import { Popcorn, Tv, AtSign, Search, LogIn } from "lucide-react";
+import { Popcorn, Tv, AtSign, Search, User } from "lucide-react"; // <-- replaced LogIn with User
 import logo from "../logo.svg?url";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
@@ -195,7 +195,7 @@ const Header = () => {
               aria-label="Login"
               className="relative flex items-center justify-center w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-600 transition-all duration-200 text-white shadow-lg"
               onClick={() => setDrawerOpen(true)}>
-              <LogIn size={20} />
+              <User size={20} /> {/* <-- changed from <LogIn /> to <User /> */}
             </button>
           )}
         </div>
@@ -228,7 +228,8 @@ const Header = () => {
                 className="w-16 h-16 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-xl hover:scale-105"
                 onClick={() => setDrawerOpen(true)}
                 aria-label="Login">
-                <LogIn size={28} />
+                <User size={28} />{" "}
+                {/* <-- changed from <LogIn /> to <User /> */}
               </button>
             )}
           </div>

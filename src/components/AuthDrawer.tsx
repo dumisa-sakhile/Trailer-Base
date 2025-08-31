@@ -58,7 +58,18 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     });
     return () => unsubscribe();
   }, [isOpen, onClose]);
-
+// ...existing code...
+                      <p className="text-center text-sm text-neutral-400 mt-4">
+                        Need help?{" "}
+                        <a
+                          href="https://sakhiledumisa.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400"
+                        >
+                          Reach out to me on sakhiledumisa.com
+                        </a>
+                      </p>
   useEffect(() => {
     if (!isOpen) return;
     const verifyMagicLinkSignIn = async () => {
@@ -309,6 +320,17 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
                         Create an account to bookmark your favorite movies and
                         TV shows, receive personalized recommendations, and
                         more!
+                      </p>
+                      <p className="text-center text-sm text-neutral-400 mt-4">
+                        Need help?{" "}
+                        <a
+                          href="https://sakhiledumisa.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400"
+                        >
+                          Reach out to me on sakhiledumisa.com
+                        </a>
                       </p>
                     </form>
                   </>
