@@ -5,11 +5,11 @@ import { onAuthStateChanged } from "firebase/auth";
 import type { User as FirebaseUser } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
-import { Popcorn, Tv, AtSign, Search, User } from "lucide-react"; // <-- replaced LogIn with User
+import { Popcorn, Tv, AtSign, Search, User } from "lucide-react";
 import logo from "../logo.svg?url";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
-import AuthDrawer from "./AuthDrawer"; // <-- import the drawer
+import AuthDrawer from "./AuthDrawer";
 
 interface NavItem {
   icon: React.ComponentType<{ size: number; className?: string }>;
@@ -23,12 +23,10 @@ const Header = () => {
   const location = useLocation();
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [drawerOpen, setDrawerOpen] = useState(false); // <-- state for drawer
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Define the allowed exact routes for the header to be visible
   const allowedExactRoutes = ["/", "/tv", "/people", "/auth", "/search"];
 
-  // Check if the current pathname is either an exact match or follows /people/:personId pattern
   const shouldShowHeader =
     allowedExactRoutes.includes(location.pathname) ||
     /^\/people\/[^/]+$/.test(location.pathname);
@@ -151,7 +149,6 @@ const Header = () => {
     );
   };
 
-  // Conditionally render the header only on allowed routes
   if (!shouldShowHeader) {
     return null;
   }
@@ -159,7 +156,7 @@ const Header = () => {
   return (
     <>
       {/* Desktop/Tablet Sidebar */}
-      <aside className="hidden md:flex flex-col w-14 fixed z-50 left-0 top-0 h-full bg-black/60 backdrop-blur-2xl p-2 items-center shadow-2xl justify-between py-6  border-r-1 border-neutral-50/10">
+      <aside className="hidden md:flex flex-col w-14 fixed z-50 left-0 top-0 h-full bg-black/60 backdrop-blur-2xl p-2 items-center shadow-2xl justify-between py-6 border-r-1 border-neutral-50/10">
         <Link
           to="/"
           search={{ period: "day", page: 1 }}
@@ -179,7 +176,6 @@ const Header = () => {
 
         <div className="flex flex-col items-center gap-4 pt-4 border-t border-gray-700/20 w-full">
           {!loading && user ? (
-            // Only the profile link is shown when logged in
             <Link
               to="/auth/profile"
               className="w-10 h-10 rounded-full overflow-hidden border-2 border-transparent transition-all duration-200 hover:border-white focus:outline-none focus:ring-2 focus:ring-white/50 shadow-md">
@@ -190,53 +186,60 @@ const Header = () => {
               />
             </Link>
           ) : (
-            // Login button for logged out state
             <button
               aria-label="Login"
               className="relative flex items-center justify-center w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-600 transition-all duration-200 text-white shadow-lg"
               onClick={() => setDrawerOpen(true)}>
-              <User size={20} /> {/* <-- changed from <LogIn /> to <User /> */}
+              <User size={20} />
             </button>
           )}
         </div>
       </aside>
 
       {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-black/60 backdrop-blur-2xl rounded-3xl z-50 px-4 py-3 shadow-2xl">
+      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] bg-black/60 backdrop-blur-2xl rounded-3xl z-50 px-4 py-3 shadow-2xl">
         <div className="flex justify-around items-center h-full">
-          {navItems.slice(0, 2).map((item) => (
+          {navItems.map((item) => (
             <NavItemComponent key={item.path} item={item} isMobile={true} />
           ))}
-
-          <div className="relative -mt-8 flex justify-center items-center">
-            {!loading && user ? (
+          {user ? (
+            <div className="group relative flex flex-col items-center">
               <Link
                 to="/auth/profile"
-                className={`w-16 h-16 flex items-center justify-center rounded-full border-4 ${
+                aria-label="Profile"
+                className={`relative flex items-center justify-center w-10 h-10 rounded-md transition-all duration-200 group-hover:scale-105 group ${
                   location.pathname.startsWith("/auth/profile")
-                    ? "border-white"
-                    : "border-gray-700"
-                } overflow-hidden bg-gray-800 shadow-xl transition-all duration-200 hover:scale-105`}>
+                    ? "bg-white/15 text-white shadow-md"
+                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                } rounded-full !bg-transparent`}>
                 <img
                   src={getProfileImage()}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
               </Link>
-            ) : (
+              <span
+                className={`text-[10px] mt-1 font-medium ${
+                  location.pathname.startsWith("/auth/profile")
+                    ? "text-white"
+                    : "text-gray-400"
+                }`}>
+                Profile
+              </span>
+            </div>
+          ) : (
+            <div className="group relative flex flex-col items-center">
               <button
-                className="w-16 h-16 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-xl hover:scale-105"
                 onClick={() => setDrawerOpen(true)}
-                aria-label="Login">
-                <User size={28} />{" "}
-                {/* <-- changed from <LogIn /> to <User /> */}
+                aria-label="Sign In"
+                className="relative flex items-center justify-center w-10 h-10 rounded-md transition-all duration-200 group-hover:scale-105 text-gray-400 hover:bg-white/5 hover:text-white rounded-full !bg-transparent">
+                <User size={20} />
               </button>
-            )}
-          </div>
-
-          {navItems.slice(2).map((item) => (
-            <NavItemComponent key={item.path} item={item} isMobile={true} />
-          ))}
+              <span className="text-[10px] mt-1 font-medium text-gray-400">
+                Sign In
+              </span>
+            </div>
+          )}
         </div>
       </nav>
 
