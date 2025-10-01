@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
-import { useBookmarkMutations } from "./useBookmarkMutations";
+import  useBookmarkMutations  from "./useBookmarkMutations";
 import { BookmarkPlus, BookmarkMinus, Star } from "lucide-react";
 
 interface MediaCardProps {

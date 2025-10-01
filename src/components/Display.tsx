@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { useBookmarkMutations } from "./useBookmarkMutations";
+import  useBookmarkMutations  from "./useBookmarkMutations";
 import { getMovieDetails } from "@/api/movie";
 
 interface MovieProps {

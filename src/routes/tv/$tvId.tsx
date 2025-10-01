@@ -8,7 +8,6 @@ import {
   getTVRecommendations,
   getTVImages,
 } from "@/api/tv";
-import Loading from "@/components/Loading";
 import { useState, useEffect, useCallback } from "react";
 import { auth, db } from "@/config/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -30,6 +29,7 @@ import type {
   TVProps,
   MediaImage,
 } from "@/Types/tvInterfaces";
+import MediaDetailsSkeleton from "@/components/MediaDetailsSkeleton";
 
 export const Route = createFileRoute("/tv/$tvId")({
   loader: async ({ params }) => {
@@ -213,7 +213,7 @@ function TVDetails() {
 
   // Early return for loading or error state
   if (isLoading) {
-    return <Loading />;
+    return <MediaDetailsSkeleton  />;
   }
 
   if (error) {
@@ -508,7 +508,7 @@ function TVDetails() {
           {recommendations?.results?.length === 0 && (
             <p>No recommendations available</p>
           )}
-          {recommendationsLoading && <Loading />}
+          {recommendationsLoading && <MediaDetailsSkeleton/>}
           {recommendations?.results?.map(
             ({ id, name, first_air_date, poster_path, vote_average }) => (
               <MediaCard

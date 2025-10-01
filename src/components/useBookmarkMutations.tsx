@@ -12,7 +12,7 @@ export interface Bookmark {
   category: "movie" | "tv"; // Added for Firestore rules and routing
 }
 
-export const useBookmarkMutations = () => {
+const useBookmarkMutations = () => {
   const queryClient = useQueryClient();
 
   const addBookmarkMutation = useMutation({
@@ -76,3 +76,5 @@ export const useBookmarkMutations = () => {
 
   return { addBookmarkMutation, removeBookmarkMutation };
 };
+
+export default useBookmarkMutations;

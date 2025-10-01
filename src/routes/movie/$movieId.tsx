@@ -8,7 +8,6 @@ import {
   getMovieRecommendations,
   getMovieImages,
 } from "@/api/movie";
-import Loading from "@/components/Loading";
 import { useState, useEffect, useCallback } from "react";
 import { auth, db } from "@/config/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -35,6 +34,7 @@ import type {
   MovieProps,
   MovieImage,
 } from "@/Types/movieInterfaces";
+import MediaDetailsSkeleton from "@/components/MediaDetailsSkeleton";
 
 export const Route = createFileRoute("/movie/$movieId")({
   loader: async ({ params }) => {
@@ -209,7 +209,7 @@ function MovieDetails() {
 
   // Early return for loading or error state
   if (isLoading) {
-    return <Loading />;
+    return <MediaDetailsSkeleton />;
   }
 
   if (error) {
@@ -460,7 +460,7 @@ function MovieDetails() {
           {recommendations?.results?.length === 0 && (
             <p>No recommendations available</p>
           )}
-          {recommendationsLoading && <Loading />}
+          {recommendationsLoading && <MediaDetailsSkeleton />}
           {recommendations?.results?.map(
             ({ id, title, release_date, poster_path, vote_average }) => (
               <MediaCard
