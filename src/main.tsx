@@ -7,7 +7,6 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import NotFound from './components/NotFound.tsx';
-import Loading from './components/Loading.tsx';
 import { Toaster } from 'react-hot-toast';
 import { injectSpeedInsights } from "@vercel/speed-insights";
 import { inject } from "@vercel/analytics";
@@ -29,7 +28,6 @@ const router = createRouter({
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
   defaultNotFoundComponent: () => <NotFound />,
-  defaultPendingComponent: () => <Loading/>,
 })
 
 // Register the router instance for type safety
