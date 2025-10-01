@@ -110,8 +110,8 @@ Ensure TypeScript/React best practices, Tailwind consistency, and no hardcoded k
 
 ## Contact
 - GitHub: [dumisa-sakhile](https://github.com/dumisa-sakhile)
-- Portfolio: [sakhile-dumisa.vercel.app](https://sakhile-dumisa.vercel.app)
-- Live Site: [trailer-base.vercel.app](https://trailer-base.vercel.app)
+- Portfolio: [sakhiledumisa.com](https://sakhiledumisa.com)
+- Live Site: [trailerbase.tech](https://trailerbase.tech)
 
 ## Acknowledgments
 - TMDB, Firebase, TanStack Router/Query, Tailwind CSS, Sonner, Vite, Vercel.
