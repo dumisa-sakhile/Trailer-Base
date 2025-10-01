@@ -232,7 +232,7 @@ const Header = () => {
               <button
                 onClick={() => setDrawerOpen(true)}
                 aria-label="Sign In"
-                className="relative flex items-center justify-center w-10 h-10 rounded-md transition-all duration-200 group-hover:scale-105 text-gray-400 hover:bg-white/5 hover:text-white rounded-full !bg-transparent">
+                className="relative flex items-center justify-center w-10 h-10 transition-all duration-200 group-hover:scale-105 text-gray-400 hover:bg-white/5 hover:text-white rounded-full !bg-transparent">
                 <User size={20} />
               </button>
               <span className="text-[10px] mt-1 font-medium text-gray-400">
