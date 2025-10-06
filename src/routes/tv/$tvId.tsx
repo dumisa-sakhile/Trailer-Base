@@ -299,6 +299,10 @@ function TVDetails() {
           />
         </div>
 
+        <title>{data?.name || "Trailer Base"}</title>
+        <meta name="description" content={data?.overview} />
+        
+
         {/* Centered logo above tagline on mobile */}
         {selectedLogo && (
           <div className="flex md:hidden justify-center mb-4">
@@ -502,7 +506,7 @@ function TVDetails() {
 
         {/* Recommendations section */}
         <h1 className="text-3xl max-sm:text-2xl lg:text-4xl font-medium tracking-tight">
-          Recommendations
+          You might also like
         </h1>
         <section className="relative w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 md:gap-10">
           {recommendations?.results?.length === 0 && (
