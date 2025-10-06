@@ -182,7 +182,7 @@ const Header = () => {
               <img
                 src={getProfileImage()}
                 alt="Profile"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-full"
               />
             </Link>
           ) : (
@@ -215,7 +215,7 @@ const Header = () => {
                 <img
                   src={getProfileImage()}
                   alt="Profile"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-full"
                 />
               </Link>
               <span
