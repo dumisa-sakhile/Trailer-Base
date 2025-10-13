@@ -206,8 +206,8 @@ function PersonDetailsPage() {
         <motion.div variants={itemVariants}>
           <BackHomeBtn />
         </motion.div>
-        <title>Trailer Base - Person Details</title>
-
+        <title>{person.name}</title>
+        <meta name="description" content={person.biography} />
         {/* Header Section */}
         <motion.div
           variants={containerVariants}
