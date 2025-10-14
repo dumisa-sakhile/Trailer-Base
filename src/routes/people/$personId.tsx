@@ -215,7 +215,7 @@ function PersonDetailsPage() {
           {/* Profile Image */}
           <div className="flex-shrink-0 mx-auto md:mx-0 group">
             <Atropos
-              className="w-64 h-auto rounded-2xl overflow-hidden"
+              className="w-20 h-20 rounded-full overflow-hidden md:w-64 md:h-auto md:rounded-2xl"
               activeOffset={30}
               shadow={false}
               highlight={false}
@@ -230,7 +230,7 @@ function PersonDetailsPage() {
                     : FALLBACK_POSTER
                 }
                 alt={person?.name || "Profile Image"}
-                className="w-64 h-auto rounded-2xl cursor-move shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+                className="w-20 h-20 object-cover rounded-full md:w-64 md:h-auto md:rounded-2xl cursor-move shadow-lg transition-transform duration-300 ease-in-out md:group-hover:scale-110 md:group-hover:rotate-2"
               />
             </Atropos>
           </div>

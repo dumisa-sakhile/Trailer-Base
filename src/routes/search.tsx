@@ -469,6 +469,7 @@ function Search() {
   return (
     <section className="min-h-screen text-white flex flex-col poppins-light">
       <header className="py-6 md:p-8 flex flex-col gap-6 sm:gap-8 z-10">
+        <title>TrailerBase - Search </title>
         <h1 className="text-4xl lg:text-5xl text-white text-center font-extrabold tracking-tight">
           Discover Your Next Favorite
         </h1>
