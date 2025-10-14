@@ -478,7 +478,7 @@ function Search() {
             <input
               autoFocus
               type="search"
-              placeholder={`Search ${label.toLowerCase()}`}
+              placeholder={`${label.toLowerCase()} search...`}
               value={inputValue}
               onChange={handleSearchChange}
               className="w-full h-14 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white placeholder:text-white pl-14 pr-36 leading-6 outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all font-normal shadow-lg"
