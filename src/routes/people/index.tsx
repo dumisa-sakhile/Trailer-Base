@@ -264,11 +264,11 @@ function People() {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 }, // Start hidden, slightly below
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
-      y: 0, // Animate to original position
-      transition: { duration: 0.6, ease: "easeOut" },
+      y: 0,
+      transition: { duration: 0.6 },
     },
   };
 

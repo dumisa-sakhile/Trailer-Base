@@ -6,6 +6,19 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { db } from "@/config/firebase";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
+
+const EASE_IN_OUT = [0.42, 0, 0.58, 1] as any;
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.08 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.36, ease: EASE_IN_OUT } },
+};
 
 interface UserData {
   username?: string;
@@ -100,30 +113,6 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
     profileMutation.mutate({ username: newUsername, gender });
   };
 
-  // Animation variants for staggered entrance
-  const containerVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.2,
-        duration: 0.4,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
-
   if (!isShowing) return null;
 
   return (
@@ -133,7 +122,8 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
       variants={containerVariants}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
       <motion.div
-        variants={containerVariants}
+        // this inner panel is a child of the outer container — use itemVariants to avoid nested container recursion
+        variants={itemVariants}
         className="relative w-full max-w-md bg-[#1C1C1E] text-white rounded-2xl shadow-xl p-6 md:p-8">
         <motion.button
           variants={itemVariants}
@@ -154,7 +144,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
           </svg>
         </motion.button>
 
-        <motion.div variants={containerVariants} className="text-center">
+        <motion.div variants={itemVariants} className="text-center">
           <motion.h2
             variants={itemVariants}
             className="text-2xl max-sm:text-xl font-semibold mb-2">
