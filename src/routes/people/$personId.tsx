@@ -75,12 +75,16 @@ function PersonDetailsPage() {
     },
   };
 
+  // Use a typed-friendly easing (cubic-bezier) instead of string to satisfy the current motion types.
+  // [0.42, 0, 0.58, 1] ≈ easeInOut
+  const EASE_IN_OUT: [number, number, number, number] = [0.42, 0, 0.58, 1];
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 0.6, ease: EASE_IN_OUT },
     },
   };
 
@@ -89,12 +93,12 @@ function PersonDetailsPage() {
     collapsed: (height: number) => ({
       height: height || "auto",
       opacity: 1,
-      transition: { duration: 0.4, ease: "easeInOut" },
+      transition: { duration: 0.4, ease: EASE_IN_OUT },
     }),
     expanded: (height: number) => ({
       height: height || "auto",
       opacity: 1,
-      transition: { duration: 0.4, ease: "easeInOut" },
+      transition: { duration: 0.4, ease: EASE_IN_OUT },
     }),
   };
 
