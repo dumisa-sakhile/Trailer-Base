@@ -9,7 +9,7 @@ interface ResetSentNoticeProps {
 
 const ResetSentNotice: React.FC<ResetSentNoticeProps> = ({ email, onBack, onClose }) => {
   return (
-    <div className="mb-4 p-3 bg-blue-900/40 text-blue-300 rounded space-y-3">
+    <div className="mb-4 p-3  rounded space-y-3">
       <div>
         Password reset email sent to <strong>{email}</strong>. Check your inbox.
       </div>

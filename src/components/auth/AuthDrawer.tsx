@@ -234,7 +234,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
           // ignore signOut error
         }
         const msg = `Email not verified. A verification link was sent to ${email}. Verify your email to sign in.`;
-        toast.error(msg);
+        toast.error(msg, { duration: 10000 });
         setCreatedNotice(msg);
         setSuppressAutoClose(true);
         // keep password in state so the user can use "Resend" which signs in temporarily
@@ -430,7 +430,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     ? ReactDOM.createPortal(
         <AnimatePresence>
           <motion.div
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center poppins-light"
+            className="fixed inset-0 z-50 flex items-center justify-center poppins-light"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}>
@@ -446,7 +446,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
             {/* Drawer/Modal */}
             <motion.div
               ref={drawerRef}
-              className="relative w-full sm:w-[400px] bg-black md:bg-[#23272f] rounded-t-2xl sm:rounded-2xl shadow-2xl p-6 pt-4 flex flex-col max-h-[90vh] overflow-y-auto"
+              className="fixed bottom-0 md:relative w-full max-w-[400px] bg-[#23272f] rounded-t-2xl rounded-b-none md:rounded-2xl shadow-2xl p-6 pt-4 flex flex-col max-h-[90vh] overflow-y-auto"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -458,7 +458,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
               {...dragHandlers}>
               {/* Close Button */}
               <button
-                className="hidden md:block absolute top-3 right-3 p-2 rounded-full bg-neutral-700 hover:bg-neutral-600 transition-colors"
+                className="absolute top-3 right-3 p-2 rounded-full bg-neutral-700 hover:bg-neutral-600 transition-colors"
                 onClick={() => {
                   resetAllStates();
                   onClose();
@@ -611,7 +611,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
                     <p className="text-center text-sm text-neutral-400 mt-4">
                       Need help?{" "}
                       <a href="https://sakhiledumisa.com" target="_blank" rel="noopener noreferrer" className="text-blue-400">
-                        Reach out to me on sakhiledumisa.com
+                        Visit sakhiledumisa.com
                       </a>
                     </p>
                   </>

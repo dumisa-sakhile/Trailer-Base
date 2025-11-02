@@ -36,7 +36,7 @@ const SignInForm: React.FC<SignInFormProps> = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] text-sm"
-          required
+          
         />
       </div>
 
@@ -51,7 +51,7 @@ const SignInForm: React.FC<SignInFormProps> = ({
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(255,255,255,0.1)] text-sm"
-          required
+          
         />
       </div>
 
@@ -68,14 +68,14 @@ const SignInForm: React.FC<SignInFormProps> = ({
           <button
             type="button"
             onClick={onForgotPassword}
-            className="text-blue-400 underline w-full sm:w-auto text-left sm:text-center"
+            className="text-blue-400  w-full sm:w-auto text-left sm:text-center"
           >
             Forgot password?
           </button>
           <button
             type="button"
             onClick={onCreateAccount}
-            className="text-neutral-400 underline w-full sm:w-auto text-left sm:text-center ml-0 sm:ml-2"
+            className="text-green-400  w-full sm:w-auto text-left sm:text-center ml-0 sm:ml-2"
           >
             Create account
           </button>
