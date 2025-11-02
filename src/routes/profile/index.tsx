@@ -38,6 +38,7 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import MediaCard from "@/components/MediaCard"; // Ensure this path is correct
 import EditProfileForm from "@/components/EditProfileForm";
 import male from "/male.jpg?url";
@@ -287,8 +288,11 @@ function Profile() {
     return userData?.gender === "female" ? female : male;
   };
 
+  // typed easing tuple (cast to any to satisfy differing motion type defs)
+  const EASE_CARD = [0.22, 1, 0.36, 1] as any;
+
   // Animation variants for staggered entrance (used for main sections)
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -300,23 +304,27 @@ function Profile() {
   };
 
   // Animation variants for individual items within sections
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 0.6 },
     },
   };
 
   // Animation variants for individual MediaCards (no stagger or whileInView)
-  const cardVariants = {
+  const cardVariants: Variants = {
     hidden: { opacity: 0, scale: 0.95, y: 20 },
     visible: {
       opacity: 1,
       scale: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+      transition: {
+        duration: 0.4,
+        // Use numeric cubic-bezier easing array casted to any to satisfy the Transition type
+        ease: EASE_CARD,
+      },
     },
   };
 

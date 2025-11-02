@@ -5,6 +5,7 @@ import BackHomeBtn from "@/components/BackHomeBtn";
 import MediaCard from "@/components/MediaCard";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import Atropos from "atropos/react";
 import "atropos/atropos.css";
 import PersonDetailsSkeleton from "@/components/PersonDetailsSkeleton";
@@ -17,6 +18,40 @@ export const Route = createFileRoute("/people/$personId")({
   },
   component: PersonDetailsPage,
 });
+
+// cubic-bezier easing tuple (cast to any to satisfy differing motion type defs)
+const EASE_IN_OUT = [0.42, 0, 0.58, 1] as any;
+
+// typed variants to avoid TS errors from motion types
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.12 },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.48, ease: EASE_IN_OUT },
+  },
+};
+
+const bioVariants: Variants = {
+  collapsed: (height: number) => ({
+    height: height || "auto",
+    opacity: 1,
+    transition: { duration: 0.36, ease: EASE_IN_OUT },
+  }),
+  expanded: (height: number) => ({
+    height: height || "auto",
+    opacity: 1,
+    transition: { duration: 0.36, ease: EASE_IN_OUT },
+  }),
+};
 
 function PersonDetailsPage() {
   const { personId } = Route.useLoaderData();
@@ -63,45 +98,6 @@ function PersonDetailsPage() {
           new Date(a.first_air_date).getTime()
       ) || [];
 
-  // Animation variants for staggered entrance
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  // Use a typed-friendly easing (cubic-bezier) instead of string to satisfy the current motion types.
-  // [0.42, 0, 0.58, 1] ≈ easeInOut
-  const EASE_IN_OUT: [number, number, number, number] = [0.42, 0, 0.58, 1];
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: EASE_IN_OUT },
-    },
-  };
-
-  // Animation variants for biography expansion
-  const bioVariants = {
-    collapsed: (height: number) => ({
-      height: height || "auto",
-      opacity: 1,
-      transition: { duration: 0.4, ease: EASE_IN_OUT },
-    }),
-    expanded: (height: number) => ({
-      height: height || "auto",
-      opacity: 1,
-      transition: { duration: 0.4, ease: EASE_IN_OUT },
-    }),
-  };
-
   // Add state for biography expansion
   const [bioExpanded, setBioExpanded] = useState(false);
   const [collapsedHeight, setCollapsedHeight] = useState<number | null>(null);
@@ -120,10 +116,8 @@ function PersonDetailsPage() {
         : biography;
     const paragraphs = displayText.split("\n");
     return paragraphs.map((para: string, index: number) => (
-      <motion.p
-        key={index}
-        variants={itemVariants}
-        className="mb-4 text-neutral-100 text-md">
+      // itemVariants is typed and uses a numeric easing tuple to satisfy TS
+      <motion.p key={index} variants={itemVariants} className="mb-4 text-neutral-100 text-md">
         {para}
       </motion.p>
     ));
