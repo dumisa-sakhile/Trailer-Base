@@ -185,3 +185,18 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 *{
   outline: none;
 }
+
+/* Remove focus outlines and shadows across the app (all components) */
+*:focus,
+button:focus,
+a:focus,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+summary:focus,
+[tabindex]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
