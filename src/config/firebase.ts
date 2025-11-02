@@ -1,7 +1,14 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  runTransaction,
+  serverTimestamp,
+} from "firebase/firestore";
 import type { User } from "firebase/auth";
 import axios from "axios";
 
@@ -77,55 +84,111 @@ const getUserName = (user: User): string => {
   return user.email?.split('@')[0] || "User";
 };
 
+// Helper: only include defined/non-empty values to avoid overwriting existing fields with null/undefined
+const compact = (obj: Record<string, any> | null | undefined) => {
+  if (!obj) return {};
+  const out: Record<string, any> = {};
+  for (const k of Object.keys(obj)) {
+    const v = (obj as any)[k];
+    if (v !== undefined && v !== null && !(typeof v === "string" && v.trim() === "")) {
+      out[k] = v;
+    }
+  }
+  return out;
+};
+
+// Build a minimal profile update object from Firebase Auth user
+const buildProfileFromAuthUser = (user: User) => {
+  return compact({
+    displayName: user.displayName ?? undefined,
+    email: user.email ?? undefined,
+    photoURL: user.photoURL ?? undefined,
+    providerId: user.providerData?.[0]?.providerId ?? undefined,
+    lastSignIn: user.metadata?.lastSignInTime ?? undefined,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// Merge incoming auth profile into Firestore user doc WITHOUT overwriting existing non-empty values.
+// Only writes fields that are missing/empty on the existing doc.
+export const upsertUserProfile = async (user: User) => {
+  try {
+    const userDocRef = doc(db, "users", user.uid);
+    const authProfile = buildProfileFromAuthUser(user);
+    if (Object.keys(authProfile).length === 0) return;
+
+    await runTransaction(db, async (tx) => {
+      const snap = await tx.get(userDocRef);
+      const existing = snap.exists() ? snap.data() : {};
+
+      // prepare update: only set fields that do not exist on the document
+      const update: Record<string, any> = {};
+      for (const key of Object.keys(authProfile)) {
+        const incoming = (authProfile as any)[key];
+        const existingVal = (existing as any)[key];
+        if (existingVal === undefined || existingVal === null || existingVal === "") {
+          update[key] = incoming;
+        }
+        // if existing value exists, keep it (do not override)
+      }
+
+      // Always ensure we don't overwrite hasWelcomeEmail here.
+      // Use merge semantics by keeping this update object minimal.
+      if (Object.keys(update).length > 0) {
+        tx.set(userDocRef, update, { merge: true });
+      } else if (!snap.exists()) {
+        // if doc didn't exist and there is no meaningful incoming data, create a minimal doc
+        tx.set(userDocRef, { createdAt: serverTimestamp() }, { merge: true });
+      }
+    });
+  } catch (err) {
+    console.error("upsertUserProfile error:", err);
+  }
+};
+
 // Function to send welcome email for users who haven't received one
 export const sendWelcomeMessage = async (user: User) => {
   try {
     // Get the user's name
     const userName = getUserName(user);
 
-    // Check if the user has already received a welcome email
     const userDocRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userDocRef);
-    const userData = userDoc.data();
+    const snap = await getDoc(userDocRef);
+    const userData = snap.exists() ? snap.data() : {};
 
-    // If hasWelcomeEmail doesn't exist or is false, send welcome email
-    if (!userData?.hasWelcomeEmail) {
-      // Set hasWelcomeEmail to false if it doesn't exist
-      if (!userDoc.exists() || userData?.hasWelcomeEmail === undefined) {
-        await setDoc(userDocRef, { 
-          ...userData,
-          hasWelcomeEmail: false 
-        }, { merge: true });
-      }
-
-      // Send welcome email
-      await sendWelcomeEmail(userName, user.email!);
-      
-      // Update user document to mark welcome email as sent
-      await setDoc(userDocRef, { 
-        ...userData,
-        hasWelcomeEmail: true 
-      }, { merge: true });
-
-      console.log(`Welcome email sent to ${user.email}`);
-    } else {
-      console.log(`User ${user.uid} already has received welcome email.`);
+    // If hasWelcomeEmail is truthy, skip
+    if (userData?.hasWelcomeEmail) {
+      console.log(`User ${user.uid} already received welcome email.`);
+      return;
     }
+
+    // Do NOT write a false value to hasWelcomeEmail. Only set true after successful send.
+    // Send welcome email
+    await sendWelcomeEmail(userName, user.email!);
+
+    // After successful send, mark as sent atomically (merge true so other fields remain untouched)
+    await setDoc(userDocRef, { hasWelcomeEmail: true, welcomeSentAt: serverTimestamp() }, { merge: true });
+
+    console.log(`Welcome email sent to ${user.email}`);
   } catch (error: any) {
     console.error("Error sending welcome email:", {
-      message: error.message,
-      code: error.code,
-      response: error.response?.data,
-      stack: error.stack,
+      message: error?.message,
+      code: error?.code,
+      response: error?.response?.data,
+      stack: error?.stack,
     });
+    // do not overwrite hasWelcomeEmail on failure
   }
 };
 
 // Listen for authentication state changes
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // User is signed in, check and send welcome email if needed
-    sendWelcomeMessage(user);
+    // Merge auth profile into Firestore (doesn't overwrite existing fields)
+    await upsertUserProfile(user);
+
+    // Send welcome email only if it hasn't been sent (function checks Firestore)
+    await sendWelcomeMessage(user);
   }
 });
 
