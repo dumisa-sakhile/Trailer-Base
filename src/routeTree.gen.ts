@@ -12,16 +12,13 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SearchImport } from './routes/search'
-import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as TvIndexImport } from './routes/tv/index'
+import { Route as ProfileIndexImport } from './routes/profile/index'
 import { Route as PeopleIndexImport } from './routes/people/index'
-import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as TvTvIdImport } from './routes/tv/$tvId'
 import { Route as PeoplePersonIdImport } from './routes/people/$personId'
 import { Route as MovieMovieIdImport } from './routes/movie/$movieId'
-import { Route as AuthVerifyImport } from './routes/auth/verify'
-import { Route as AuthProfileImport } from './routes/auth/profile'
 import { Route as TvListListImport } from './routes/tv/list/$list'
 import { Route as MovieListListImport } from './routes/movie/list/$list'
 import { Route as TvTypeTypeNameTypeIdImport } from './routes/tv/$type.$typeName.$typeId'
@@ -32,12 +29,6 @@ import { Route as MovieTypeTypeNameTypeIdImport } from './routes/movie/$type.$ty
 const SearchRoute = SearchImport.update({
   id: '/search',
   path: '/search',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AuthRouteRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,16 +44,16 @@ const TvIndexRoute = TvIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ProfileIndexRoute = ProfileIndexImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const PeopleIndexRoute = PeopleIndexImport.update({
   id: '/people/',
   path: '/people/',
   getParentRoute: () => rootRoute,
-} as any)
-
-const AuthIndexRoute = AuthIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 const TvTvIdRoute = TvTvIdImport.update({
@@ -81,18 +72,6 @@ const MovieMovieIdRoute = MovieMovieIdImport.update({
   id: '/movie/$movieId',
   path: '/movie/$movieId',
   getParentRoute: () => rootRoute,
-} as any)
-
-const AuthVerifyRoute = AuthVerifyImport.update({
-  id: '/verify',
-  path: '/verify',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-
-const AuthProfileRoute = AuthProfileImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 const TvListListRoute = TvListListImport.update({
@@ -130,33 +109,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRoute
-    }
     '/search': {
       id: '/search'
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchImport
       parentRoute: typeof rootRoute
-    }
-    '/auth/profile': {
-      id: '/auth/profile'
-      path: '/profile'
-      fullPath: '/auth/profile'
-      preLoaderRoute: typeof AuthProfileImport
-      parentRoute: typeof AuthRouteImport
-    }
-    '/auth/verify': {
-      id: '/auth/verify'
-      path: '/verify'
-      fullPath: '/auth/verify'
-      preLoaderRoute: typeof AuthVerifyImport
-      parentRoute: typeof AuthRouteImport
     }
     '/movie/$movieId': {
       id: '/movie/$movieId'
@@ -179,18 +137,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TvTvIdImport
       parentRoute: typeof rootRoute
     }
-    '/auth/': {
-      id: '/auth/'
-      path: '/'
-      fullPath: '/auth/'
-      preLoaderRoute: typeof AuthIndexImport
-      parentRoute: typeof AuthRouteImport
-    }
     '/people/': {
       id: '/people/'
       path: '/people'
       fullPath: '/people'
       preLoaderRoute: typeof PeopleIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileIndexImport
       parentRoute: typeof rootRoute
     }
     '/tv/': {
@@ -233,33 +191,14 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-interface AuthRouteRouteChildren {
-  AuthProfileRoute: typeof AuthProfileRoute
-  AuthVerifyRoute: typeof AuthVerifyRoute
-  AuthIndexRoute: typeof AuthIndexRoute
-}
-
-const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthProfileRoute: AuthProfileRoute,
-  AuthVerifyRoute: AuthVerifyRoute,
-  AuthIndexRoute: AuthIndexRoute,
-}
-
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
-)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteRouteWithChildren
   '/search': typeof SearchRoute
-  '/auth/profile': typeof AuthProfileRoute
-  '/auth/verify': typeof AuthVerifyRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
-  '/auth/': typeof AuthIndexRoute
   '/people': typeof PeopleIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/tv': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
   '/tv/list/$list': typeof TvListListRoute
@@ -270,13 +209,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/search': typeof SearchRoute
-  '/auth/profile': typeof AuthProfileRoute
-  '/auth/verify': typeof AuthVerifyRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
-  '/auth': typeof AuthIndexRoute
   '/people': typeof PeopleIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/tv': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
   '/tv/list/$list': typeof TvListListRoute
@@ -287,15 +224,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteRouteWithChildren
   '/search': typeof SearchRoute
-  '/auth/profile': typeof AuthProfileRoute
-  '/auth/verify': typeof AuthVerifyRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/people/$personId': typeof PeoplePersonIdRoute
   '/tv/$tvId': typeof TvTvIdRoute
-  '/auth/': typeof AuthIndexRoute
   '/people/': typeof PeopleIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/tv/': typeof TvIndexRoute
   '/movie/list/$list': typeof MovieListListRoute
   '/tv/list/$list': typeof TvListListRoute
@@ -307,15 +241,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/search'
-    | '/auth/profile'
-    | '/auth/verify'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
-    | '/auth/'
     | '/people'
+    | '/profile'
     | '/tv'
     | '/movie/list/$list'
     | '/tv/list/$list'
@@ -325,13 +256,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/search'
-    | '/auth/profile'
-    | '/auth/verify'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
-    | '/auth'
     | '/people'
+    | '/profile'
     | '/tv'
     | '/movie/list/$list'
     | '/tv/list/$list'
@@ -340,15 +269,12 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/auth'
     | '/search'
-    | '/auth/profile'
-    | '/auth/verify'
     | '/movie/$movieId'
     | '/people/$personId'
     | '/tv/$tvId'
-    | '/auth/'
     | '/people/'
+    | '/profile/'
     | '/tv/'
     | '/movie/list/$list'
     | '/tv/list/$list'
@@ -359,12 +285,12 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren
   SearchRoute: typeof SearchRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
   PeoplePersonIdRoute: typeof PeoplePersonIdRoute
   TvTvIdRoute: typeof TvTvIdRoute
   PeopleIndexRoute: typeof PeopleIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
   TvIndexRoute: typeof TvIndexRoute
   MovieListListRoute: typeof MovieListListRoute
   TvListListRoute: typeof TvListListRoute
@@ -374,12 +300,12 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRouteRoute: AuthRouteRouteWithChildren,
   SearchRoute: SearchRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
   PeoplePersonIdRoute: PeoplePersonIdRoute,
   TvTvIdRoute: TvTvIdRoute,
   PeopleIndexRoute: PeopleIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
   TvIndexRoute: TvIndexRoute,
   MovieListListRoute: MovieListListRoute,
   TvListListRoute: TvListListRoute,
@@ -398,12 +324,12 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/auth",
         "/search",
         "/movie/$movieId",
         "/people/$personId",
         "/tv/$tvId",
         "/people/",
+        "/profile/",
         "/tv/",
         "/movie/list/$list",
         "/tv/list/$list",
@@ -414,24 +340,8 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
-    "/auth": {
-      "filePath": "auth/route.tsx",
-      "children": [
-        "/auth/profile",
-        "/auth/verify",
-        "/auth/"
-      ]
-    },
     "/search": {
       "filePath": "search.tsx"
-    },
-    "/auth/profile": {
-      "filePath": "auth/profile.tsx",
-      "parent": "/auth"
-    },
-    "/auth/verify": {
-      "filePath": "auth/verify.tsx",
-      "parent": "/auth"
     },
     "/movie/$movieId": {
       "filePath": "movie/$movieId.tsx"
@@ -442,12 +352,11 @@ export const routeTree = rootRoute
     "/tv/$tvId": {
       "filePath": "tv/$tvId.tsx"
     },
-    "/auth/": {
-      "filePath": "auth/index.tsx",
-      "parent": "/auth"
-    },
     "/people/": {
       "filePath": "people/index.tsx"
+    },
+    "/profile/": {
+      "filePath": "profile/index.tsx"
     },
     "/tv/": {
       "filePath": "tv/index.tsx"

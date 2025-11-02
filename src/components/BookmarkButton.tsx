@@ -4,7 +4,7 @@ import { doc, setDoc, deleteDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { BookmarkIcon } from "lucide-react";
 import { db } from "@/config/firebase";
-import AuthDrawer from "./AuthDrawer";
+import AuthDrawer from "./auth/AuthDrawer";
 
 interface BookmarkButtonProps {
   user: import("firebase/auth").User | null;

@@ -7,7 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
-import AuthDrawer from "./AuthDrawer";
+import AuthDrawer from "./auth/AuthDrawer";
 
 const BackHomeBtn = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const BackHomeBtn = () => {
 
   const handleProfileClick = () => {
     if (user) {
-      navigate({ to: "/auth/profile" });
+      navigate({ to: "/profile" });
     } else {
       setDrawerOpen(true);
     }

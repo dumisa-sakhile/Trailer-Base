@@ -59,7 +59,7 @@ interface UserData {
   displayName?: string;
 }
 
-export const Route = createFileRoute("/auth/profile")({
+export const Route = createFileRoute("/profile/")({
   component: Profile,
 });
 

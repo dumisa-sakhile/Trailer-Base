@@ -1,7 +1,7 @@
 import type { FunctionComponent } from "react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import AuthDrawer from "./AuthDrawer";
+import AuthDrawer from "./auth/AuthDrawer";
 import BackHomeBtn from "./BackHomeBtn";
 
 /**

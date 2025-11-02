@@ -52,7 +52,7 @@ if (rootElement && !rootElement.innerHTML) {
       <QueryClientProvider client={queryClient}>
        
           <RouterProvider router={router} />
-          <Toaster position='bottom-right'/>
+          <Toaster position='top-center'/>
         
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

@@ -9,7 +9,7 @@ import { Popcorn, Tv, AtSign, Search, User } from "lucide-react";
 import logo from "../logo.svg?url";
 import male from "/male.jpg?url";
 import female from "/female.jpg?url";
-import AuthDrawer from "./AuthDrawer";
+import AuthDrawer from "./auth/AuthDrawer";
 
 interface NavItem {
   icon: React.ComponentType<{ size: number; className?: string }>;
@@ -177,7 +177,7 @@ const Header = () => {
         <div className="flex flex-col items-center gap-4 pt-4 border-t border-gray-700/20 w-full">
           {!loading && user ? (
             <Link
-              to="/auth/profile"
+              to="/profile"
               className="w-10 h-10 rounded-full overflow-hidden border-2 border-transparent transition-all duration-200 hover:border-white focus:outline-none focus:ring-2 focus:ring-white/50 shadow-md">
               <img
                 src={getProfileImage()}
@@ -205,10 +205,10 @@ const Header = () => {
           {user ? (
             <div className="group relative flex flex-col items-center">
               <Link
-                to="/auth/profile"
+                to="/profile"
                 aria-label="Profile"
                 className={`relative flex items-center justify-center w-10 h-10 rounded-md transition-all duration-200 group-hover:scale-105 group ${
-                  location.pathname.startsWith("/auth/profile")
+                  location.pathname.startsWith("/profile")
                     ? "bg-white/15 text-white shadow-md"
                     : "text-gray-400 hover:bg-white/5 hover:text-white"
                 } rounded-full !bg-transparent`}>
@@ -220,7 +220,7 @@ const Header = () => {
               </Link>
               <span
                 className={`text-[10px] mt-1 font-medium ${
-                  location.pathname.startsWith("/auth/profile")
+                  location.pathname.startsWith("/profile")
                     ? "text-white"
                     : "text-gray-400"
                 }`}>
