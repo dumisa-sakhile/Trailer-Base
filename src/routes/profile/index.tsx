@@ -1,35 +1,99 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-// Confirm Sign Out Modal
+import { useState, useEffect, useRef } from "react";
+// Confirm Sign Out Modal — mobile-first, minimal, no gray
 const ConfirmSignOutModal: React.FC<{
   isOpen: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }> = ({ isOpen, onConfirm, onCancel }) => {
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCancel();
+    };
+    document.addEventListener("keydown", onKey);
+    // focus cancel for safe default action
+    cancelRef.current?.focus();
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen, onCancel]);
+
   if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#18181b] border border-white/10 rounded-2xl shadow-xl p-8 max-w-xs w-full flex flex-col items-center text-center">
-        <h3 className="text-lg font-semibold text-white mb-2">
-          Confirm Sign Out
-        </h3>
-        <p className="text-neutral-300 mb-6">
-          Are you sure you want to sign out?
-        </p>
-        <div className="flex gap-4 w-full">
-          <button
-            className="flex-1 py-2 rounded-lg bg-neutral-700 text-white hover:bg-neutral-600 transition-all"
-            onClick={onCancel}
-            autoFocus>
-            Cancel
-          </button>
-          <button
-            className="flex-1 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all"
-            onClick={onConfirm}>
-            Sign Out
-          </button>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={onCancel}
+        aria-hidden="true"
+      />
+
+      {/* Dialog: bottom-sheet on mobile (full width) and centered on larger screens */}
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 20, opacity: 0 }}
+        transition={{ duration: 0.14 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-signout-title"
+        className="relative z-10 w-full sm:max-w-md mx-4"
+      >
+        <div className="bg-white text-black rounded-t-lg sm:rounded-lg shadow-xl p-5 sm:p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                className="w-6 h-6 text-red-600"
+                aria-hidden="true"
+              >
+                <path
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 17l5-5-5-5M21 12H9"
+                />
+                <path
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 19H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7"
+                />
+              </svg>
+            </div>
+
+            <div className="flex-1">
+              <h3 id="confirm-signout-title" className="text-lg font-semibold">
+                Sign out?
+              </h3>
+              <p className="mt-1 text-sm text-black/70">
+                You'll be signed out on this device. You can sign back in anytime.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 flex gap-3">
+            <button
+              ref={cancelRef}
+              onClick={onCancel}
+              className="flex-1 py-2.5 rounded-md border border-transparent bg-transparent text-black hover:bg-black/5 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="flex-1 py-2.5 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
