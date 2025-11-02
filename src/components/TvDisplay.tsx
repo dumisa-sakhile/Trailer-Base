@@ -102,22 +102,55 @@ const useWindowSize = () => {
   return windowSize;
 };
 
-// Skeleton loading component for a single TV show card (improved colors)
-const TVCardSkeleton: React.FC<{ style: React.CSSProperties }> = ({
-  style,
-}) => (
-  <div
-    style={style}
-    className="relative group inline-block animate-pulse rounded-md">
+// Skeleton loading component for a single TV show card (improved dark theme)
+const TVCardSkeleton: React.FC<{ style: React.CSSProperties }> = React.memo(
+  ({ style }) => (
     <div
-      className="w-[140px] h-[210px] bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900 rounded-md"
-      style={{ borderRadius: "0.375rem" }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-white/20 to-transparent dark:from-neutral-900/80 dark:via-neutral-900/40 dark:to-transparent flex flex-col justify-end p-2 rounded-md">
-        <div className="h-4 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-2"></div>
-        <div className="h-3 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2"></div>
+      style={style}
+      className="relative group inline-block rounded-md"
+      aria-hidden>
+      <div
+        className="w-[140px] h-[210px] rounded-md overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(20,20,22,0.95) 0%, rgba(34,34,36,0.98) 40%, rgba(44,44,48,1) 100%)",
+          borderRadius: "0.375rem",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px rgba(0,0,0,0.6)",
+        }}>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent flex flex-col justify-end p-2 rounded-md">
+          <div className="h-4 bg-neutral-700/80 rounded w-3/4 mb-2"></div>
+          <div className="h-3 bg-neutral-700/70 rounded w-1/2"></div>
+        </div>
+
+        {/* subtle shimmer */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "-130px",
+            width: "110px",
+            height: "100%",
+            transform: "skewX(-18deg)",
+            background:
+              "linear-gradient(90deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.00) 100%)",
+            animation: "tv-shimmer 1.6s linear infinite",
+          }}
+        />
       </div>
+
+      <div className="absolute top-3 left-3 p-2 bg-neutral-800/80 rounded-full shadow-md">
+        <div className="w-5 h-5 bg-neutral-700 rounded-full"></div>
+      </div>
+
+      <style>{`
+        @keyframes tv-shimmer {
+          0% { transform: translateX(-130px) skewX(-18deg); }
+          100% { transform: translateX(420px) skewX(-18deg); }
+        }
+      `}</style>
     </div>
-  </div>
+  )
 );
 
 const TVCard: React.FC<{

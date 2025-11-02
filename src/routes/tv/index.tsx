@@ -180,7 +180,6 @@ function App() {
         />
       </motion.div>
       <br />
-      <br />
       <motion.div
         variants={containerVariants}
         initial="hidden"

@@ -64,7 +64,7 @@ function List() {
         <MediaGridSkeleton titleText={`${formattedTitle} Movies`} />
       ) : (
         // Show actual content once loaded
-        <div className="fixed top-0 left-0 w-full h-full pt-[15%] md:pt-[5%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto text-white">
+        <div className="fixed top-0 left-0 w-full h-full pt-[35%] md:pt-[5%] p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto text-white">
           <h1 className="-mt-10 text-2xl text-left font-bold capitalize">
             {formattedTitle} Movies
           </h1>

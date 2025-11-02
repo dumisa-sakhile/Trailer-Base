@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import MediaCard from "./MediaCard"; // Ensure this import path is correct
@@ -90,45 +90,82 @@ const MediaCardSkeleton: React.FC = () => (
 
 /**
  * MediaListSkeleton Component
- * Renders a full skeleton for the entire MediaList section.
- * This includes placeholders for the section title, "View All" button,
- * and a responsive grid of MediaCardSkeleton components.
+ * Horizontal, scrollable skeleton with left/right buttons (mirrors MediaList layout).
  */
 const MediaListSkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Determine the current card width based on screen size for accurate calculation
-  let currentCardWidth = DEFAULT_CARD_WIDTH;
-  if (windowWidth < 640) {
-    // Tailwind's 'sm' breakpoint is typically 640px
-    currentCardWidth = SM_CARD_WIDTH;
-  }
-
-  // Calculate how many cards can fit in a row, considering section padding (e.g., px-8 = 32px each side)
-  // This is an approximation for responsive layout.
-  const horizontalPadding = 32 * 2; // Assuming px-8 on both sides
+  // Determine size per card
+  const currentCardWidth = windowWidth < 640 ? SM_CARD_WIDTH : DEFAULT_CARD_WIDTH;
+  const horizontalPadding = 32 * 2; // matches section padding approximation
   const effectiveWidth = Math.max(0, windowWidth - horizontalPadding);
-  const cardsPerRow = Math.floor(effectiveWidth / (currentCardWidth + GAP));
+  const cardsPerView = Math.max(1, Math.floor(effectiveWidth / (currentCardWidth + GAP)));
+  const numberOfSkeletons = Math.max(cardsPerView * 2, 6); // at least 2 "screens" worth
 
-  // Render enough skeletons to fill at least 2-3 rows, or a minimum number if the screen is very small
-  const numberOfSkeletons = Math.max(cardsPerRow * 3, 6); // Ensures at least 6 skeletons are shown
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const update = () => {
+      setCanScrollLeft(el.scrollLeft > 8);
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [numberOfSkeletons]);
+
+  const scrollByAmount = (direction: "left" | "right") => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const amount = Math.max(el.clientWidth * 0.8, 300);
+    el.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
+  };
 
   return (
-    <section className="w-full flex flex-col items-center justify-center gap-4 px-4 sm:px-6 lg:px-8 py-6 animate-pulse">
-      <div className="w-full flex items-center justify-between">
-        {/* Skeleton for the section title */}
-        <div className="h-8 md:h-10 lg:h-12 bg-neutral-700 rounded w-1/3 max-w-[280px]"></div>
-        {/* Skeleton for the "View All" button */}
-        <div className="h-9 w-28 bg-blue-700 rounded-md"></div>
+    <div className="relative -mx-4 px-4">
+      <button
+        type="button"
+        onClick={() => scrollByAmount("left")}
+        aria-label="Scroll left"
+        className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
+          canScrollLeft ? "opacity-100" : "opacity-30 pointer-events-none"
+        }`}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => scrollByAmount("right")}
+        aria-label="Scroll right"
+        className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
+          canScrollRight ? "opacity-100" : "opacity-30 pointer-events-none"
+        }`}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M9 6l6 6-6 6"></path>
+        </svg>
+      </button>
+
+      <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
+        <div className="flex gap-4 lg:gap-6 items-stretch py-2">
+          {Array.from({ length: numberOfSkeletons }).map((_, i) => (
+            <div key={i} className="flex-shrink-0">
+              <MediaCardSkeleton />
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="h-4" /> {/* Spacer div to match actual layout */}
-      <div className="w-full flex flex-wrap justify-center sm:justify-start gap-4 lg:gap-6">
-        {/* Render a grid of individual MediaCardSkeletons */}
-        {Array.from({ length: numberOfSkeletons }).map((_, index) => (
-          <MediaCardSkeleton key={index} />
-        ))}
-      </div>
-    </section>
+    </div>
   );
 };
 
@@ -152,73 +189,126 @@ const MediaList: React.FC<MediaListProps> = ({
     visible: { opacity: 1, y: 0 },
   };
 
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const update = () => {
+      setCanScrollLeft(el.scrollLeft > 8);
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [data, isLoading]);
+
+  const scrollByAmount = (direction: "left" | "right") => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const amount = Math.max(el.clientWidth * 0.8, 300); // scroll by 80% viewport or min 300px
+    el.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
+  };
+
   return (
-    <section className="w-full flex flex-col items-center justify-center gap-4 px-4 sm:px-6 lg:px-8 py-6">
-      {/* Conditional rendering for the actual title and "View All" button */}
+    <section className="w-full flex flex-col gap-4 px-4 sm:px-6 lg:px-8 py-6">
+      {/* Header row: Title + View All */}
       {!isLoading && (
         <div className="w-full flex items-center justify-between">
-          {/* Section title */}
           <h2 className="text-2xl max-sm:text-xl lg:text-3xl text-neutral-100 font-medium capitalize tracking-tight">
             {title}
           </h2>
-          {/* Link to view all items in the category */}
           <Link
             to={`/${mediaType}/list/$list`}
             params={{ list: list }}
             search={{ page: 1 }}>
-            <button className="px-3 py-2 text-xs md:text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <button className="px-3 py-2 text-xs md:text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-all duration-300">
               View All {title}
             </button>
           </Link>
         </div>
       )}
-      <div className="h-4" /> {/* Spacer div */}
-      {/* Conditional rendering for loading, error, or data display */}
-      {isLoading && <MediaListSkeleton />}{" "}
-      {/* Show the custom list skeleton when loading */}
-      {isError && (
-        <div className="w-full text-center text-red-400 font-medium py-8">
-          Error: {error?.message ?? "An error occurred while fetching data."}
+
+      <div className="h-4" /> {/* Spacer */}
+
+      {/* When loading, render the horizontal skeleton component */}
+      {isLoading ? (
+        <MediaListSkeleton />
+      ) : (
+        <div className="relative -mx-4 px-4">
+          {/* Left scroll button */}
+          <button
+            type="button"
+            onClick={() => scrollByAmount("left")}
+            aria-label="Scroll left"
+            className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
+              canScrollLeft ? "opacity-100" : "opacity-30 pointer-events-none"
+            }`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+          </button>
+
+          {/* Right scroll button */}
+          <button
+            type="button"
+            onClick={() => scrollByAmount("right")}
+            aria-label="Scroll right"
+            className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
+              canScrollRight ? "opacity-100" : "opacity-30 pointer-events-none"
+            }`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 6l6 6-6 6"></path>
+            </svg>
+          </button>
+
+          {/* Error state */}
+          {isError ? (
+            <div className="w-full text-center text-red-400 font-medium py-8">
+              Error: {error?.message ?? "An error occurred while fetching data."}
+            </div>
+          ) : (
+            // Actual data: horizontal scrollable row
+            data?.results && data.results.length > 0 ? (
+              <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
+                <motion.div
+                  className="flex gap-4 lg:gap-6 items-stretch"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+                  }}>
+                  {data.results.map((item: MediaProps) => (
+                    <motion.div key={item.id} variants={cardVariants} className="flex-shrink-0">
+                      <MediaCard
+                        id={item.id}
+                        title={item.title || item.name || "Untitled"}
+                        release_date={item.release_date || item.first_air_date || ""}
+                        poster_path={item.poster_path}
+                        vote_average={item.vote_average}
+                        type={mediaType}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+            ) : (
+              <div className="w-full text-center text-neutral-400 py-8">
+                No {mediaType === "movie" ? "movies" : "TV shows"} found for this list.
+              </div>
+            )
+          )}
         </div>
       )}
-      {/* Render actual media cards if not loading, no error, and data is available */}
-      {!isLoading && !isError && data?.results && data.results.length > 0 && (
-        <motion.div
-          className="w-full flex flex-wrap justify-center sm:justify-center gap-4 "
-          initial="hidden"
-          // Animate children with a slight stagger effect
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-          }}>
-          {data.results.map((item: MediaProps) => (
-            <motion.div
-              key={item.id}
-              variants={cardVariants}
-              className="flex-shrink-0" // Prevents cards from shrinking in flex container
-            >
-              <MediaCard
-                id={item.id}
-                title={item.title || item.name || "Untitled"}
-                release_date={item.release_date || item.first_air_date || ""}
-                poster_path={item.poster_path}
-                vote_average={item.vote_average}
-                type={mediaType}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
-      {/* Message for when no results are found */}
-      {!isLoading &&
-        !isError &&
-        (!data?.results || data.results.length === 0) && (
-          <div className="w-full text-center text-neutral-400 py-8">
-            No {mediaType === "movie" ? "movies" : "TV shows"} found for this
-            list.
-          </div>
-        )}
     </section>
   );
 };

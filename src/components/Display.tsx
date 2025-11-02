@@ -85,23 +85,52 @@ const useWindowSize = () => {
   return windowSize;
 };
 
-// Skeleton loading component for a single movie card (improved colors)
-const MovieCardSkeleton: React.FC<{ style: React.CSSProperties }> = ({
-  style,
-}) => (
+// Skeleton loading component for a single movie card (refined dark theme)
+const MovieCardSkeleton: React.FC<{ style: React.CSSProperties }> = React.memo(({ style }) => (
   <div
     style={style}
-    className="relative group inline-block animate-pulse rounded-md">
+    className="relative group inline-block rounded-md">
     <div
-      className="w-[140px] h-[210px] bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900 rounded-md"
-      style={{ borderRadius: "0.375rem" }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-white/20 to-transparent dark:from-neutral-900/80 dark:via-neutral-900/40 dark:to-transparent flex flex-col justify-end p-2 rounded-md">
-        <div className="h-4 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-2"></div>
-        <div className="h-3 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2"></div>
+      className="w-[140px] h-[210px] rounded-md overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(20,20,22,0.95) 0%, rgba(34,34,36,0.98) 40%, rgba(44,44,48,1) 100%)",
+        borderRadius: "0.375rem",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px rgba(0,0,0,0.6)",
+      }}>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent flex flex-col justify-end p-2">
+        <div className="h-4 bg-neutral-700/80 rounded w-2/3 mb-2"></div>
+        <div className="h-3 bg-neutral-700/70 rounded w-1/2"></div>
       </div>
+      {/* subtle shimmer */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "-150px",
+          width: "120px",
+          height: "100%",
+          transform: "skewX(-18deg)",
+          background:
+            "linear-gradient(90deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.025) 50%, rgba(255,255,255,0.00) 100%)",
+          animation: "shimmer 1.6s linear infinite",
+        }}
+      />
     </div>
+
+    <div className="absolute top-3 left-3 p-2 bg-neutral-800/80 rounded-full shadow-md">
+      <div className="w-5 h-5 bg-neutral-700 rounded-full"></div>
+    </div>
+
+    <style>{`
+      @keyframes shimmer {
+        0% { transform: translateX(-150px) skewX(-18deg); }
+        100% { transform: translateX(420px) skewX(-18deg); }
+      }
+    `}</style>
   </div>
-);
+));
 
 const MovieCard: React.FC<{
   movie: MovieProps;
@@ -216,58 +245,66 @@ const MovieCard: React.FC<{
   }
 );
 
-// Skeleton loading component for the main display area (improved colors)
-const DisplaySkeleton: React.FC = () => {
+// Skeleton loading component for the main display area (refined dark theme)
+const DisplaySkeleton: React.FC = React.memo(() => {
   const { width: windowWidth } = useWindowSize();
-  const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
+  const visibleItems = Math.max(3, Math.floor(windowWidth / ITEM_SIZE));
 
   return (
-    <div className="relative w-full h-screen flex flex-col md:flex animate-pulse">
-      {/* Featured Movie Background Skeleton (element only, not page) */}
-      <div className="absolute left-0 top-0 w-full h-full pointer-events-none z-0">
-        <div className="w-full h-full bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent" />
+    <div className="relative w-full h-screen flex flex-col animate-pulse bg-neutral-900 text-neutral-100">
+      {/* Background */}
+      <div className="absolute inset-0 z-0">
+        <div
+          className="w-full h-full"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(8,8,10,1) 0%, rgba(16,16,18,1) 45%, rgba(26,26,28,1) 100%)",
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-transparent" />
       </div>
 
-      {/* Featured Movie Content Skeleton */}
+      {/* Featured content skeleton */}
       <div className="relative flex-grow flex items-center justify-end z-10">
-        <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
-          <div className="h-10 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-4"></div>
-          <div className="h-6 bg-blue-400 dark:bg-blue-700 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-neutral-100 dark:bg-neutral-700 rounded w-1/3 mb-4"></div>
-          <div className="h-20 bg-neutral-200 dark:bg-neutral-800 rounded w-full mb-4"></div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
-            <div className="bg-blue-400 dark:bg-blue-700 rounded w-32 h-10"></div>
-            <div className="bg-neutral-200 dark:bg-neutral-700 rounded w-10 h-10"></div>
+        <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 max-w-2xl">
+          <div className="h-10 bg-neutral-800/80 rounded w-3/4 mb-4" />
+          <div className="h-6 bg-blue-800/90 rounded w-1/4 mb-2" />
+          <div className="h-4 bg-neutral-800/80 rounded w-1/2 mb-2" />
+          <div className="h-4 bg-neutral-800/80 rounded w-1/3 mb-4" />
+          <div className="h-20 bg-neutral-800/80 rounded w-full mb-4" />
+          <div className="flex flex-row gap-3 mt-4">
+            <div className="bg-blue-800/90 rounded w-32 h-10" />
+            <div className="bg-neutral-800/80 rounded w-10 h-10" />
           </div>
-          <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-2/3 mt-2"></div>
+          <div className="h-4 bg-neutral-800/80 rounded w-2/3 mt-2" />
         </div>
       </div>
 
-      {/* Scrollable Movie List Skeleton (element only, not page) */}
-      <div className="w-full h-[230px] py-2 sm:py-4 z-20 flex overflow-hidden">
-        <div className="absolute left-0 top-0 w-full h-full bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
-        {Array.from({ length: visibleItems }).map((_, index) => (
-          <MovieCardSkeleton
-            key={index}
-            style={{
-              width: `${ITEM_WIDTH}px`,
-              height: "210px",
-              marginRight: `${ITEM_MARGIN}px`,
-            }}
-          />
-        ))}
+      {/* Scrollable row skeleton */}
+      <div className="w-full h-[230px] py-2 sm:py-4 z-20 flex overflow-hidden relative">
+        <div className="absolute left-0 top-0 w-full h-full bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
+        <div className="flex gap-4 items-stretch px-4 sm:px-6">
+          {Array.from({ length: visibleItems }).map((_, index) => (
+            <MovieCardSkeleton
+              key={index}
+              style={{
+                width: `${ITEM_WIDTH}px`,
+                height: "210px",
+                marginRight: `${ITEM_MARGIN}px`,
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Scroll Buttons Skeleton (element only, not page) */}
-      <div className="absolute bottom-58 right-2 flex gap-2 z-20">
-        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
-        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+      {/* Scroll buttons placeholder */}
+      <div className="absolute bottom-14 right-4 flex gap-2 z-20">
+        <div className="bg-neutral-800/70 rounded-md p-2 w-10 h-10" />
+        <div className="bg-neutral-800/70 rounded-md p-2 w-10 h-10" />
       </div>
     </div>
   );
-};
+});
 
 const Display: React.FC<DisplayProps> = ({
   data,
@@ -695,4 +732,5 @@ const Display: React.FC<DisplayProps> = ({
   );
 };
 
-export default Display;
+// At the bottom: wrap export with memo to avoid unnecessary re-renders
+export default React.memo(Display);
