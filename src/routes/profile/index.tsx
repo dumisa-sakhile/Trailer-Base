@@ -357,6 +357,28 @@ function Profile() {
           initial="hidden"
           animate="visible"
           className="w-full min-h-screen flex flex-col gap-6 py-4 px-6 mx-auto max-w-6xl text-neutral-200">
+          {/* New Back + Home buttons */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => window.history.back()}
+                className="px-3 py-2 rounded-lg bg-[#333]/50 text-white text-sm hover:scale-105 transition-all"
+                aria-label="Go back"
+                title="Go back"
+              >
+                ← Back
+              </button>
+              <button
+                onClick={() => navigate({ to: "/" })}
+                className="px-3 py-2 rounded-lg bg-[#333]/50 text-white text-sm hover:scale-105 transition-all"
+                aria-label="Home"
+                title="Home"
+              >
+                Home ⌂
+              </button>
+            </div>
+          </div>
+
           <motion.h1
             variants={itemVariants}
             className="text-3xl sm:text-4xl font-bold tracking-tight text-white">

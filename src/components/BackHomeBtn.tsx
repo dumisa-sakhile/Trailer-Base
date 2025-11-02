@@ -1,102 +1,59 @@
-import { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Home, User } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { auth, db } from "../config/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
-import male from "/male.jpg?url";
-import female from "/female.jpg?url";
-import AuthDrawer from "./auth/AuthDrawer";
 
-const BackHomeBtn = () => {
+interface Props {
+  homePath?: string;
+  className?: string;
+  backLabel?: string;
+  homeLabel?: string;
+  profilePath?: string;
+}
+
+const BackHomeBtn: React.FC<Props> = ({
+  homePath = "/",
+  className = "",
+  backLabel = "← Back",
+  homeLabel = "Home ⌂",
+  profilePath = "/profile",
+}) => {
   const navigate = useNavigate();
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Firebase user state (manual, no react-firebase-hooks)
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, []);
-
-  // Fetch user data (for gender)
-  const { data: userData } = useQuery({
-    queryKey: ["userData", user?.uid],
-    queryFn: async () => {
-      if (!user?.uid) return {};
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      return userDoc.exists() ? userDoc.data() : {};
-    },
-    enabled: !!user?.uid,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const getProfileImage = () => {
-    if (user?.photoURL) return user.photoURL;
-    if (userData?.gender === "female") return female;
-    return male;
-  };
-
-  const handleProfileClick = () => {
-    if (user) {
-      navigate({ to: "/profile" });
-    } else {
-      setDrawerOpen(true);
-    }
-  };
 
   return (
-    <section className="absolute top-8 right-8 z-20 hidden sm:flex gap-4 pointer-events-auto">
-      {/* Back Button */}
+    <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 ${className}`}>
       <button
         onClick={() => window.history.back()}
-        aria-label="Go back to previous page"
-        className="button-style">
-        <ChevronLeft className="w-5 h-5" stroke="#e5e7eb" strokeWidth={1.5} />
-        <span>Back</span>
+        className="px-3 py-2 rounded-lg bg-[#333]/50 text-white text-sm hover:scale-105 transition-all"
+        aria-label="Go back"
+        title="Go back"
+        type="button"
+      >
+        {backLabel}
       </button>
 
-      {/* Home Button */}
       <button
-        onClick={() => navigate({ to: "/" })}
-        aria-label="Go to homepage"
-        className="button-style">
-        <Home className="w-5 h-5" stroke="#e5e7eb" strokeWidth={1.5} />
-        <span>Home</span>
+        onClick={() => navigate({ to: homePath })}
+        className="px-3 py-2 rounded-lg bg-[#333]/50 text-white text-sm hover:scale-105 transition-all"
+        aria-label="Home"
+        title="Home"
+        type="button"
+      >
+        {homeLabel}
       </button>
 
-      {/* Profile Button */}
       <button
-        onClick={handleProfileClick}
+        onClick={() => navigate({ to: profilePath })}
+        className="px-3 py-2 rounded-lg bg-[#333]/50 text-white text-sm hover:scale-105 transition-all flex items-center gap-2"
         aria-label="Profile"
-        className="button-style flex items-center gap-2"
-        disabled={loading}>
-        {user ? (
-          <>
-            <img
-              src={getProfileImage()}
-              alt="Profile"
-              className="w-6 h-6 rounded-full object-cover border border-blue-500"
-            />
-            <span>{user.displayName || user.email}</span>
-          </>
-        ) : (
-          <>
-            <User className="w-5 h-5" stroke="#e5e7eb" strokeWidth={1.5} />
-            <span>Profile</span>
-          </>
-        )}
+        title="Profile"
+        type="button"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        Profile
       </button>
-
-      {/* Auth Drawer */}
-      <AuthDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
-    </section>
+    </div>
   );
 };
 
