@@ -1,3 +1,4 @@
+// components/auth/VerificationSent.tsx
 import React from "react";
 
 interface Props {

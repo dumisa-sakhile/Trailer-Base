@@ -29,8 +29,8 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-[rgba(255,255,255,0.04)] text-white py-3 px-4 rounded-lg focus:outline-none text-sm"
-          required
+          className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none text-sm"
+          
         />
       </div>
 

@@ -1,5 +1,5 @@
 // components/auth/SignUpForm.tsx
-import React from "react";
+import React, { useState } from "react";
 
 interface SignUpFormProps {
   email: string;
@@ -45,6 +45,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   onSubmit,
   onBack,
 }) => {
+  // Add visibility state for password fields
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const isFormValid =
     pwLengthOk &&
     pwUpperOk &&
@@ -57,12 +61,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     ["male", "female"].includes(gender.toLowerCase());
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
+    <form onSubmit={onSubmit} className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="text-sm text-neutral-400">Create account</div>
         <button
           type="button"
-          className="text-sm text-blue-400 underline"
+          className="text-sm text-blue-400 "
           onClick={onBack}
         >
           Back to sign in
@@ -78,8 +82,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          required
-          className="w-full bg-[rgba(255,255,255,0.04)] text-white py-2 px-3 rounded"
+          
+          className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none text-sm"
         />
       </div>
 
@@ -87,37 +91,57 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <label className="block text-sm mb-2" htmlFor="name">Name</label>
         <input
           id="name"
+          type="text"
+          placeholder="Enter your name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full bg-[rgba(255,255,255,0.04)] text-white py-2 px-3 rounded"
-          required
+          className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none text-sm"
+          
         />
       </div>
 
       <div>
         <label className="block text-sm mb-2" htmlFor="create-password">Password</label>
-        <input
-          id="create-password"
-          type="password"
-          placeholder="Create a strong password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-[rgba(255,255,255,0.04)] text-white py-2 px-3 rounded"
-          required
-        />
+        <div className="relative">
+          <input
+            id="create-password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Create a strong password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full pr-10 bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none text-sm"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((s) => !s)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-neutral-300 hover:text-white"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
       </div>
 
       <div>
         <label className="block text-sm mb-2" htmlFor="confirm-password">Confirm Password</label>
-        <input
-          id="confirm-password"
-          type="password"
-          placeholder="Confirm password"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-          className="w-full bg-[rgba(255,255,255,0.04)] text-white py-2 px-3 rounded"
-          required
-        />
+        <div className="relative">
+          <input
+            id="confirm-password"
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm password"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            className="w-full pr-10 bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none text-sm"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword((s) => !s)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-neutral-300 hover:text-white"
+            aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+          >
+            {showConfirmPassword ? "Hide" : "Show"}
+          </button>
+        </div>
       </div>
 
       {/* Password criteria */}
@@ -143,7 +167,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
               value="male"
               checked={gender.toLowerCase() === "male"}
               onChange={(e) => setGender(e.target.value)}
-              required
+              
               className="accent-blue-600"
               aria-label="Male"
             />
