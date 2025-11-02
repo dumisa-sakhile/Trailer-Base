@@ -61,7 +61,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     ["male", "female"].includes(gender.toLowerCase());
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4 overflow-y-auto">
       <div className="flex items-center justify-between">
         <div className="text-sm text-neutral-400">Create account</div>
         <button
