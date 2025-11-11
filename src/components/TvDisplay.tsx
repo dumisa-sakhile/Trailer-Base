@@ -21,8 +21,13 @@ import {
 } from "lucide-react";
 import { auth, db } from "@/config/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import  useBookmarkMutations  from "./useBookmarkMutations";
+import useBookmarkMutations from "./useBookmarkMutations";
 import { getTVDetails } from "@/api/tv";
+
+// shadcn/ui components
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TVProps {
   id: number;
@@ -74,9 +79,9 @@ const ErrorFallback: React.FC<{ error: Error }> = ({ error }) => (
 );
 
 // Define item size as a constant
-const ITEM_WIDTH = 140; // Card width
-const ITEM_MARGIN = 10; // Margin between cards
-const ITEM_SIZE = ITEM_WIDTH + ITEM_MARGIN; // Total size for FixedSizeList
+const ITEM_WIDTH = 140;
+const ITEM_MARGIN = 10;
+const ITEM_SIZE = ITEM_WIDTH + ITEM_MARGIN;
 
 // Custom hook to get window dimensions for responsiveness
 const useWindowSize = () => {
@@ -102,53 +107,24 @@ const useWindowSize = () => {
   return windowSize;
 };
 
-// Skeleton loading component for a single TV show card (improved dark theme)
+// Skeleton loading component for a single TV show card
 const TVCardSkeleton: React.FC<{ style: React.CSSProperties }> = React.memo(
   ({ style }) => (
-    <div
-      style={style}
-      className="relative group inline-block rounded-md"
-      aria-hidden>
-      <div
-        className="w-[140px] h-[210px] rounded-md overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(20,20,22,0.95) 0%, rgba(34,34,36,0.98) 40%, rgba(44,44,48,1) 100%)",
-          borderRadius: "0.375rem",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px rgba(0,0,0,0.6)",
-        }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent flex flex-col justify-end p-2 rounded-md">
-          <div className="h-4 bg-neutral-700/80 rounded w-3/4 mb-2"></div>
-          <div className="h-3 bg-neutral-700/70 rounded w-1/2"></div>
+    <div style={style} className="flex-shrink-0">
+      <div className="relative w-[140px] h-[210px] rounded-md overflow-hidden">
+        <Card className="w-full h-full rounded-md border-0 bg-neutral-800 p-0">
+          <CardContent className="p-0 w-full h-full">
+            <Skeleton className="w-full h-full rounded-md bg-neutral-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex flex-col justify-end p-2 rounded-md">
+              <Skeleton className="h-4 bg-neutral-600 rounded w-2/3 mb-2" />
+              <Skeleton className="h-3 bg-neutral-600 rounded w-1/2" />
+            </div>
+          </CardContent>
+        </Card>
+        <div className="absolute top-2 left-2 p-1 bg-neutral-700 rounded-full shadow-md">
+          <Skeleton className="w-4 h-4 bg-neutral-600 rounded-full" />
         </div>
-
-        {/* subtle shimmer */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            top: 0,
-            left: "-130px",
-            width: "110px",
-            height: "100%",
-            transform: "skewX(-18deg)",
-            background:
-              "linear-gradient(90deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.00) 100%)",
-            animation: "tv-shimmer 1.6s linear infinite",
-          }}
-        />
       </div>
-
-      <div className="absolute top-3 left-3 p-2 bg-neutral-800/80 rounded-full shadow-md">
-        <div className="w-5 h-5 bg-neutral-700 rounded-full"></div>
-      </div>
-
-      <style>{`
-        @keyframes tv-shimmer {
-          0% { transform: translateX(-130px) skewX(-18deg); }
-          100% { transform: translateX(420px) skewX(-18deg); }
-        }
-      `}</style>
     </div>
   )
 );
@@ -165,20 +141,25 @@ const TVCard: React.FC<{
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
 
+  // Merge transform into the wrapper style so the FixedSizeList item size remains unchanged
+  const rootStyle: React.CSSProperties = {
+    ...style,
+    transform: isSelected ? "scale(0.8)" : undefined,
+    transition: "transform 200ms ease",
+    transformOrigin: "center",
+  };
+
   return (
-    <div style={style} className="relative group inline-block">
-      <Suspense
-        fallback={
-          <TVCardSkeleton
-            style={{ width: `${ITEM_WIDTH}px`, height: "210px" }}
-          />
-        }>
-        <button
+    <div style={rootStyle} className="flex-shrink-0">
+      <div className="relative group">
+        <Button
+          variant="ghost"
           onClick={() => onClick(tvShow.id)}
-          className={`w-[140px] h-[210px] overflow-hidden focus:outline-none rounded-md hover:scale-95 transition-transform duration-200 ${
-            isSelected ? "border-2 border-blue-500" : ""
+          className={`w-[140px] h-[210px] overflow-hidden focus:outline-none rounded-md hover:scale-95 transition-transform duration-200 p-0 ${
+            isSelected ? "ring-2 ring-blue-500" : ""
           }`}
-          style={{ borderRadius: "0.375rem" }}>
+          style={{ borderRadius: "0.375rem", transformOrigin: "center" }}
+        >
           {tvShow.poster_path ? (
             <img
               src={`https://image.tmdb.org/t/p/w342${tvShow.poster_path}`}
@@ -193,11 +174,11 @@ const TVCard: React.FC<{
               style={{ borderRadius: "0.375rem" }}
             />
           ) : (
-            <div
-              className="w-full h-full bg-neutral-900 flex items-center justify-center rounded-md"
-              style={{ borderRadius: "0.375rem" }}>
-              <p className="text-neutral-500 text-sm">No poster</p>
-            </div>
+            <Card className="w-full h-full bg-neutral-900 flex items-center justify-center rounded-md border-0">
+              <CardContent className="p-0 flex items-center justify-center h-full">
+                <p className="text-neutral-500 text-sm">No poster</p>
+              </CardContent>
+            </Card>
           )}
           {/* Styled shadow overlay and animated index/title */}
           <div
@@ -216,32 +197,28 @@ const TVCard: React.FC<{
               </span>
             </h3>
           </div>
-        </button>
+        </Button>
         {auth?.currentUser && (
           <div
-            className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity rounded-md"
+            className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity rounded-md"
             style={{ borderRadius: "0.375rem" }}>
             {bookmarks?.includes(tvShow.id.toString()) ? (
-              <button
-                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200"
+              <Button
+                variant="ghost"
+                size="icon"
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200 h-8 w-8"
                 onClick={() =>
                   removeBookmarkMutation.mutate(tvShow.id.toString())
                 }
                 disabled={removeBookmarkMutation.isPending}
                 aria-label={`Remove ${tvShow.name || "Unknown"} from bookmarks`}>
-                <BookmarkMinus size={20} />
-              </button>
+                <BookmarkMinus size={16} />
+              </Button>
             ) : (
-              <button
-                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                style={{
-                  padding: "0.25rem",
-                  width: "2rem",
-                  height: "2rem",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 h-8 w-8"
                 onClick={() =>
                   addBookmarkMutation.mutate({
                     id: tvShow.id,
@@ -254,64 +231,71 @@ const TVCard: React.FC<{
                 }
                 disabled={addBookmarkMutation.isPending || !tvShow.poster_path}
                 aria-label={`Add ${tvShow.name || "Unknown"} to bookmarks`}>
-                <BookmarkPlus size={20} />
-              </button>
+                <BookmarkPlus size={16} />
+              </Button>
             )}
           </div>
         )}
-      </Suspense>
+      </div>
     </div>
   );
 };
 
-// Skeleton loading component for the main display area (improved colors)
+// Skeleton loading component for the main display area
 const TvDisplaySkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
-  const visibleItems = Math.floor(windowWidth / ITEM_SIZE);
+  const visibleItems = Math.max(3, Math.floor(windowWidth / ITEM_SIZE));
 
   return (
-    <div className="relative w-full h-screen flex flex-col animate-pulse">
-      {/* Featured TV Background Skeleton (element only, not page) */}
-      <div className="absolute left-0 top-0 w-full h-full pointer-events-none z-0">
-        <div className="w-full h-full bg-gradient-to-br from-neutral-200 via-neutral-300 to-neutral-100 dark:from-neutral-700 dark:via-neutral-800 dark:to-neutral-900" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent" />
+    <div className="relative w-full h-screen flex flex-col bg-neutral-900 text-neutral-100">
+      {/* Background */}
+      <div className="absolute inset-0 z-0">
+        <div
+          className="w-full h-full"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(8,8,10,1) 0%, rgba(16,16,18,1) 45%, rgba(26,26,28,1) 100%)",
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-transparent" />
       </div>
 
-      {/* Featured TV Content Skeleton */}
+      {/* Featured content skeleton */}
       <div className="relative flex-grow flex items-center justify-end z-10">
-        <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
-          <div className="h-10 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4 mb-4"></div>
-          <div className="h-6 bg-blue-400 dark:bg-blue-700 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-neutral-200 dark:bg-neutral-600 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-neutral-100 dark:bg-neutral-700 rounded w-1/3 mb-4"></div>
-          <div className="h-20 bg-neutral-200 dark:bg-neutral-800 rounded w-full mb-4"></div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
-            <div className="bg-blue-400 dark:bg-blue-700 rounded w-32 h-10"></div>
-            <div className="bg-neutral-200 dark:bg-neutral-700 rounded w-10 h-10"></div>
+        <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 max-w-2xl">
+          <Skeleton className="h-10 bg-neutral-800 rounded w-3/4 mb-4" />
+          <Skeleton className="h-6 bg-blue-800 rounded w-1/4 mb-2" />
+          <Skeleton className="h-4 bg-neutral-800 rounded w-1/2 mb-2" />
+          <Skeleton className="h-4 bg-neutral-800 rounded w-1/3 mb-4" />
+          <Skeleton className="h-20 bg-neutral-800 rounded w-full mb-4" />
+          <div className="flex flex-row gap-3 mt-4">
+            <Skeleton className="bg-blue-800 rounded w-32 h-10" />
+            <Skeleton className="bg-neutral-800 rounded w-10 h-10" />
           </div>
-          <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-2/3 mt-2"></div>
+          <Skeleton className="h-4 bg-neutral-800 rounded w-2/3 mt-2" />
         </div>
       </div>
 
-      {/* Scrollable TV List Skeleton (element only, not page) */}
-      <div className="w-full h-[230px] py-2 sm:py-4 z-20 flex overflow-hidden">
-        <div className="absolute left-0 top-0 w-full h-full bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
-        {Array.from({ length: visibleItems }).map((_, index) => (
-          <TVCardSkeleton
-            key={index}
-            style={{
-              width: `${ITEM_WIDTH}px`,
-              height: "210px",
-              marginRight: `${ITEM_MARGIN}px`,
-            }}
-          />
-        ))}
+      {/* Scrollable row skeleton */}
+      <div className="w-full h-[230px] py-2 sm:py-4 z-20 flex overflow-hidden relative">
+        <div className="absolute left-0 top-0 w-full h-full bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
+        <div className="flex gap-4 items-stretch px-4 sm:px-6 w-full">
+          {Array.from({ length: visibleItems }).map((_, index) => (
+            <TVCardSkeleton
+              key={index}
+              style={{
+                width: `${ITEM_WIDTH}px`,
+                height: "210px",
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Scroll Buttons Skeleton (element only, not page) */}
-      <div className="absolute bottom-58 right-2 flex gap-2 z-20">
-        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
-        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-md p-2 sm:p-3.5 w-10 h-10"></div>
+      {/* Scroll buttons placeholder */}
+      <div className="absolute bottom-56 right-4 flex gap-2 z-20">
+        <Skeleton className="bg-neutral-800 rounded-md w-10 h-10" />
+        <Skeleton className="bg-neutral-800 rounded-md w-10 h-10" />
       </div>
     </div>
   );
@@ -329,9 +313,11 @@ const TvDisplay: React.FC<DisplayProps> = ({
   const queryClient = useQueryClient();
   const { addBookmarkMutation, removeBookmarkMutation } =
     useBookmarkMutations();
-  // Use a ref to avoid double render on initial mount
   const hasSetInitialFeatured = useRef(false);
   const [featuredTVId, setFeaturedTVId] = useState<number | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
   const { width: windowWidth } = useWindowSize();
 
   const otherTVShows = useMemo(() => data?.results || [], [data?.results]);
@@ -384,6 +370,17 @@ const TvDisplay: React.FC<DisplayProps> = ({
     (otherTVShows.length - visibleItems) * ITEM_SIZE
   );
 
+  // Update scroll button states
+  useEffect(() => {
+    const updateScrollButtons = () => {
+      const currentScroll = scrollOffset;
+      setCanScrollLeft(currentScroll > 0);
+      setCanScrollRight(currentScroll < maxScrollOffset - 10);
+    };
+
+    updateScrollButtons();
+  }, [scrollOffset, maxScrollOffset, otherTVShows.length]);
+
   // Smooth scroll animation
   const smoothScrollTo = useCallback(
     (targetOffset: number, duration: number) => {
@@ -413,53 +410,20 @@ const TvDisplay: React.FC<DisplayProps> = ({
     [scrollOffset]
   );
 
-  // Debounced scroll functions
-  const scrollLeft = useMemo(
-    () =>
-      debounce(
-        () => {
-          if (listRef.current) {
-            const currentIndex = Math.floor(scrollOffset / ITEM_SIZE);
-            if (currentIndex <= 0) {
-              const newOffset = Math.max(
-                0,
-                (otherTVShows.length - visibleItems) * ITEM_SIZE
-              );
-              smoothScrollTo(newOffset, 500);
-            } else {
-              const newIndex = currentIndex - 1;
-              const newOffset = newIndex * ITEM_SIZE;
-              smoothScrollTo(newOffset, 500);
-            }
-          }
-        },
-        300,
-        { leading: true, trailing: false }
-      ),
-    [scrollOffset, otherTVShows.length, visibleItems, smoothScrollTo]
-  );
+  // Scroll functions
+  const scrollLeft = useCallback(() => {
+    if (listRef.current) {
+      const newOffset = Math.max(0, scrollOffset - visibleItems * ITEM_SIZE);
+      smoothScrollTo(newOffset, 500);
+    }
+  }, [scrollOffset, visibleItems, smoothScrollTo]);
 
-  const scrollRight = useMemo(
-    () =>
-      debounce(
-        () => {
-          if (listRef.current) {
-            const currentIndex = Math.floor(scrollOffset / ITEM_SIZE);
-            const maxIndex = otherTVShows.length - 1;
-            if (currentIndex >= maxIndex - visibleItems + 1) {
-              smoothScrollTo(0, 500);
-            } else {
-              const newIndex = currentIndex + 1;
-              const newOffset = newIndex * ITEM_SIZE;
-              smoothScrollTo(newOffset, 500);
-            }
-          }
-        },
-        300,
-        { leading: true, trailing: false }
-      ),
-    [scrollOffset, otherTVShows.length, visibleItems, smoothScrollTo]
-  );
+  const scrollRight = useCallback(() => {
+    if (listRef.current) {
+      const newOffset = Math.min(maxScrollOffset, scrollOffset + visibleItems * ITEM_SIZE);
+      smoothScrollTo(newOffset, 500);
+    }
+  }, [scrollOffset, maxScrollOffset, visibleItems, smoothScrollTo]);
 
   const prefetchTVDetails = useCallback(
     (id: number) => {
@@ -535,7 +499,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <section
-        className="relative  w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex"
+        className="relative w-full h-screen bg-black text-white overflow-hidden hidden flex-col md:flex"
         style={{
           boxShadow:
             "inset 60px 0 60px -30px rgba(0,0,0,0.8), inset -60px 0 60px -30px rgba(0,0,0,0.8)",
@@ -543,8 +507,8 @@ const TvDisplay: React.FC<DisplayProps> = ({
         {/* Featured TV Background */}
         <Suspense
           fallback={
-            <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center animate-pulse">
-              <div className="h-full w-full bg-neutral-800"></div>
+            <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
+              <Skeleton className="h-full w-full bg-neutral-800" />
             </div>
           }>
           <div className="absolute inset-0 w-full h-full">
@@ -568,24 +532,24 @@ const TvDisplay: React.FC<DisplayProps> = ({
           </div>
         </Suspense>
 
-        {/* Gradient Overlay (left to right for featured TV shadow) */}
+        {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent z-10" />
 
-        {/* Featured TV Content (Suspense boundary only for details) */}
+        {/* Featured TV Content */}
         <div className="relative flex-grow flex items-center justify-end z-20">
           <Suspense
             fallback={
-              <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl animate-pulse">
-                <div className="h-10 bg-neutral-700 rounded w-3/4 mb-4"></div>
-                <div className="h-6 bg-red-600 rounded w-1/4 mb-2"></div>
-                <div className="h-4 bg-neutral-700 rounded w-1/2 mb-2"></div>
-                <div className="h-4 bg-neutral-700 rounded w-1/3 mb-4"></div>
-                <div className="h-20 bg-neutral-700 rounded w-full mb-4"></div>
+              <div className="absolute inset-0 flex flex-col items-start justify-end p-4 sm:p-6 lg:p-8 text-left max-w-2xl">
+                <Skeleton className="h-10 bg-neutral-700 rounded w-3/4 mb-4" />
+                <Skeleton className="h-6 bg-red-600 rounded w-1/4 mb-2" />
+                <Skeleton className="h-4 bg-neutral-700 rounded w-1/2 mb-2" />
+                <Skeleton className="h-4 bg-neutral-700 rounded w-1/3 mb-4" />
+                <Skeleton className="h-20 bg-neutral-700 rounded w-full mb-4" />
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
-                  <div className="bg-blue-600 rounded w-32 h-10"></div>
-                  <div className="bg-neutral-700 rounded w-10 h-10"></div>
+                  <Skeleton className="bg-blue-600 rounded w-32 h-10" />
+                  <Skeleton className="bg-neutral-700 rounded w-10 h-10" />
                 </div>
-                <div className="h-4 bg-neutral-700 rounded w-2/3 mt-2"></div>
+                <Skeleton className="h-4 bg-neutral-700 rounded w-2/3 mt-2" />
               </div>
             }>
             {(featuredTV || isDetailsLoading) && (
@@ -636,8 +600,10 @@ const TvDisplay: React.FC<DisplayProps> = ({
                   </Link>
                   {auth?.currentUser &&
                     (bookmarks?.includes(featuredTV?.id?.toString() || "") ? (
-                      <button
-                        className="bg-red-600 text-white px-4 sm:px-4 py-2 sm:py-3 rounded hover:bg-red-700 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-red-500"
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="px-4 sm:px-4 py-2 sm:py-3 text-base sm:text-xl h-10 w-10"
                         onClick={() =>
                           removeBookmarkMutation.mutate(
                             featuredTV?.id?.toString() || ""
@@ -648,18 +614,12 @@ const TvDisplay: React.FC<DisplayProps> = ({
                           featuredTV?.name || "Unknown"
                         } from bookmarks`}>
                         <BookmarkMinus size={20} />
-                      </button>
+                      </Button>
                     ) : (
-                      <button
-                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 px-4 sm:px-4 py-2 sm:py-3 rounded hover:bg-white hover:text-neutral-900 text-base sm:text-xl flex items-center justify-center focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                        style={{
-                          padding: "0.5rem 1rem",
-                          minWidth: "2.5rem",
-                          minHeight: "2.5rem",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 hover:scale-95 text-base sm:text-xl h-10 w-10 border-0"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredTV?.id || 0,
@@ -678,7 +638,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                           featuredTV?.name || "Unknown"
                         } to bookmarks`}>
                         <BookmarkPlus size={20} />
-                      </button>
+                      </Button>
                     ))}
                 </div>
                 <p className="text-neutral-200 text-xs sm:text-sm mt-2">
@@ -691,14 +651,37 @@ const TvDisplay: React.FC<DisplayProps> = ({
           </Suspense>
         </div>
 
-        {/* Scrollable TV List (no suspense boundary here) */}
-        <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20">
+        {/* Scrollable TV List */}
+        <div className="w-full h-[230px] bg-gradient-to-t from-black via-black/50 to-transparent py-2 sm:py-4 z-20 relative">
           {isError && (
             <p className="text-red-500 text-sm sm:text-base px-4 sm:px-6">
               Error:{" "}
               {error instanceof Error ? error.message : "An error occurred"}
             </p>
           )}
+          
+          {/* Scroll Buttons */}
+          <div className="absolute right-4 bottom-56 transform -translate-y-1/2 flex gap-2 z-30">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollLeft}
+              disabled={!canScrollLeft}
+              aria-label="Scroll Left"
+              className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 opacity-80 hover:opacity-100 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 border-0 disabled:opacity-30">
+              <ChevronLeft size={20} />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={scrollRight}
+              disabled={!canScrollRight}
+              aria-label="Scroll Right"
+              className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 opacity-80 hover:opacity-100 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 border-0 disabled:opacity-30">
+              <ChevronRight size={20} />
+            </Button>
+          </div>
+
           {!isError && otherTVShows.length > 0 ? (
             <FixedSizeList
               ref={listRef}
@@ -707,7 +690,9 @@ const TvDisplay: React.FC<DisplayProps> = ({
               itemCount={otherTVShows.length}
               itemSize={ITEM_SIZE}
               layout="horizontal"
-              className="px-4 sm:px-6">
+              className="px-4 sm:px-6"
+              onScroll={({ scrollOffset }) => setScrollOffset(scrollOffset)}
+            >
               {({ index, style }: ListChildComponentProps) => (
                 <div style={{ ...style, scrollSnapAlign: "start" }}>
                   <TVCard
@@ -730,28 +715,11 @@ const TvDisplay: React.FC<DisplayProps> = ({
                   style={{
                     width: `${ITEM_WIDTH}px`,
                     height: "210px",
-                    marginRight: `${ITEM_MARGIN}px`,
                   }}
                 />
               ))}
             </div>
           )}
-        </div>
-
-        {/* Scroll Buttons */}
-        <div className="absolute bottom-58 right-2 flex gap-2 z-20">
-          <button
-            onClick={scrollLeft}
-            aria-label="Scroll Left"
-            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={scrollRight}
-            aria-label="Scroll Right"
-            className="bg-[rgba(255,255,255,0.1)] rounded-md p-2 sm:p-3.5 opacity-30 hover:opacity-80 hover:bg-blue-900/20 hover:scale-105 transition-all duration-200 will-change-transform ring-1 ring-blue-400/10 focus:ring-2 focus:ring-blue-500/50">
-            <ChevronRight size={20} />
-          </button>
         </div>
       </section>
     </ErrorBoundary>
