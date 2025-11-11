@@ -179,7 +179,6 @@ function App() {
           error={popularTVError}
         />
       </motion.div>
-      <br />
       <motion.div
         variants={containerVariants}
         initial="hidden"

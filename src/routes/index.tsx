@@ -160,7 +160,6 @@ function App() {
           error={popularMovieError}
         />
       </motion.div>
-      <br />
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -175,7 +174,6 @@ function App() {
           error={topRatedMovieError}
         />
       </motion.div>
-      <br />
       <motion.div
         variants={containerVariants}
         initial="hidden"
