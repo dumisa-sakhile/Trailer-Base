@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import MediaCard from "./MediaCard"; // Ensure this import path is correct
+import { motion, AnimatePresence } from "framer-motion";
+import MediaCard from "./MediaCard";
+
+// shadcn/ui components
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define interfaces for Media properties and MediaList component props
 interface MediaProps {
   id: number;
-  title?: string; // Optional for movies
-  name?: string; // Optional for TV
-  release_date?: string; // Optional for movies
-  first_air_date?: string; // Optional for TV
+  title?: string;
+  name?: string;
+  release_date?: string;
+  first_air_date?: string;
   poster_path: string;
   vote_average: number;
 }
@@ -25,13 +30,11 @@ interface MediaListProps {
 }
 
 // Define card dimensions for the skeleton to match MediaCard's actual sizes
-// These values should align with the max-sm and default sizes in MediaCard's className
-const DEFAULT_CARD_WIDTH = 260; // Equivalent to w-[260px]
-const SM_CARD_WIDTH = 120; // Equivalent to max-sm:w-[120px]
-const GAP = 16; // Corresponds to Tailwind's gap-4 (16px) or lg:gap-6 (24px). Using 16px as a base.
+const DEFAULT_CARD_WIDTH = 180;
+const SM_CARD_WIDTH = 120;
+const GAP = 16;
 
 // Custom hook to get window dimensions for responsiveness in skeletons
-// This helps the skeleton dynamically adjust the number of placeholder cards
 const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
@@ -58,103 +61,54 @@ const useWindowSize = () => {
 /**
  * MediaCardSkeleton Component
  * Renders a skeleton placeholder for a single media card.
- * It mimics the layout and dimensions of the actual MediaCard,
- * using neutral colors and an animating pulse effect.
  */
 const MediaCardSkeleton: React.FC = () => (
-  <div
-    className="relative w-[260px] h-[390px] max-sm:w-[120px] max-sm:h-[180px]
-                  bg-neutral-800 rounded-2xl animate-pulse overflow-hidden">
-    {/* Placeholder for the image area, filling the card */}
-    <div className="absolute inset-0 bg-neutral-700"></div>
-
-    {/* Placeholder for the content overlay (rating, date, title) at the bottom of the card */}
-    <div
-      className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-neutral-900/40 to-transparent
-                    flex flex-col justify-end p-4 max-sm:p-2">
-      {/* Skeleton for rating/year line */}
-      <div className="h-4 w-1/3 bg-neutral-600 rounded mb-2 max-sm:h-3 max-sm:w-1/2"></div>
-      {/* Skeleton for title line 1 */}
-      <div className="h-5 w-3/4 bg-neutral-600 rounded mb-1 max-sm:h-4 max-sm:w-2/3"></div>
-      {/* Skeleton for title line 2 */}
-      <div className="h-5 w-1/2 bg-neutral-600 rounded max-sm:h-4 max-sm:w-1/2"></div>
-    </div>
-
-    {/* Placeholder for the bookmark button at the top-left */}
+  <div className="relative w-[180px] h-[270px] max-sm:w-[120px] max-sm:h-[180px]">
+    <Card className="w-full h-full rounded-2xl overflow-hidden shadow-lg bg-neutral-800 border-0 p-0">
+      <CardContent className="p-0 w-full h-full">
+        <div className="relative w-full h-full">
+          <Skeleton className="w-full h-full rounded-2xl bg-neutral-700" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 flex flex-col justify-end p-4 max-sm:p-2 rounded-2xl">
+            <div className="flex items-center gap-2">
+              <Skeleton className="w-4 h-4 bg-neutral-600 rounded" />
+              <Skeleton className="h-3 w-12 bg-neutral-600 rounded max-sm:h-2" />
+            </div>
+            <Skeleton className="h-3 w-16 bg-neutral-600 rounded mt-1 max-sm:h-2" />
+            <Skeleton className="h-4 w-24 bg-neutral-600 rounded mt-2 max-sm:h-3" />
+            <Skeleton className="h-4 w-20 bg-neutral-600 rounded mt-1 max-sm:h-3" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
     <div className="absolute top-3 left-3 p-2 bg-neutral-700 rounded-full shadow-md max-sm:p-1.5 max-sm:top-2 max-sm:left-2">
-      {/* Inner circle for the bookmark icon */}
-      <div className="w-5 h-5 bg-neutral-600 rounded-full max-sm:w-4 max-sm:h-4"></div>
+      <Skeleton className="w-5 h-5 bg-neutral-600 rounded-full" />
     </div>
   </div>
 );
 
 /**
  * MediaListSkeleton Component
- * Horizontal, scrollable skeleton with left/right buttons (mirrors MediaList layout).
+ * Horizontal, scrollable skeleton with left/right buttons
  */
 const MediaListSkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Determine size per card
   const currentCardWidth = windowWidth < 640 ? SM_CARD_WIDTH : DEFAULT_CARD_WIDTH;
-  const horizontalPadding = 32 * 2; // matches section padding approximation
+  const horizontalPadding = 32 * 2;
   const effectiveWidth = Math.max(0, windowWidth - horizontalPadding);
   const cardsPerView = Math.max(1, Math.floor(effectiveWidth / (currentCardWidth + GAP)));
-  const numberOfSkeletons = Math.max(cardsPerView * 2, 6); // at least 2 "screens" worth
-
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const update = () => {
-      setCanScrollLeft(el.scrollLeft > 8);
-      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
-    };
-    update();
-    el.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      el.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [numberOfSkeletons]);
-
-  const scrollByAmount = (direction: "left" | "right") => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const amount = Math.max(el.clientWidth * 0.8, 300);
-    el.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
-  };
+  const numberOfSkeletons = Math.max(cardsPerView * 2, 6);
 
   return (
     <div className="relative -mx-4 px-4">
-      <button
-        type="button"
-        onClick={() => scrollByAmount("left")}
-        aria-label="Scroll left"
-        className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
-          canScrollLeft ? "opacity-100" : "opacity-30 pointer-events-none"
-        }`}
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M15 18l-6-6 6-6"></path>
-        </svg>
-      </button>
+      <div className="absolute left-2 top-1/2 -translate-y-1/2 z-20">
+        <Skeleton className="w-10 h-10 rounded-full bg-neutral-700" />
+      </div>
 
-      <button
-        type="button"
-        onClick={() => scrollByAmount("right")}
-        aria-label="Scroll right"
-        className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
-          canScrollRight ? "opacity-100" : "opacity-30 pointer-events-none"
-        }`}
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M9 6l6 6-6 6"></path>
-        </svg>
-      </button>
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
+        <Skeleton className="w-10 h-10 rounded-full bg-neutral-700" />
+      </div>
 
       <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
         <div className="flex gap-4 lg:gap-6 items-stretch py-2">
@@ -169,10 +123,12 @@ const MediaListSkeleton: React.FC = () => {
   );
 };
 
-/* Add a small GridSkeleton for mobile 2-column layout */
+/**
+ * GridSkeleton for mobile 2-column layout
+ */
 const GridSkeleton: React.FC = () => {
   const cols = 2;
-  const rows = 3; // show ~3 rows on mobile for good coverage
+  const rows = 3;
   const numberOfSkeletons = cols * rows;
   return (
     <div className="w-full px-4">
@@ -189,8 +145,7 @@ const GridSkeleton: React.FC = () => {
 
 /**
  * MediaList Component
- * Displays a list of media items (movies or TV shows) with a title and a "View All" link.
- * It integrates a custom skeleton loading state when data is being fetched.
+ * Displays a list of media items with smooth animations and proper skeleton loading
  */
 const MediaList: React.FC<MediaListProps> = ({
   mediaType,
@@ -201,15 +156,33 @@ const MediaList: React.FC<MediaListProps> = ({
   error,
   list,
 }) => {
-  // Variants for Framer Motion animation for individual cards
+  // Smooth animation variants
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        // removed `ease` to satisfy framer-motion TS types
+      },
+    },
+  };
+
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, scale: 0.9, y: 20 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        // removed `ease`
+      },
+    },
   };
 
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-
-  // NEW: detect mobile to switch to a 2-column grid
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth < 640;
 
@@ -235,116 +208,104 @@ const MediaList: React.FC<MediaListProps> = ({
   const scrollByAmount = (direction: "left" | "right") => {
     const el = scrollerRef.current;
     if (!el) return;
-    const amount = Math.max(el.clientWidth * 0.8, 300); // scroll by 80% viewport or min 300px
+    const amount = Math.max(el.clientWidth * 0.8, 300);
     el.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
   };
 
   return (
-    <section className="w-full flex flex-col gap-4 px-4 sm:px-6 lg:px-8 py-6">
+    <motion.section 
+      className="w-full flex flex-col gap-4 px-4 sm:px-6 lg:px-8 py-6"
+      initial="initial"
+      animate="animate"
+      variants={pageVariants}
+    >
       {/* Header row: Title + View All */}
-      {!isLoading && (
-        <div className="w-full flex items-center justify-between">
-          <h2 className="text-2xl max-sm:text-xl lg:text-3xl text-neutral-100 font-medium capitalize tracking-tight">
-            {title}
-          </h2>
-          <Link
-            to={`/${mediaType}/list/$list`}
-            params={{ list: list }}
-            search={{ page: 1 }}>
-            <button className="px-3 py-2 text-xs md:text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-all duration-300">
-              View All {title}
-            </button>
-          </Link>
-        </div>
-      )}
+      <AnimatePresence>
+        {!isLoading && (
+          <motion.div 
+            className="w-full flex items-center justify-between"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h2 className="text-2xl max-sm:text-xl lg:text-3xl text-neutral-100 font-medium capitalize tracking-tight">
+              {title}
+            </h2>
+            <Link
+              to={`/${mediaType}/list/$list`}
+              params={{ list: list }}
+              search={{ page: 1 }}
+            >
+              <Button 
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-300"
+              >
+                View All {title}
+              </Button>
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="h-4" /> {/* Spacer */}
 
-      {/* When loading, render either the mobile grid skeleton or the horizontal skeleton */}
-      {isLoading ? (
-        isMobile ? (
-          <GridSkeleton />
-        ) : (
-          <MediaListSkeleton />
-        )
-      ) : (
-        /* Not loading: choose mobile grid (2-col) or desktop horizontal scroller */
-        isMobile ? (
-          <div className="w-full px-0">
-            {isError ? (
-              <div className="w-full text-center text-red-400 font-medium py-8">
-                Error: {error?.message ?? "An error occurred while fetching data."}
-              </div>
-            ) : data?.results && data.results.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4">
-                {data.results.map((item: MediaProps) => (
-                  <div key={item.id} className="w-full">
-                    <MediaCard
-                      id={item.id}
-                      title={item.title || item.name || "Untitled"}
-                      release_date={item.release_date || item.first_air_date || ""}
-                      poster_path={item.poster_path}
-                      vote_average={item.vote_average}
-                      type={mediaType}
-                    />
-                  </div>
-                ))}
-              </div>
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {isMobile ? (
+              <GridSkeleton />
             ) : (
-              <div className="w-full text-center text-neutral-400 py-8">
-                No {mediaType === "movie" ? "movies" : "TV shows"} found for this list.
-              </div>
+              <MediaListSkeleton />
             )}
-          </div>
+          </motion.div>
         ) : (
-          <div className="relative -mx-4 px-4">
-            {/* Left scroll button */}
-            <button
-              type="button"
-              onClick={() => scrollByAmount("left")}
-              aria-label="Scroll left"
-              className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
-                canScrollLeft ? "opacity-100" : "opacity-30 pointer-events-none"
-              }`}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 18l-6-6 6-6"></path>
-              </svg>
-            </button>
-
-            {/* Right scroll button */}
-            <button
-              type="button"
-              onClick={() => scrollByAmount("right")}
-              aria-label="Scroll right"
-              className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg transition-opacity ${
-                canScrollRight ? "opacity-100" : "opacity-30 pointer-events-none"
-              }`}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 6l6 6-6 6"></path>
-              </svg>
-            </button>
-
-            {/* Error state */}
-            {isError ? (
-              <div className="w-full text-center text-red-400 font-medium py-8">
-                Error: {error?.message ?? "An error occurred while fetching data."}
-              </div>
-            ) : (
-              // Actual data: horizontal scrollable row
-              data?.results && data.results.length > 0 ? (
-                <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
-                  <motion.div
-                    className="flex gap-4 lg:gap-6 items-stretch"
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Mobile Grid Layout */}
+            {isMobile ? (
+              <div className="w-full px-0">
+                {isError ? (
+                  <motion.div 
+                    className="w-full text-center text-red-400 font-medium py-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    Error: {error?.message ?? "An error occurred while fetching data."}
+                  </motion.div>
+                ) : data?.results && data.results.length > 0 ? (
+                  <motion.div 
+                    className="grid grid-cols-2 gap-4"
                     initial="hidden"
                     animate="visible"
                     variants={{
                       hidden: { opacity: 0 },
-                      visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-                    }}>
-                    {data.results.map((item: MediaProps) => (
-                      <motion.div key={item.id} variants={cardVariants} className="flex-shrink-0">
+                      visible: { 
+                        opacity: 1, 
+                        transition: { 
+                          staggerChildren: 0.1,
+                          delayChildren: 0.2
+                        } 
+                      },
+                    }}
+                  >
+                    {data.results.map((item: MediaProps, index) => (
+                      <motion.div 
+                        key={item.id} 
+                        className="w-full"
+                        variants={cardVariants}
+                        transition={{ delay: index * 0.05 /* kept delay only */ }}
+                      >
                         <MediaCard
                           id={item.id}
                           title={item.title || item.name || "Untitled"}
@@ -356,17 +317,120 @@ const MediaList: React.FC<MediaListProps> = ({
                       </motion.div>
                     ))}
                   </motion.div>
-                </div>
-              ) : (
-                <div className="w-full text-center text-neutral-400 py-8">
-                  No {mediaType === "movie" ? "movies" : "TV shows"} found for this list.
-                </div>
-              )
+                ) : (
+                  <motion.div 
+                    className="w-full text-center text-neutral-400 py-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    No {mediaType === "movie" ? "movies" : "TV shows"} found for this list.
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              /* Desktop Horizontal Scroller */
+              <div className="relative -mx-4 px-4">
+                {/* Left scroll button */}
+                <AnimatePresence>
+                  {canScrollLeft && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      type="button"
+                      onClick={() => scrollByAmount("left")}
+                      aria-label="Scroll left"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg hover:bg-[#111]/80 transition-all duration-200"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M15 18l-6-6 6-6"></path>
+                      </svg>
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+
+                {/* Right scroll button */}
+                <AnimatePresence>
+                  {canScrollRight && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      type="button"
+                      onClick={() => scrollByAmount("right")}
+                      aria-label="Scroll right"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg hover:bg-[#111]/80 transition-all duration-200"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 6l6 6-6 6"></path>
+                      </svg>
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+
+                {/* Error state */}
+                {isError ? (
+                  <motion.div 
+                    className="w-full text-center text-red-400 font-medium py-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    Error: {error?.message ?? "An error occurred while fetching data."}
+                  </motion.div>
+                ) : (
+                  // Actual data: horizontal scrollable row
+                  data?.results && data.results.length > 0 ? (
+                    <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
+                      <motion.div
+                        className="flex gap-4 lg:gap-6 items-stretch"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                          hidden: { opacity: 0 },
+                          visible: { 
+                            opacity: 1, 
+                            transition: { 
+                              staggerChildren: 0.08,
+                              delayChildren: 0.1
+                            } 
+                          },
+                        }}
+                      >
+                        {data.results.map((item: MediaProps, index) => (
+                          <motion.div 
+                            key={item.id} 
+                            variants={cardVariants}
+                            transition={{ delay: index * 0.03 /* kept duration/delay only */ }}
+                            className="flex-shrink-0"
+                          >
+                            <MediaCard
+                              id={item.id}
+                              title={item.title || item.name || "Untitled"}
+                              release_date={item.release_date || item.first_air_date || ""}
+                              poster_path={item.poster_path}
+                              vote_average={item.vote_average}
+                              type={mediaType}
+                            />
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </div>
+                  ) : (
+                    <motion.div 
+                      className="w-full text-center text-neutral-400 py-8"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      No {mediaType === "movie" ? "movies" : "TV shows"} found for this list.
+                    </motion.div>
+                  )
+                )}
+              </div>
             )}
-          </div>
-        )
-      )}
-    </section>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.section>
   );
 };
 
