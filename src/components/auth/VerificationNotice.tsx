@@ -1,5 +1,8 @@
 // components/auth/VerificationNotice.tsx
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface VerificationNoticeProps {
   notice: string;
@@ -20,45 +23,55 @@ const VerificationNotice: React.FC<VerificationNoticeProps> = ({
   onClose,
 }) => {
   return (
-    <div className="p-4">
-      <h3 className="text-lg font-semibold mb-3 text-white">Verify your email</h3>
-      <p className="text-sm text-neutral-300 mb-4">
-        {notice}
-      </p>
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Verify your email</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4 pt-0">
+        <Alert>
+          <AlertDescription className="text-sm text-muted-foreground mb-4">
+            {notice}
+          </AlertDescription>
+        </Alert>
 
-      <div className="mb-4 break-all bg-[rgba(255,255,255,0.03)] p-3 rounded text-sm text-white">{email}</div>
+        <div className="break-all bg-muted p-3 rounded text-sm text-foreground">{email}</div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          type="button"
-          onClick={onResend}
-          disabled={resendLoading}
-          className={`py-2 px-4 rounded-lg w-full sm:w-auto ${resendLoading ? "opacity-50 cursor-not-allowed bg-gray-600" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
-        >
-          {resendLoading ? "Resending..." : "Resend email"}
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button
+            type="button"
+            onClick={onResend}
+            disabled={resendLoading}
+            className="w-full sm:w-auto"
+          >
+            {resendLoading ? "Resending..." : "Resend email"}
+          </Button>
 
-        <button
-          type="button"
-          onClick={onBack}
-          className="py-2 px-4 rounded-lg w-full sm:w-auto bg-transparent border border-neutral-700 text-neutral-200"
-        >
-          Back to login
-        </button>
+          <Button
+            type="button"
+            onClick={onBack}
+            variant="outline"
+            className="w-full sm:w-auto"
+            disabled={resendLoading}
+          >
+            Back to login
+          </Button>
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="py-2 px-4 rounded-lg w-full sm:w-auto bg-neutral-800 text-neutral-200"
-        >
-          Close
-        </button>
-      </div>
+          <Button
+            type="button"
+            onClick={onClose}
+            variant="secondary"
+            className="w-full sm:w-auto"
+            disabled={resendLoading}
+          >
+            Close
+          </Button>
+        </div>
 
-      <p className="text-xs text-neutral-400 mt-4">
-        If you don't see the email, check your spam folder or wait a few minutes. After verifying, return here and sign in.
-      </p>
-    </div>
+        <p className="text-xs text-muted-foreground">
+          If you don't see the email, check your spam folder or wait a few minutes. After verifying, return here and sign in.
+        </p>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -17,6 +17,9 @@ import {
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import SignInForm from "./SignInForm";
 import SignUpForm from "./SignUpForm";
 import PasswordResetForm from "./PasswordResetForm";
@@ -68,7 +71,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
   // Password reset UI state
   const [showResetForm, setShowResetForm] = useState<boolean>(false);
   const [resetSent, setResetSent] = useState<boolean>(false);
-  const [createdNotice, setCreatedNotice] = useState<string | null>(null);
+  const [verificationNotice, setVerificationNotice] = useState<string | null>(null);
 
   // new state for resend verification flow
   const [resendLoading, setResendLoading] = useState<boolean>(false);
@@ -99,6 +102,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
 
       // If a fresh account was just created client-side, and the current user matches it
       // but hasn't verified email yet, immediately sign out and ignore this auth state.
+      // This prevents any data reads or permission checks while unverified.
       if (currentUser && justCreatedUid && currentUser.uid === justCreatedUid && !currentUser.emailVerified) {
         try {
           await signOut(auth);
@@ -122,13 +126,27 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
         return;
       }
 
-      // Normal sign-in / state update
-      setUser(currentUser);
-      prevUserRef.current = currentUser ?? null;
+      // Normal sign-in / state update - only set user if verified, to prevent unverified access
+      if (currentUser && currentUser.emailVerified) {
+        setUser(currentUser);
+        prevUserRef.current = currentUser;
+      } else if (currentUser && !currentUser.emailVerified) {
+        // For non-just-created unverified users (e.g., during resend), sign out to prevent access
+        try {
+          await signOut(auth);
+        } catch (e) {
+          // ignore
+        }
+        setUser(null);
+        prevUserRef.current = null;
+      } else {
+        setUser(null);
+        prevUserRef.current = null;
+      }
 
-      // Automatically close the drawer when user signs in,
+      // Automatically close the drawer when user signs in (verified),
       // but do NOT auto-close while we are suppressing auto-close for the verification flow.
-      if (currentUser && !suppressAutoClose) {
+      if (currentUser && currentUser.emailVerified && !suppressAutoClose) {
         setTimeout(() => {
           onClose();
         }, 300); // short delay for UX
@@ -163,8 +181,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
       const result = await signInWithPopup(auth, provider);
       const u = result.user;
       if (u) {
-        // If the provider account is not verified for some reason, prevent sign-in
-        // and show verification UI instead of closing the drawer.
+        // Google sign-ins are typically verified, but check anyway
         if (!u.emailVerified) {
           try {
             await sendEmailVerification(u);
@@ -179,12 +196,13 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
           // show error toast so user knows what to do and keep drawer open with the notice UI
           const msg = `Email not verified. A verification link was sent to ${u.email}. Verify your email to sign in.`;
           toast.error(msg);
-          setCreatedNotice(msg);
+          setVerificationNotice(msg);
           setSuppressAutoClose(true);
-          // leave the drawer open and show verification UI
+          // leave the drawer open and show verification UI - no data reads attempted
           return;
         }
 
+        // Verified: write to Firestore (rules should allow for verified)
         await setDoc(
           doc(db, "users", u.uid),
           {
@@ -205,7 +223,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
       setIsLoading(false);
     }
   };
-  
+
   const handlePasswordSignIn = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsLoading(true);
@@ -222,6 +240,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
 
       // If the account exists but email is not verified, do NOT keep them signed in.
       // Send a verification email, sign them out and show the verification UI.
+      // Do not close drawer, render verification message instead.
       if (u && !u.emailVerified) {
         try {
           await sendEmailVerification(u);
@@ -235,22 +254,29 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
         }
         const msg = `Email not verified. A verification link was sent to ${email}. Verify your email to sign in.`;
         toast.error(msg, { duration: 10000 });
-        setCreatedNotice(msg);
+        setVerificationNotice(msg);
         setSuppressAutoClose(true);
         // keep password in state so the user can use "Resend" which signs in temporarily
+        // no data reads attempted post-signout
         return;
       }
 
+      // Verified: write to Firestore if needed
       if (u) {
-        await setDoc(
-          doc(db, "users", u.uid),
-          {
-            email: u.email,
-            displayName: u.displayName || "Anonymous",
-            lastLogin: new Date().toISOString(),
-          },
-          { merge: true }
-        );
+        try {
+          await setDoc(
+            doc(db, "users", u.uid),
+            {
+              email: u.email,
+              displayName: u.displayName || "Anonymous",
+              lastLogin: new Date().toISOString(),
+            },
+            { merge: true }
+          );
+        } catch (writeErr) {
+          console.warn("Failed to update user doc on signin:", writeErr);
+          // Don't fail signin on write error; user is still authenticated
+        }
       }
       toast.success("Signed in successfully");
       onClose();
@@ -279,7 +305,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    setCreatedNotice(null);
+    setVerificationNotice(null);
 
     // Suppress auto-close while the create / send verification flow runs
     setSuppressAutoClose(true);
@@ -303,35 +329,57 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
         // remember this uid so the onAuthStateChanged handler can immediately sign out unverified accounts
         setJustCreatedUid(u.uid);
 
-        // update displayName and firestore
-        await updateProfile(u, { displayName: name });
-        await setDoc(
-          doc(db, "users", u.uid),
-          {
-            email: u.email,
-            displayName: name,
-            gender: gender.toLowerCase(),
-            createdAt: new Date().toISOString(),
-            lastLogin: new Date().toISOString(),
-            hasWelcomeEmail: false,
-            emailVerified: u.emailVerified ?? false,
-          },
-          { merge: true }
-        );
+        // update displayName (auth profile, should always work)
+        try {
+          await updateProfile(u, { displayName: name });
+        } catch (profileErr) {
+          console.warn("Failed to update auth profile on create:", profileErr);
+        }
+
+        // Try to write to Firestore - if permission denied due to unverified, warn but proceed
+        // User doc will be created on first verified signin
+        try {
+          await setDoc(
+            doc(db, "users", u.uid),
+            {
+              email: u.email,
+              displayName: name,
+              gender: gender.toLowerCase(),
+              createdAt: new Date().toISOString(),
+              lastLogin: new Date().toISOString(),
+              hasWelcomeEmail: false,
+              emailVerified: u.emailVerified ?? false,
+            },
+            { merge: true }
+          );
+        } catch (writeErr: any) {
+          if (writeErr.code === 'permission-denied') {
+            console.warn("Permission denied on user doc write during create (unverified); will create on first verified login");
+          } else {
+            console.error("Unexpected error writing user doc on create:", writeErr);
+          }
+          // Proceed anyway - account created, just doc not written yet
+        }
 
         // send verification email
-        await sendEmailVerification(u);
+        try {
+          await sendEmailVerification(u);
+        } catch (emailErr) {
+          console.warn("Failed to send verification email on create:", emailErr);
+          // Still show notice, user can resend later
+        }
 
         // make sure client is signed out so we don't treat the user as authenticated until they verify
+        // this prevents permission issues on data reads in the app
         try {
           await signOut(auth);
         } catch (e) {
           // ignore signOut error; onAuthStateChanged guard also covers this case
         }
 
-        // inform user to verify email
+        // inform user to verify email - show proper UI (VerificationNotice), no data reads
         const msg = `Account created. A verification link was sent to ${email}. Please verify your email before signing in.`;
-        setCreatedNotice(msg);
+        setVerificationNotice(msg);
         toast.success("Verification email sent. Check your inbox.");
         setShowCreateForm(false);
 
@@ -346,9 +394,9 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
       setJustCreatedUid(null);
     } finally {
       setIsLoading(false);
-      // After flow completed (success or failure), we stop suppressing auto-close only if we are not actively showing the createdNotice.
-      // If createdNotice is set, keep suppressAutoClose true until user navigates back to login or closes the drawer.
-      if (!createdNotice) {
+      // After flow completed (success or failure), we stop suppressing auto-close only if we are not actively showing the verificationNotice.
+      // If verificationNotice is set, keep suppressAutoClose true until user navigates back to login or closes the drawer.
+      if (!verificationNotice) {
         setSuppressAutoClose(false);
       }
     }
@@ -374,6 +422,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
   };
 
   // Resend verification: sign in temporarily with provided credentials, resend, then sign out
+  // During this brief sign-in (unverified), avoid any Firestore operations to prevent permission errors
   const handleResendVerification = async () => {
     setError(null);
     setResendLoading(true);
@@ -387,7 +436,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
       await sendEmailVerification(u);
       await signOut(auth); // keep user signed out client-side
       toast.success("Verification email resent. Check your inbox.");
-      setCreatedNotice(null); // allow returning to login form
+      setVerificationNotice(null); // allow returning to login form
       setSuppressAutoClose(false);
     } catch (err: any) {
       const msg = stripFirebasePrefix(err);
@@ -402,7 +451,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     setShowCreateForm(false);
     setShowResetForm(false);
     setResetSent(false);
-    setCreatedNotice(null);
+    setVerificationNotice(null);
     setPassword("");
     setPasswordConfirm("");
     setName("");
@@ -416,6 +465,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     setPwSpecialOk(false);
     setPwMatch(false);
     setSuppressAutoClose(false);
+    setJustCreatedUid(null);
   };
 
   // Improved flow: on close or signin, reset states to prevent glitches in state persistence
@@ -430,7 +480,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
     ? ReactDOM.createPortal(
         <AnimatePresence>
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center poppins-light"
+            className="fixed inset-0 z-50 flex items-center justify-center dark"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}>
@@ -446,7 +496,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
             {/* Drawer/Modal */}
             <motion.div
               ref={drawerRef}
-              className="fixed bottom-0 md:relative w-full max-w-[400px] bg-[#23272f] rounded-t-2xl rounded-b-none md:rounded-2xl shadow-2xl p-6 pt-4 flex flex-col max-h-[90vh] overflow-y-auto"
+              className="fixed bottom-0 md:relative w-full max-w-[400px] bg-background rounded-t-2xl rounded-b-none md:rounded-2xl shadow-2xl p-6 pt-4 flex flex-col max-h-[90vh] overflow-y-auto"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -457,49 +507,42 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
               dragConstraints={{ top: 0, bottom: 0 }}
               {...dragHandlers}>
               {/* Close Button */}
-              <button
-                className="absolute top-3 right-3 p-2 rounded-full bg-neutral-700 hover:bg-neutral-600 transition-colors"
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute top-3 right-3 h-8 w-8 p-0 rounded-full"
                 onClick={() => {
                   resetAllStates();
                   onClose();
                 }}
-                aria-label="Close"
-                type="button">
-                <X size={20} />
-              </button>
+                aria-label="Close">
+                <X className="h-4 w-4" />
+              </Button>
 
               {/* Handle */}
               <div className="flex justify-center mb-4">
-                <div className="w-10 h-1.5 rounded-full bg-neutral-500" />
-              </div>
-
-              {/* Title & Description */}
-              <div className="mb-4 text-center">
-                <h2 className="text-xl font-bold text-white">Log In or Create an Account</h2>
-                <p className="text-sm text-neutral-400 mt-1">
-                  Sign in to bookmark favorites and get recommendations.
-                </p>
+                <div className="w-10 h-1.5 rounded-full bg-muted" />
               </div>
 
               {/* Content */}
               <div className="flex-1">
                 {error && (
-                  <div className="mb-4 text-red-500 text-sm" aria-live="assertive">
-                    {error}
-                  </div>
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertDesc>{error}</AlertDesc>
+                  </Alert>
                 )}
 
                 {/* When a verification notice exists, render the verification UI alone */}
-                {createdNotice ? (
+                {verificationNotice ? (
                   <VerificationNotice
-                    notice={createdNotice}
+                    notice={verificationNotice}
                     email={email}
                     password={password}
                     resendLoading={resendLoading}
                     onResend={handleResendVerification}
                     onBack={() => {
                       // hide verification notice and show login form with email preserved
-                      setCreatedNotice(null);
+                      setVerificationNotice(null);
                       setShowCreateForm(false);
                       setError(null);
                       setSuppressAutoClose(false);
@@ -525,21 +568,27 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
                   />
                 ) : user ? null : (
                   <>
-                    <button
+                    {/* Title & Description */}
+                    <div className="mb-4 text-center">
+                      <h2 className="text-2xl font-bold text-foreground">Log In or Create an Account</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Sign in to bookmark favorites and get recommendations.
+                      </p>
+                    </div>
+
+                    <Button
                       onClick={handleGoogleSignIn}
                       disabled={isLoading}
-                      className={`w-full py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center bg-white text-black mb-4 ${
-                        isLoading ? "opacity-50 cursor-not-allowed bg-gray-600 hover:bg-gray-600" : "hover:bg-gray-200"
-                      }`}
+                      className="w-full mb-4 bg-card text-foreground border hover:bg-accent"
                       aria-label="Sign in with Google">
                       <img src="https://www.google.com/favicon.ico" alt="Google Icon" className="w-5 h-5 mr-2" />
                       Sign in with Google
-                    </button>
+                    </Button>
 
                     <div className="flex items-center my-4">
-                      <div className="flex-grow border-t border-white/10"></div>
-                      <span className="mx-4 text-sm text-white">or</span>
-                      <div className="flex-grow border-t border-white/10"></div>
+                      <Separator className="flex-grow" />
+                      <span className="mx-4 text-sm text-muted-foreground">or</span>
+                      <Separator className="flex-grow" />
                     </div>
 
                     {/* Render appropriate form based on state */}
@@ -604,13 +653,13 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
                       />
                     )}
 
-                    <p className="text-center text-xs text-gray-100 mt-4">
+                    <p className="text-center text-xs text-muted-foreground mt-4">
                       Create an account to bookmark your favorite movies and TV shows, receive personalized recommendations, and more!
                     </p>
 
-                    <p className="text-center text-sm text-neutral-400 mt-4">
+                    <p className="text-center text-sm text-muted-foreground mt-4">
                       Need help?{" "}
-                      <a href="https://sakhiledumisa.com" target="_blank" rel="noopener noreferrer" className="text-blue-400">
+                      <a href="https://sakhiledumisa.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                         Visit sakhiledumisa.com
                       </a>
                     </p>

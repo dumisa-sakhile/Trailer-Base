@@ -1,5 +1,9 @@
 // components/auth/PasswordResetForm.tsx
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface PasswordResetFormProps {
   email: string;
@@ -14,41 +18,37 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
   email,
   setEmail,
   isLoading,
+  error,
   onSubmit,
   onCancel,
 }) => {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      <title>Password Reset</title>
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       <div>
-        <label className="block text-sm mb-2" htmlFor="reset-email">
-          Email
-        </label>
-        <input
-          type="email"
+        <Label htmlFor="reset-email">Email</Label>
+        <Input
           id="reset-email"
+          type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-[rgba(255,255,255,0.1)] text-white py-3 px-4 rounded-lg focus:outline-none text-sm"
-          
+          disabled={isLoading}
         />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-2">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white"
-        >
+        <Button type="submit" disabled={isLoading} className="flex-1">
           {isLoading ? "Sending..." : "Send reset email"}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 py-2 px-4 rounded-lg bg-neutral-700 text-white"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} className="flex-1" disabled={isLoading}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );
