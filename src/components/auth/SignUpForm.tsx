@@ -1,9 +1,16 @@
 // components/auth/SignUpForm.tsx
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+// removed Alert import and added Select imports
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface SignUpFormProps {
   email: string;
@@ -63,18 +70,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     pwMatch &&
     !!email &&
     !!name &&
-    ["male", "female"].includes(gender.toLowerCase());
+    ["male", "female"].includes((gender || "").toLowerCase());
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 overflow-y-auto">
-      <title>Create Account</title>
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      {/* header (accessible) */}
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">Create account</div>
+        <h2 className="text-lg font-semibold text-foreground">Create account</h2>
         <Button
           type="button"
           variant="link"
@@ -86,9 +88,18 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         </Button>
       </div>
 
+      {/* Inline, color-coded notice (no bg/shadow/border) */}
+      {error && (
+        <div role="alert" className="text-sm text-red-400">
+          {error}
+        </div>
+      )}
+
       {/* Email (visible / editable on signup) */}
-      <div>
-        <Label htmlFor="signup-email">Email</Label>
+      <div className="pb-4">
+        <Label htmlFor="signup-email" className="block pb-2 text-sm font-medium text-foreground">
+          Email
+        </Label>
         <Input
           id="signup-email"
           type="email"
@@ -99,8 +110,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         />
       </div>
 
-      <div>
-        <Label htmlFor="name">Name</Label>
+      <div className="pb-4">
+        <Label htmlFor="name" className="block pb-2 text-sm font-medium text-foreground">
+          Name
+        </Label>
         <Input
           id="name"
           type="text"
@@ -111,8 +124,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         />
       </div>
 
-      <div>
-        <Label htmlFor="create-password">Password</Label>
+      <div className="pb-4">
+        <Label htmlFor="create-password" className="block pb-2 text-sm font-medium text-foreground">
+          Password
+        </Label>
         <div className="relative">
           <Input
             id="create-password"
@@ -128,8 +143,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute right-0 top-0 h-full p-0 hover:bg-transparent"
+              className="absolute right-0 top-0 h-full p-0 px-4 hover:bg-transparent"
               onClick={() => setShowPassword((s) => !s)}
+              aria-pressed={showPassword}
             >
               {showPassword ? "Hide" : "Show"}
             </Button>
@@ -137,8 +153,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="confirm-password">Confirm Password</Label>
+      <div className="pb-4">
+        <Label htmlFor="confirm-password" className="block pb-2 text-sm font-medium text-foreground">
+          Confirm Password
+        </Label>
         <div className="relative">
           <Input
             id="confirm-password"
@@ -154,8 +172,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute right-0 top-0 h-full p-0 hover:bg-transparent"
+              className="absolute right-0 top-0 h-full p-0 px-4 hover:bg-transparent"
               onClick={() => setShowConfirmPassword((s) => !s)}
+              aria-pressed={showConfirmPassword}
             >
               {showConfirmPassword ? "Hide" : "Show"}
             </Button>
@@ -163,8 +182,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         </div>
       </div>
 
-      {/* Password criteria */}
-      <div className="text-sm">
+      {/* Password criteria (no special bg/shadow) */}
+      <div className="text-sm pb-4">
         <div className="mb-2 font-medium text-foreground">Password must contain:</div>
         <ul className="space-y-1 list-disc pl-4">
           <li className={`text-sm ${pwLengthOk ? "text-green-400" : "text-muted-foreground"}`}>At least 8 characters</li>
@@ -176,36 +195,21 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         </ul>
       </div>
 
-      <div>
-        <Label>Gender (required)</Label>
-        <div className="flex gap-4 mt-2">
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="gender"
-              value="male"
-              checked={gender.toLowerCase() === "male"}
-              onChange={(e) => setGender(e.target.value)}
-              className="accent-primary h-4 w-4"
-              aria-label="Male"
-              disabled={isLoading}
-            />
-            <Label className="text-sm cursor-pointer">Male</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="gender"
-              value="female"
-              checked={gender.toLowerCase() === "female"}
-              onChange={(e) => setGender(e.target.value)}
-              className="accent-primary h-4 w-4"
-              aria-label="Female"
-              disabled={isLoading}
-            />
-            <Label className="text-sm cursor-pointer">Female</Label>
-          </div>
-        </div>
+      {/* Gender: Select (blended appearance) */}
+      <div className="pb-4">
+        <Label className="block pb-2 text-sm font-medium text-foreground">Gender (required)</Label>
+        <Select value={gender} onValueChange={setGender}>
+          <SelectTrigger
+            className="w-full bg-[#2A2A2D] border border-neutral-700 text-foreground"
+            disabled={isLoading}
+          >
+            <SelectValue placeholder="Select gender" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#2A2A2D] text-white border border-neutral-700 ">
+            <SelectItem value="male">Male</SelectItem>
+            <SelectItem value="female">Female</SelectItem>
+          </SelectContent>
+        </Select>
         <p className="text-xs text-muted-foreground mt-1">Select your gender (required)</p>
       </div>
 

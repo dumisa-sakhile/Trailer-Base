@@ -1,8 +1,5 @@
 // components/auth/VerificationNotice.tsx
-import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface VerificationNoticeProps {
   notice: string;
@@ -23,55 +20,66 @@ const VerificationNotice: React.FC<VerificationNoticeProps> = ({
   onClose,
 }) => {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Verify your email</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 pt-0">
-        <Alert>
-          <AlertDescription className="text-sm text-muted-foreground mb-4">
-            {notice}
-          </AlertDescription>
-        </Alert>
+    <div className="space-y-4 overflow-y-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Verify your email</h2>
+      </div>
 
-        <div className="break-all bg-muted p-3 rounded text-sm text-foreground">{email}</div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button
-            type="button"
-            onClick={onResend}
-            disabled={resendLoading}
-            className="w-full sm:w-auto"
-          >
-            {resendLoading ? "Resending..." : "Resend email"}
-          </Button>
-
-          <Button
-            type="button"
-            onClick={onBack}
-            variant="outline"
-            className="w-full sm:w-auto"
-            disabled={resendLoading}
-          >
-            Back to login
-          </Button>
-
-          <Button
-            type="button"
-            onClick={onClose}
-            variant="secondary"
-            className="w-full sm:w-auto"
-            disabled={resendLoading}
-          >
-            Close
-          </Button>
-        </div>
-
-        <p className="text-xs text-muted-foreground">
-          If you don't see the email, check your spam folder or wait a few minutes. After verifying, return here and sign in.
+      {/* Verification notice */}
+      <div className="pb-4">
+        <p className="text-sm text-blue-400 mb-4">
+          {notice}
         </p>
-      </CardContent>
-    </Card>
+
+        {/* Email display */}
+        <div className="break-all p-3 rounded text-sm text-foreground border border-neutral-700">
+          {email}
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Button
+          type="button"
+          onClick={onResend}
+          disabled={resendLoading}
+          className="flex-1"
+        >
+          {resendLoading ? "Resending..." : "Resend email"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="flex-1"
+          disabled={resendLoading}
+        >
+          Back to login
+        </Button>
+      </div>
+
+      {/* Close button */}
+      <div className="text-center">
+        <Button
+          type="button"
+          variant="link"
+          onClick={onClose}
+          className="p-0 h-auto text-foreground"
+          disabled={resendLoading}
+        >
+          Close
+        </Button>
+      </div>
+
+      {/* Help text */}
+      <div className="pb-4">
+        <p className="text-xs text-muted-foreground">
+          If you don't see the email, check your spam folder or wait a few minutes. 
+          After verifying, return here and sign in.
+        </p>
+      </div>
+    </div>
   );
 };
 

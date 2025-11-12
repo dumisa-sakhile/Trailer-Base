@@ -1,5 +1,5 @@
 // components/auth/AuthDrawer.tsx
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
@@ -585,11 +585,7 @@ const AuthDrawer: React.FC<AuthDrawerProps> = ({ isOpen, onClose }) => {
                       Sign in with Google
                     </Button>
 
-                    <div className="flex items-center my-4">
-                      <Separator className="flex-grow" />
-                      <span className="mx-4 text-sm text-muted-foreground">or</span>
-                      <Separator className="flex-grow" />
-                    </div>
+                   
 
                     {/* Render appropriate form based on state */}
                     {showResetForm ? (

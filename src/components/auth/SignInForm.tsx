@@ -1,5 +1,4 @@
 // components/auth/SignInForm.tsx
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,15 +28,24 @@ const SignInForm: React.FC<SignInFormProps> = ({
   onCreateAccount,
 }) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <title>Sign In</title>
+    <form onSubmit={onSubmit} className="space-y-4 overflow-y-auto">
+      {/* header (accessible) */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Sign in</h2>
+      </div>
+
+      {/* Error alert */}
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <div>
-        <Label htmlFor="email">Email</Label>
+
+      {/* Email field */}
+      <div className="pb-4">
+        <Label htmlFor="email" className="block pb-2 text-sm font-medium text-foreground">
+          Email
+        </Label>
         <Input
           id="email"
           type="email"
@@ -48,8 +56,11 @@ const SignInForm: React.FC<SignInFormProps> = ({
         />
       </div>
 
-      <div>
-        <Label htmlFor="password">Password</Label>
+      {/* Password field */}
+      <div className="pb-4">
+        <Label htmlFor="password" className="block pb-2 text-sm font-medium text-foreground">
+          Password
+        </Label>
         <Input
           id="password"
           type="password"
@@ -60,30 +71,37 @@ const SignInForm: React.FC<SignInFormProps> = ({
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4">
-        <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="flex-1"
+        >
           {isLoading ? "Signing in..." : "Sign in"}
         </Button>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2 text-sm">
-          <Button
-            type="button"
-            variant="link"
-            onClick={onForgotPassword}
-            className="p-0 h-auto text-primary w-full sm:w-auto text-left sm:text-center"
-            disabled={isLoading}
-          >
-            Forgot password?
-          </Button>
-          <Button
-            type="button"
-            variant="link"
-            onClick={onCreateAccount}
-            className="p-0 h-auto text-green-500 w-full sm:w-auto text-left sm:text-center ml-0 sm:ml-2"
-            disabled={isLoading}
-          >
-            Create account
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCreateAccount}
+          className="flex-1"
+          disabled={isLoading}
+        >
+          Create account
+        </Button>
+      </div>
+
+      {/* Forgot password link */}
+      <div className="text-center">
+        <Button
+          type="button"
+          variant="link"
+          onClick={onForgotPassword}
+          className="p-0 h-auto text-foreground"
+          disabled={isLoading}
+        >
+          Forgot password?
+        </Button>
       </div>
     </form>
   );

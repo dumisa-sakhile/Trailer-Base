@@ -1,7 +1,5 @@
 // components/auth/ResetSentNotice.tsx
-import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ResetSentNoticeProps {
   email: string;
@@ -11,24 +9,39 @@ interface ResetSentNoticeProps {
 
 const ResetSentNotice: React.FC<ResetSentNoticeProps> = ({ email, onBack, onClose }) => {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Password Reset</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 pt-0">
-        <p className="text-sm text-muted-foreground">
-          Password reset email sent to <strong>{email}</strong>. Check your inbox.
+    <div className="space-y-4 overflow-y-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Password reset</h2>
+      </div>
+
+      {/* Success message */}
+      <div className="pb-4">
+        <p className="text-sm text-green-400">
+          Password reset email sent to <strong className="text-foreground">{email}</strong>. 
+          Please check your inbox for further instructions.
         </p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button type="button" variant="secondary" onClick={onBack} className="flex-1">
-            Back to sign in
-          </Button>
-          <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-            Close
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Button
+          type="button"
+          onClick={onBack}
+          className="flex-1"
+        >
+          Back to sign in
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="flex-1"
+        >
+          Close
+        </Button>
+      </div>
+    </div>
   );
 };
 
