@@ -18,7 +18,6 @@ import {
 import { doc, setDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import SignInForm from "./SignInForm";
 import SignUpForm from "./SignUpForm";
