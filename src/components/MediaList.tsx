@@ -2,12 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import MediaCard from "./MediaCard";
-
 // shadcn/ui components
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-
 // Define interfaces for Media properties and MediaList component props
 interface MediaProps {
   id: number;
@@ -18,7 +16,6 @@ interface MediaProps {
   poster_path: string;
   vote_average: number;
 }
-
 interface MediaListProps {
   mediaType: "movie" | "tv";
   title: string;
@@ -28,36 +25,29 @@ interface MediaListProps {
   error: { message?: string } | null;
   list: "upcoming" | "top_rated" | "popular";
 }
-
 // Define card dimensions for the skeleton to match MediaCard's actual sizes
 const DEFAULT_CARD_WIDTH = 180;
 const SM_CARD_WIDTH = 120;
 const GAP = 16;
-
 // Custom hook to get window dimensions for responsiveness in skeletons
 const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
     height: typeof window !== "undefined" ? window.innerHeight : 0,
   });
-
   useEffect(() => {
     if (typeof window === "undefined") return;
-
     const handleResize = () => {
       setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight,
       });
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
   return windowSize;
 };
-
 /**
  * MediaCardSkeleton Component
  * Renders a skeleton placeholder for a single media card.
@@ -85,7 +75,6 @@ const MediaCardSkeleton: React.FC = () => (
     </div>
   </div>
 );
-
 /**
  * MediaListSkeleton Component
  * Horizontal, scrollable skeleton with left/right buttons
@@ -93,25 +82,21 @@ const MediaCardSkeleton: React.FC = () => (
 const MediaListSkeleton: React.FC = () => {
   const { width: windowWidth } = useWindowSize();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-
   const currentCardWidth = windowWidth < 640 ? SM_CARD_WIDTH : DEFAULT_CARD_WIDTH;
   const horizontalPadding = 32 * 2;
   const effectiveWidth = Math.max(0, windowWidth - horizontalPadding);
   const cardsPerView = Math.max(1, Math.floor(effectiveWidth / (currentCardWidth + GAP)));
   const numberOfSkeletons = Math.max(cardsPerView * 2, 6);
-
   return (
     <div className="relative -mx-4 px-4">
       <div className="absolute left-2 top-1/2 -translate-y-1/2 z-20">
         <Skeleton className="w-10 h-10 rounded-full bg-neutral-700" />
       </div>
-
       <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
         <Skeleton className="w-10 h-10 rounded-full bg-neutral-700" />
       </div>
-
       <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 lg:gap-6 items-stretch py-2">
+        <div className="flex gap-3 lg:gap-4 items-stretch py-2">
           {Array.from({ length: numberOfSkeletons }).map((_, i) => (
             <div key={i} className="flex-shrink-0">
               <MediaCardSkeleton />
@@ -122,7 +107,6 @@ const MediaListSkeleton: React.FC = () => {
     </div>
   );
 };
-
 /**
  * GridSkeleton for mobile 2-column layout
  */
@@ -131,10 +115,10 @@ const GridSkeleton: React.FC = () => {
   const rows = 3;
   const numberOfSkeletons = cols * rows;
   return (
-    <div className="w-full px-4">
-      <div className="grid grid-cols-2 gap-4">
+    <div className="w-full">
+      <div className="grid grid-cols-2 gap-3">
         {Array.from({ length: numberOfSkeletons }).map((_, i) => (
-          <div key={i} className="w-full flex-shrink-0">
+          <div key={i} className="w-full flex-shrink-0 px-2">
             <MediaCardSkeleton />
           </div>
         ))}
@@ -142,7 +126,6 @@ const GridSkeleton: React.FC = () => {
     </div>
   );
 };
-
 /**
  * MediaList Component
  * Displays a list of media items with smooth animations and proper skeleton loading
@@ -168,7 +151,6 @@ const MediaList: React.FC<MediaListProps> = ({
       },
     },
   };
-
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.9, y: 20 },
     visible: {
@@ -181,14 +163,11 @@ const MediaList: React.FC<MediaListProps> = ({
       },
     },
   };
-
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth < 640;
-
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -204,17 +183,15 @@ const MediaList: React.FC<MediaListProps> = ({
       window.removeEventListener("resize", update);
     };
   }, [data, isLoading]);
-
   const scrollByAmount = (direction: "left" | "right") => {
     const el = scrollerRef.current;
     if (!el) return;
     const amount = Math.max(el.clientWidth * 0.8, 300);
     el.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
   };
-
   return (
-    <motion.section 
-      className="w-full flex flex-col gap-4 px-4 sm:px-6 lg:px-8 py-6"
+    <motion.section
+      className="w-full flex flex-col gap-4 px-4 sm:px-6 lg:px-8 py-4"
       initial="initial"
       animate="animate"
       variants={pageVariants}
@@ -222,7 +199,7 @@ const MediaList: React.FC<MediaListProps> = ({
       {/* Header row: Title + View All */}
       <AnimatePresence>
         {!isLoading && (
-          <motion.div 
+          <motion.div
             className="w-full flex items-center justify-between"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -236,19 +213,17 @@ const MediaList: React.FC<MediaListProps> = ({
               params={{ list: list }}
               search={{ page: 1 }}
             >
-              <Button 
+              <Button
                 size="sm"
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-300"
               >
-                View All {title}
+                {isMobile ? "View more" : `View All ${title}`}
               </Button>
             </Link>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <div className="h-4" /> {/* Spacer */}
-
+      <div className="h-2" /> {/* Spacer */}
       <AnimatePresence mode="wait">
         {isLoading ? (
           <motion.div
@@ -274,9 +249,9 @@ const MediaList: React.FC<MediaListProps> = ({
           >
             {/* Mobile Grid Layout */}
             {isMobile ? (
-              <div className="w-full px-0">
+              <div className="w-full">
                 {isError ? (
-                  <motion.div 
+                  <motion.div
                     className="w-full text-center text-red-400 font-medium py-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -284,25 +259,25 @@ const MediaList: React.FC<MediaListProps> = ({
                     Error: {error?.message ?? "An error occurred while fetching data."}
                   </motion.div>
                 ) : data?.results && data.results.length > 0 ? (
-                  <motion.div 
-                    className="grid grid-cols-2 gap-4"
+                  <motion.div
+                    className="grid grid-cols-2 gap-3"
                     initial="hidden"
                     animate="visible"
                     variants={{
                       hidden: { opacity: 0 },
-                      visible: { 
-                        opacity: 1, 
-                        transition: { 
+                      visible: {
+                        opacity: 1,
+                        transition: {
                           staggerChildren: 0.1,
                           delayChildren: 0.2
-                        } 
+                        }
                       },
                     }}
                   >
                     {data.results.map((item: MediaProps, index) => (
-                      <motion.div 
-                        key={item.id} 
-                        className="w-full"
+                      <motion.div
+                        key={item.id}
+                        className="w-full px-2"
                         variants={cardVariants}
                         transition={{ delay: index * 0.05 /* kept delay only */ }}
                       >
@@ -318,7 +293,7 @@ const MediaList: React.FC<MediaListProps> = ({
                     ))}
                   </motion.div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     className="w-full text-center text-neutral-400 py-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -348,7 +323,6 @@ const MediaList: React.FC<MediaListProps> = ({
                     </motion.button>
                   )}
                 </AnimatePresence>
-
                 {/* Right scroll button */}
                 <AnimatePresence>
                   {canScrollRight && (
@@ -367,10 +341,9 @@ const MediaList: React.FC<MediaListProps> = ({
                     </motion.button>
                   )}
                 </AnimatePresence>
-
                 {/* Error state */}
                 {isError ? (
-                  <motion.div 
+                  <motion.div
                     className="w-full text-center text-red-400 font-medium py-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -382,23 +355,23 @@ const MediaList: React.FC<MediaListProps> = ({
                   data?.results && data.results.length > 0 ? (
                     <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
                       <motion.div
-                        className="flex gap-4 lg:gap-6 items-stretch"
+                        className="flex gap-3 lg:gap-4 items-stretch"
                         initial="hidden"
                         animate="visible"
                         variants={{
                           hidden: { opacity: 0 },
-                          visible: { 
-                            opacity: 1, 
-                            transition: { 
+                          visible: {
+                            opacity: 1,
+                            transition: {
                               staggerChildren: 0.08,
                               delayChildren: 0.1
-                            } 
+                            }
                           },
                         }}
                       >
                         {data.results.map((item: MediaProps, index) => (
-                          <motion.div 
-                            key={item.id} 
+                          <motion.div
+                            key={item.id}
                             variants={cardVariants}
                             transition={{ delay: index * 0.03 /* kept duration/delay only */ }}
                             className="flex-shrink-0"
@@ -416,7 +389,7 @@ const MediaList: React.FC<MediaListProps> = ({
                       </motion.div>
                     </div>
                   ) : (
-                    <motion.div 
+                    <motion.div
                       className="w-full text-center text-neutral-400 py-8"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -433,5 +406,4 @@ const MediaList: React.FC<MediaListProps> = ({
     </motion.section>
   );
 };
-
 export default MediaList;

@@ -48,7 +48,8 @@ const MediaCard: React.FC<MediaCardProps> = ({
   });
 
   return (
-    <div className="relative group w-[180px] h-[270px] max-sm:w-[120px] max-sm:h-[180px]">
+    //  👇 *** CHANGE IS HERE *** 👇
+    <div className="relative group w-[180px] h-[270px] max-sm:w-[120px] max-sm:h-[180px] m-2 max-sm:m-1">
       <Card className="w-full h-full rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-95 transition-all duration-300 ease-in-out bg-[rgba(24,24,24,0.95)] border-0 p-0">
         <CardContent className="p-0 w-full h-full">
           <Link
@@ -79,19 +80,19 @@ const MediaCard: React.FC<MediaCardProps> = ({
                   setIsImageLoaded(true);
                 }}
               />
-              
+
               {/* Overlay content */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 max-sm:p-2 rounded-2xl">
-                <div className="flex items-center gap-2">
-                  <Star size={16} className="text-[#FACC15]" />
-                  <span className="text-xs font-semibold text-[#FACC15] max-sm:text-[9px]">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 space-y-2 max-sm:p-2.5 max-sm:space-y-1.5 rounded-2xl">
+                <div className="flex items-center gap-2 max-sm:gap-1.5">
+                  <Star size={15} className="text-[#FACC15] flex-shrink-0" />
+                  <span className="text-xs font-semibold text-[#FACC15] max-sm:text-[10px]">
                     {vote_average?.toFixed(1) ?? "N/A"}/10
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 max-sm:text-[9px]">
+                <p className="text-xs text-gray-400 max-sm:text-[10px] leading-relaxed">
                   {release_date ?? "N/A"}
                 </p>
-                <h4 className="text-base font-bold text-white line-clamp-2 max-sm:text-[11px] md:text-sm poppins-regular">
+                <h4 className="text-sm font-bold text-white line-clamp-2 max-sm:text-xs poppins-regular leading-snug">
                   {title ?? "Untitled"}
                 </h4>
               </div>
@@ -105,20 +106,20 @@ const MediaCard: React.FC<MediaCardProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-3 left-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md max-sm:p-1.5 max-sm:top-2 max-sm:left-2 h-auto w-auto"
+              className="absolute top-3 left-3 p-2 bg-[rgba(24,24,24,0.9)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md max-sm:p-1.5 max-sm:top-2.5 max-sm:left-2.5 h-auto w-auto"
               onClick={() =>
                 removeBookmarkMutation?.mutate(id?.toString() ?? "")
               }
               disabled={removeBookmarkMutation?.isPending}
               aria-label={`Remove ${title ?? "media item"} from bookmarks`}
             >
-              <BookmarkMinus size={20} />
+              <BookmarkMinus size={18} className="h-4 w-4" />
             </Button>
           ) : (
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-3 left-3 p-2 bg-black rounded-full text-white hover:bg-white hover:text-black focus:ring-2 focus:ring-[#FACC15]/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md max-sm:p-1.5 max-sm:top-2 max-sm:left-2 h-auto w-auto"
+              className="absolute top-3 left-3 p-2 bg-black rounded-full text-white hover:bg-white hover:text-black focus:ring-2 focus:ring-[#FACC15]/50 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-md max-sm:p-1.5 max-sm:top-2.5 max-sm:left-2.5 h-auto w-auto"
               onClick={() =>
                 addBookmarkMutation?.mutate({
                   id: id ?? 0,
@@ -132,7 +133,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               disabled={addBookmarkMutation?.isPending}
               aria-label={`Add ${title ?? "media item"} to bookmarks`}
             >
-              <BookmarkPlus size={20} />
+              <BookmarkPlus size={18} className="h-4 w-4" />
             </Button>
           )}
         </>
