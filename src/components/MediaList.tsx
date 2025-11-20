@@ -96,7 +96,7 @@ const MediaListSkeleton: React.FC = () => {
         <Skeleton className="w-10 h-10 rounded-full bg-neutral-700" />
       </div>
       <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 lg:gap-4 items-stretch py-2">
+        <div className="flex gap-2 lg:gap-3 items-stretch py-2 justify-center">
           {Array.from({ length: numberOfSkeletons }).map((_, i) => (
             <div key={i} className="flex-shrink-0">
               <MediaCardSkeleton />
@@ -116,7 +116,7 @@ const GridSkeleton: React.FC = () => {
   const numberOfSkeletons = cols * rows;
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 justify-items-center">
         {Array.from({ length: numberOfSkeletons }).map((_, i) => (
           <div key={i} className="w-full flex-shrink-0">
             <MediaCardSkeleton />
@@ -271,7 +271,7 @@ const MediaList: React.FC<MediaListProps> = ({
                   </motion.div>
                 ) : data?.results && data.results.length > 0 ? (
                   <motion.div
-                    className="grid grid-cols-2 gap"
+                    className="grid grid-cols-2 gap-2 justify-items-center"
                     initial="hidden"
                     animate="visible"
                     variants={{
@@ -288,7 +288,7 @@ const MediaList: React.FC<MediaListProps> = ({
                     {data.results.map((item: MediaProps, index) => (
                       <motion.div
                         key={item.id}
-                        className="w-full"
+                        className="flex-shrink-0"
                         variants={cardVariants}
                         transition={{ delay: index * 0.05 /* kept delay only */ }}
                       >
@@ -366,7 +366,7 @@ const MediaList: React.FC<MediaListProps> = ({
                   data?.results && data.results.length > 0 ? (
                     <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
                       <motion.div
-                        className="flex gap-3 lg:gap-4 items-stretch"
+                        className="flex gap-2 lg:gap-3 items-stretch justify-center"
                         initial="hidden"
                         animate="visible"
                         variants={{
