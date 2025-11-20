@@ -116,9 +116,9 @@ const GridSkeleton: React.FC = () => {
   const numberOfSkeletons = cols * rows;
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {Array.from({ length: numberOfSkeletons }).map((_, i) => (
-          <div key={i} className="w-full flex-shrink-0 px-2">
+          <div key={i} className="w-full flex-shrink-0">
             <MediaCardSkeleton />
           </div>
         ))}
@@ -271,7 +271,7 @@ const MediaList: React.FC<MediaListProps> = ({
                   </motion.div>
                 ) : data?.results && data.results.length > 0 ? (
                   <motion.div
-                    className="grid grid-cols-2 gap-3"
+                    className="grid grid-cols-2 gap"
                     initial="hidden"
                     animate="visible"
                     variants={{
@@ -288,7 +288,7 @@ const MediaList: React.FC<MediaListProps> = ({
                     {data.results.map((item: MediaProps, index) => (
                       <motion.div
                         key={item.id}
-                        className="w-full px-2"
+                        className="w-full"
                         variants={cardVariants}
                         transition={{ delay: index * 0.05 /* kept delay only */ }}
                       >
