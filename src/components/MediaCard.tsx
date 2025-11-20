@@ -48,8 +48,8 @@ const MediaCard: React.FC<MediaCardProps> = ({
   });
 
   return (
-    <div className="relative group w-[180px] h-[270px] max-sm:w-[120px] max-sm:h-[180px] m-2 max-sm:m-1">
-      <Card className="w-full h-full rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-95 transition-all duration-300 ease-in-out bg-[rgba(24,24,24,0.95)] border-0 p-0">
+    <div className="relative group w-[180px] h-[270px] max-sm:w-[140px] max-sm:h-[210px] ">
+      <Card className="w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl hover:scale-95 transition-all duration-300 ease-in-out bg-[rgba(24,24,24,0.95)] border-0 p-0">
         <CardContent className="p-0 w-full h-full">
           <Link
             to={type === "movie" ? "/movie/$movieId" : "/tv/$tvId"}
@@ -58,11 +58,11 @@ const MediaCard: React.FC<MediaCardProps> = ({
                 ? { movieId: id?.toString() ?? "" }
                 : { tvId: id?.toString() ?? "" }
             }
-            className="block w-full h-full rounded-2xl overflow-hidden focus:ring-2 focus:ring-[#FACC15]/50 outline-none"
+            className="block w-full h-full rounded-lg overflow-hidden focus:ring-2 focus:ring-[#FACC15]/50 outline-none"
           >
             <div className="relative w-full h-full">
               {!isImageLoaded && (
-                <Skeleton className="w-full h-full rounded-2xl absolute inset-0" />
+                <Skeleton className="w-full h-full rounded-lg absolute inset-0" />
               )}
               <img
                 src={
@@ -71,7 +71,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
                     : "/poster.png"
                 }
                 alt={title ?? "Media item"}
-                className={`w-full h-full object-cover transition-opacity duration-300 rounded-2xl ${
+                className={`w-full h-full object-cover transition-opacity duration-300 rounded-lg ${
                   isImageLoaded ? "opacity-100" : "opacity-0"
                 }`}
                 loading="lazy"
@@ -81,7 +81,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
               />
 
               {/* Overlay content */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 space-y-2 max-sm:p-2.5 max-sm:space-y-1.5 rounded-2xl">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 space-y-2 max-sm:p-2.5 max-sm:space-y-1.5 rounded-lg">
                 <div className="flex items-center gap-2 max-sm:gap-1.5">
                   <Star size={15} className="text-[#FACC15] flex-shrink-0" />
                   <span className="text-xs font-semibold text-[#FACC15] max-sm:text-[10px]">
