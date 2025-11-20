@@ -208,18 +208,29 @@ const MediaList: React.FC<MediaListProps> = ({
             <h2 className="text-2xl max-sm:text-xl lg:text-3xl text-neutral-100 font-medium capitalize tracking-tight">
               {title}
             </h2>
-            <Link
-              to={`/${mediaType}/list/$list`}
-              params={{ list: list }}
-              search={{ page: 1 }}
-            >
-              <Button
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-300"
+            {isMobile ? (
+              <Link
+                to={`/${mediaType}/list/$list`}
+                params={{ list }}
+                search={{ page: 1 }}
+                className="text-sm text-blue-500 font-medium hover:underline"
               >
-                {isMobile ? "View more" : `View All ${title}`}
-              </Button>
-            </Link>
+                View more
+              </Link>
+            ) : (
+              <Link
+                to={`/${mediaType}/list/$list`}
+                params={{ list }}
+                search={{ page: 1 }}
+              >
+                <Button
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-300"
+                >
+                  {`View All ${title}`}
+                </Button>
+              </Link>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

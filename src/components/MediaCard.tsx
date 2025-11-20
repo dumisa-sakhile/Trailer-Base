@@ -48,7 +48,6 @@ const MediaCard: React.FC<MediaCardProps> = ({
   });
 
   return (
-    //  👇 *** CHANGE IS HERE *** 👇
     <div className="relative group w-[180px] h-[270px] max-sm:w-[120px] max-sm:h-[180px] m-2 max-sm:m-1">
       <Card className="w-full h-full rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-95 transition-all duration-300 ease-in-out bg-[rgba(24,24,24,0.95)] border-0 p-0">
         <CardContent className="p-0 w-full h-full">
