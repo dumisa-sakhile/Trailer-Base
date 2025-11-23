@@ -27,7 +27,7 @@ interface MediaListProps {
 }
 // Define card dimensions for the skeleton to match MediaCard's actual sizes
 const DEFAULT_CARD_WIDTH = 180;
-const SM_CARD_WIDTH = 120;
+const SM_CARD_WIDTH = 140; // match mobile card size (was 120)
 const GAP = 16;
 // Custom hook to get window dimensions for responsiveness in skeletons
 const useWindowSize = () => {
@@ -53,7 +53,7 @@ const useWindowSize = () => {
  * Renders a skeleton placeholder for a single media card.
  */
 const MediaCardSkeleton: React.FC = () => (
-  <div className="relative w-[180px] h-[270px] max-sm:w-[120px] max-sm:h-[180px]">
+  <div className="relative w-[180px] h-[270px] max-sm:w-[140px] max-sm:h-[210px]">
     <Card className="w-full h-full rounded-2xl overflow-hidden shadow-lg bg-neutral-800 border-0 p-0">
       <CardContent className="p-0 w-full h-full">
         <div className="relative w-full h-full">
@@ -88,7 +88,7 @@ const MediaListSkeleton: React.FC = () => {
   const cardsPerView = Math.max(1, Math.floor(effectiveWidth / (currentCardWidth + GAP)));
   const numberOfSkeletons = Math.max(cardsPerView * 2, 6);
   return (
-    <div className="relative -mx-4 px-4">
+    <div className="relative">
       <div className="absolute left-2 top-1/2 -translate-y-1/2 z-20">
         <Skeleton className="w-10 h-10 rounded-full bg-neutral-700" />
       </div>
@@ -96,7 +96,7 @@ const MediaListSkeleton: React.FC = () => {
         <Skeleton className="w-10 h-10 rounded-full bg-neutral-700" />
       </div>
       <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
-        <div className="flex gap-2 lg:gap-3 items-stretch py-2 justify-center">
+        <div className="flex gap-2 lg:gap-3 items-stretch py-2 justify-start pl-4 sm:pl-6 lg:pl-8">
           {Array.from({ length: numberOfSkeletons }).map((_, i) => (
             <div key={i} className="flex-shrink-0">
               <MediaCardSkeleton />
@@ -159,7 +159,6 @@ const MediaList: React.FC<MediaListProps> = ({
       y: 0,
       transition: {
         duration: 0.4,
-        // removed `ease`
       },
     },
   };
@@ -205,7 +204,7 @@ const MediaList: React.FC<MediaListProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h2 className="text-2xl max-sm:text-xl lg:text-3xl text-neutral-100 font-medium capitalize tracking-tight">
+            <h2 className="text-lg max-sm:text-base lg:text-xl text-neutral-100 font-semibold tracking-tight">
               {title}
             </h2>
             {isMobile ? (
@@ -315,7 +314,7 @@ const MediaList: React.FC<MediaListProps> = ({
               </div>
             ) : (
               /* Desktop Horizontal Scroller */
-              <div className="relative -mx-4 px-4">
+              <div className="relative">
                 {/* Left scroll button */}
                 <AnimatePresence>
                   {canScrollLeft && (
@@ -366,7 +365,7 @@ const MediaList: React.FC<MediaListProps> = ({
                   data?.results && data.results.length > 0 ? (
                     <div ref={scrollerRef} className="w-full overflow-x-auto no-scrollbar">
                       <motion.div
-                        className="flex gap-2 lg:gap-3 items-stretch justify-center"
+                        className="flex gap-2 lg:gap-3 items-stretch justify-start pl-4 sm:pl-6 lg:pl-8"
                         initial="hidden"
                         animate="visible"
                         variants={{

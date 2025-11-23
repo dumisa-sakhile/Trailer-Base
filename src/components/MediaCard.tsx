@@ -62,7 +62,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
           >
             <div className="relative w-full h-full">
               {!isImageLoaded && (
-                <Skeleton className="w-full h-full rounded-lg absolute inset-0" />
+                <Skeleton className="w-full h-full rounded-2xl absolute inset-0 bg-neutral-700" />
               )}
               <img
                 src={
@@ -71,11 +71,15 @@ const MediaCard: React.FC<MediaCardProps> = ({
                     : "/poster.png"
                 }
                 alt={title ?? "Media item"}
-                className={`w-full h-full object-cover transition-opacity duration-300 rounded-lg ${
+                className={`w-full h-full object-cover transition-opacity duration-300 rounded-2xl bg-neutral-800 ${
                   isImageLoaded ? "opacity-100" : "opacity-0"
                 }`}
                 loading="lazy"
                 onLoad={() => {
+                  setIsImageLoaded(true);
+                }}
+                onError={() => {
+                  // if image fails, keep skeleton visible (optional)
                   setIsImageLoaded(true);
                 }}
               />
