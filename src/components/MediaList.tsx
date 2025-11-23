@@ -315,42 +315,38 @@ const MediaList: React.FC<MediaListProps> = ({
             ) : (
               /* Desktop Horizontal Scroller */
               <div className="relative">
-                {/* Left scroll button */}
-                <AnimatePresence>
-                  {canScrollLeft && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      type="button"
-                      onClick={() => scrollByAmount("left")}
-                      aria-label="Scroll left"
-                      className="absolute left-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg hover:bg-[#111]/80 transition-all duration-200"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M15 18l-6-6 6-6"></path>
-                      </svg>
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-                {/* Right scroll button */}
-                <AnimatePresence>
-                  {canScrollRight && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      type="button"
-                      onClick={() => scrollByAmount("right")}
-                      aria-label="Scroll right"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-[#111]/60 text-white shadow-lg hover:bg-[#111]/80 transition-all duration-200"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M9 6l6 6-6 6"></path>
-                      </svg>
-                    </motion.button>
-                  )}
-                </AnimatePresence>
+                {/* Left scroll button — visible on desktop; use aria-disabled but keep clickable */}
+                {!isMobile && (
+                  <button
+                    type="button"
+                    onClick={() => scrollByAmount("left")}
+                    aria-label="Scroll left"
+                    aria-disabled={!canScrollLeft}
+                    className={`absolute left-2 top-1/2 -translate-y-1/2 z-40 pointer-events-auto flex items-center justify-center w-11 h-11 rounded-full bg-neutral-900/95 text-white shadow-lg transition-colors duration-200 focus:outline-none ring-1 ring-white/6 ${
+                      canScrollLeft ? "hover:bg-neutral-800" : "opacity-50"
+                    }`}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                  </button>
+                )}
+                {/* Right scroll button — visible on desktop; use aria-disabled but keep clickable */}
+                {!isMobile && (
+                  <button
+                    type="button"
+                    onClick={() => scrollByAmount("right")}
+                    aria-label="Scroll right"
+                    aria-disabled={!canScrollRight}
+                    className={`absolute right-2 top-1/2 -translate-y-1/2 z-40 pointer-events-auto flex items-center justify-center w-11 h-11 rounded-full bg-neutral-900/95 text-white shadow-lg transition-colors duration-200 focus:outline-none ring-1 ring-white/6 ${
+                      canScrollRight ? "hover:bg-neutral-800" : "opacity-50"
+                    }`}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 6l6 6-6 6"></path>
+                    </svg>
+                  </button>
+                )}
                 {/* Error state */}
                 {isError ? (
                   <motion.div
