@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { getTrendingMovies, getList } from "@/api/movie";
+import { getTrendingMovies, getList, getMovieRecommendations } from "@/api/movie";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import MediaList from "@/components/MediaList";
@@ -7,12 +7,17 @@ import Display from "@/components/Display";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Search as SearchIconLucide } from "lucide-react";
+import useLastViewedStore from "@/stores/viewStore";
+import type { MovieProps } from "@/Types/movieInterfaces";
+import BecauseYouWatched, { type MediaProps } from "@/components/BecauseYouWatched";
 
 export const Route = createFileRoute("/")({
   component: App,
 });
 
 function App() {
+  const { lastViewedMovie } = useLastViewedStore();
+  const movieId = lastViewedMovie?.id;
   const page = 1;
   const period : 'day' | 'week' = "day"; // Can be "day", "week", etc. for trending movies
   const navigate = useNavigate();
@@ -88,6 +93,16 @@ function App() {
     staleTime: 60 * 60 * 1000,
   });
 
+  // Recommendations query
+    const { data: recommendationsData, isLoading: recommendationsLoading, isError: recommendationsErrorStatus, error : recommendationsError} =
+      useQuery<{
+        results: MovieProps[];
+      }>({
+        queryKey: ["movie-recommendations", movieId],
+        queryFn: () => getMovieRecommendations(movieId?.toString() || undefined),
+        staleTime: 1000 * 60 * 60, // 1 hour
+      });
+
   // Animation variants for staggered entrance
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -145,6 +160,23 @@ function App() {
           category="movie"
         />
       </motion.div>
+
+      {
+        recommendationsData && recommendationsData.results.length > 0 && (
+           <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible">
+            <BecauseYouWatched
+        mediaType="movie"
+        recommendations={recommendationsData?.results as unknown as MediaProps[] | undefined}
+        isLoading={recommendationsLoading}
+        isError={recommendationsErrorStatus}
+        error={recommendationsError}
+      />
+      </motion.div>
+        )
+      }
 
       <motion.div
         variants={containerVariants}

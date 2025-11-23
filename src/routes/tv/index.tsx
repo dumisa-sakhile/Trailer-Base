@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { getTrendingTV, getTVList } from "@/api/tv";
+import { getTrendingTV, getTVList, getTVRecommendations } from "@/api/tv";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import TvDisplay from "@/components/TvDisplay";
@@ -7,6 +7,9 @@ import MediaList from "@/components/MediaList";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Search as SearchIconLucide } from "lucide-react";
+import useLastViewedStore from "@/stores/viewStore";
+import type { TVProps } from "@/Types/tvInterfaces";
+import BecauseYouWatched, { type MediaProps } from "@/components/BecauseYouWatched";
 
 
 export const Route = createFileRoute("/tv/")({
@@ -78,6 +81,19 @@ function App() {
     placeholderData: keepPreviousData,
     staleTime: 60 * 60 * 1000,
   });
+
+  const { lastViewedTV } = useLastViewedStore();
+  const tvId = lastViewedTV?.id;
+
+// Recommendations query
+  const { data: recommendationsData, isLoading: recommendationsLoading, isError: recommendationsErrorStatus, error : recommendationsError} =
+    useQuery<{
+      results: TVProps[];
+    }>({
+      queryKey: ["tv-recommendations", tvId],
+      queryFn: () => getTVRecommendations(tvId?.toString() || undefined),
+      staleTime: 1000 * 60 * 60, // 1 hour
+    });
 
   // Define a stricter type for TV show items
   type TVShow = {
@@ -165,6 +181,27 @@ function App() {
         />
       </motion.div>
 
+
+
+      {
+        recommendationsData&& recommendationsData.results.length > 0 && (
+           <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible">
+            <BecauseYouWatched
+        mediaType="tv"
+        recommendations={recommendationsData?.results as unknown as MediaProps[] | undefined}
+        isLoading={recommendationsLoading}
+        isError={recommendationsErrorStatus}
+        error={recommendationsError}
+      />
+      </motion.div>
+        )
+      }
+     
+
+
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -179,6 +216,8 @@ function App() {
           error={popularTVError}
         />
       </motion.div>
+
+
       <motion.div
         variants={containerVariants}
         initial="hidden"

@@ -30,6 +30,7 @@ import type {
   MediaImage,
 } from "@/Types/tvInterfaces";
 import MediaDetailsSkeleton from "@/components/MediaDetailsSkeleton";
+import useLastViewedStore from "@/stores/viewStore";
 
 export const Route = createFileRoute("/tv/$tvId")({
   loader: async ({ params }) => {
@@ -42,6 +43,7 @@ const FALLBACK_POSTER =
   "https://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/main/public/poster.png";
 
 function TVDetails() {
+  const { setLastViewedTV, lastViewedTV } = useLastViewedStore();
   const { tvId } = Route.useLoaderData();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [showVideo, setShowVideo] = useState(false);
@@ -70,7 +72,7 @@ function TVDetails() {
   }, []);
 
   // TV details query
-  const { data, isLoading, error } = useQuery<TVDetails>({
+  const { data, error, isLoading } = useQuery<TVDetails>({
     queryKey: ["tv", tvId],
     queryFn: () => getTVDetails(tvId),
     staleTime: 1000 * 60 * 60, // 1 hour
@@ -211,7 +213,19 @@ function TVDetails() {
       })()
     : undefined;
 
-  // Early return for loading or error state
+  // Update last viewed TV show in store
+  useEffect(() => {
+    if (recommendations?.results?.length && data?.id && data?.name) {
+      setLastViewedTV(data.id, data.name);
+    }
+  }, [data?.id, data?.name, setLastViewedTV, recommendations?.results?.length]);
+
+  // Separate effect to log state changes
+  useEffect(() => {
+    console.log("Current last viewed TV show:", lastViewedTV);
+  }, [lastViewedTV]);
+
+   // Early return for loading or error state
   if (isLoading) {
     return <MediaDetailsSkeleton  />;
   }

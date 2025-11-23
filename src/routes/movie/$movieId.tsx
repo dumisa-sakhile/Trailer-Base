@@ -35,6 +35,7 @@ import type {
   MovieImage,
 } from "@/Types/movieInterfaces";
 import MediaDetailsSkeleton from "@/components/MediaDetailsSkeleton";
+import useLastViewedStore from "@/stores/viewStore";
 
 export const Route = createFileRoute("/movie/$movieId")({
   loader: async ({ params }) => {
@@ -43,10 +44,13 @@ export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetails,
 });
 
+
 const FALLBACK_POSTER =
   "https://raw.githubusercontent.com/dumisa-sakhile/CinemaLand/main/public/poster.png";
 
 function MovieDetails() {
+  const { setLastViewedMovie, lastViewedMovie } = useLastViewedStore();
+
   const { movieId } = Route.useLoaderData();
   const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [showVideo, setShowVideo] = useState(false);
@@ -206,7 +210,20 @@ function MovieDetails() {
         );
       })()
     : undefined;
+  
+  
+  useEffect(() => {
+  if (recommendations?.results?.length && data?.id && data?.title) {
+    setLastViewedMovie(data.id, data.title);
+  }
+}, [data?.id, data?.title, setLastViewedMovie, recommendations?.results?.length]);
+// Separate effect to log state changes
+useEffect(() => {
+  console.log("Current last viewed:", lastViewedMovie);
+}, [lastViewedMovie]); // This runs whenever lastViewed actually changes
 
+
+  
   // Early return for loading or error state
   if (isLoading) {
     return <MediaDetailsSkeleton />;
