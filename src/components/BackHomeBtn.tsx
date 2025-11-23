@@ -18,6 +18,10 @@ const BackHomeBtn: React.FC<Props> = ({
 }) => {
   const navigate = useNavigate();
 
+  // resolve home path: if default '/' and we're on a /tv page, use '/tv'
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+  const resolvedHomePath = homePath === "/" && pathname.startsWith("/tv") ? "/tv" : homePath;
+
   return (
     <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 ${className}`}>
       <button
@@ -31,7 +35,7 @@ const BackHomeBtn: React.FC<Props> = ({
       </button>
 
       <button
-        onClick={() => navigate({ to: homePath })}
+        onClick={() => navigate({ to: resolvedHomePath })}
         className="px-3 py-2 rounded-lg bg-[#333]/50 text-white text-sm hover:scale-105 transition-all"
         aria-label="Home"
         title="Home"

@@ -118,7 +118,7 @@ const BecauseYouWatched: React.FC<BecauseYouWatchedProps> = ({
             transition={{ duration: 0.4 }}
           >
             <h2 className="text-lg max-sm:text-base lg:text-xl text-neutral-100 font-semibold tracking-tight">
-              Because you watched "{lastViewed?.name}"
+              Because you watched {lastViewed?.name}
             </h2>
           </motion.div>
         )}
