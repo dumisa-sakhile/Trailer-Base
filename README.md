@@ -1,38 +1,46 @@
 # Trailer Base
 
-[Trailer Base](https://trailer-base.vercel.app) is a web app for browsing movie and TV trailers, built with React, TypeScript, and Tailwind CSS. It uses the TMDB API for media data, Firebase for authentication and bookmarking, TanStack Query with Axios for data fetching, TanStack Router for navigation, and Sonner for notifications.
+Trailer Base is a web app for browsing movie and TV trailers, built with React, TypeScript, and Tailwind CSS. It uses the TMDB API for media data, Firebase for authentication and bookmarking, TanStack Query for data fetching, TanStack Router for navigation, and Sonner for notifications.
+
+This README was updated to reflect recent additions: a small Zustand store for "last viewed" media and a "Because you viewed…" recommendations list that shares cache with recommendation queries.
 
 ## Features
-- Browse movies, TV shows, and industry professionals with trailers and details.
-- TMDB API integration for real-time data (posters, trailers, cast, etc.).
+- Browse movies, TV shows, and people with trailers and details.
+- TMDB API integration for posters, backdrops, trailers, cast, and recommendations.
 - Firebase authentication (Magic Link, Google OAuth) and Firestore for bookmarking.
-- Search for movies, TV shows, or people.
+- "Because you viewed…" recommendations: a personalized list fed by the last-clicked media (uses a small zustand store).
+- Skeleton UIs for smoother loading states.
+- Search and filters for quick discovery.
 - Responsive design with Tailwind CSS.
-- Efficient data fetching with TanStack Query and Axios.
-- Notifications via Sonner.
+- Efficient data fetching with TanStack Query (queries share cache keys for recommendations).
 - File-based routing with TanStack Router.
 
 ## Tech Stack
-- **Frontend**: React, TypeScript, Tailwind CSS
-- **Routing**: TanStack Router
-- **Data Fetching**: TanStack Query, Axios
-- **Backend**: Firebase (Authentication, Firestore), TMDB API
-- **Notifications**: Sonner
-- **Build**: Vite
-- **Deployment**: Vercel
+- Frontend: React + TypeScript
+- Routing: TanStack Router
+- Data fetching: TanStack Query
+- State (small local): Zustand (last-viewed store)
+- Backend services: Firebase (Auth, Firestore), TMDB API
+- UI primitives: shadcn/ui components
+- Styling: Tailwind CSS
+- Notifications: Sonner
+- Build: Vite
+- Deployment: Vercel
 
 ## Main Routes
-- `/movies`: Movie listings, trailers, and details (`/movie/:movieId`).
-- `/tv`: TV show listings, episode guides, and details (`/tv/:tvId`).
-- `/people`: Profiles of actors and directors (`/people/:personId`).
-- `/auth`: Sign-up (`/auth/sign_up`), profile (`/auth/profile`), and verification (`/auth/verify`).
-- `/`: Home page with featured content.
+- `/movies` — Movie listings, trailers, and details (`/movie/:movieId`).
+- `/tv` — TV show listings, episode guides, and details (`/tv/:tvId`).
+- `/people` — Industry professionals and profiles (`/people/:personId`).
+- Authentication is handled via an in-app Portal component (no dedicated `/auth` folder or routes). Use the Portal to open login/signup/verification flows and access the profile modal.
+- `/` — Home page with featured content and personalized lists (e.g., "Because you viewed…").
+
+Note: the in-app "Home" button resolves contextually (e.g., from a /tv page it navigates to `/tv`; from /people it navigates to `/people`).
 
 ## Prerequisites
 - Node.js (v16+)
 - React 19
 - TMDB API key
-- Firebase project with Authentication and Firestore
+- Firebase project (Authentication + Firestore)
 - Modern web browser
 
 ## Installation
@@ -45,68 +53,75 @@
    ```bash
    npm install
    ```
-3. Set up `.env` file with TMDB and Firebase keys:
-   ```env
-   VITE_TMDB_API_KEY=your-tmdb-api-key
-   VITE_FIREBASE_API_KEY=your-firebase-api-key
-   VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
-   VITE_FIREBASE_PROJECT_ID=your-project-id
-   VITE_FIREBASE_STORAGE_BUCKET=your-storage-bucket
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
-   VITE_FIREBASE_APP_ID=your-app-id
-   ```
+3. Environment variables
+   - The project reads TMDB key from environment variables. Depending on your setup (Vite vs Next), set one of the following:
+     ```env
+     # Vite
+     VITE_TMDB_API_KEY=your-tmdb-api-key
+
+     # Or (used by some components in this repo)
+     NEXT_PUBLIC_TMDB_API_KEY=your-tmdb-api-key
+     ```
+   - Firebase variables:
+     ```env
+     VITE_FIREBASE_API_KEY=your-firebase-api-key
+     VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
+     VITE_FIREBASE_PROJECT_ID=your-project-id
+     VITE_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+     VITE_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+     VITE_FIREBASE_APP_ID=your-app-id
+     ```
+   - Note: some components may reference NEXT_PUBLIC_*; set whichever matches your local dev tooling or both to be safe.
 4. Configure Firebase in `src/config/firebase.ts`.
-5. Add TMDB API key to `src/api/` files.
-6. Run the app:
+5. Run the app:
    ```bash
    npm run dev
    ```
    Open `http://localhost:3000`.
 
 ## Usage
-- **Home**: View featured content and trailers.
-- **Navigation**: Use header or bottom nav for Movies, TV, People, or Auth routes.
-- **Auth**: Sign up/log in via Magic Link or Google OAuth; view bookmarks in `/auth/profile`.
-- **Explore**: Browse movies (`/movies`), TV shows (`/tv`), or people (`/people`).
-- **Bookmark**: Save favorites to Firestore via bookmark buttons.
-- **Search**: Find content using the search component.
+- Home: personalized featured content and lists. If you click a media card, the app stores it as "last viewed" and may show a "Because you viewed…" recommendation row (if the clicked media has recommendations).
+- Navigation: header or floating controls let you switch between Movies, TV, People, and Profile.
+- Auth: sign in with Magic Link or Google OAuth via the in-app Portal (there is no separate `/auth` route). Open the Portal to sign up, verify, or manage your profile; bookmarks are saved to Firestore.
+- Bookmarks: add/remove via bookmark buttons; view on your profile page.
+- Search: find content by title, people, or keywords.
+
+## Implementation notes
+- Recommendations use a local fetcher in components (they intentionally do not call shared api helpers when configured that way). Query keys follow the pattern `['recommendations', type, id]` so recommendation results can be cached and shared across components.
+- A small zustand store (src/stores/lastViewedStore.ts) holds the last viewed media (id + type) so "Because you viewed…" lists can be shown globally.
+- Authentication now uses an in-app Portal component instead of a dedicated `src/routes/auth` folder. The Portal component opens login/signup/verification flows and the profile modal; adjust your routing references accordingly.
+- Skeleton components match the real card sizes to avoid layout shifts and visual flashes.
+- Buttons and UI elements are styled with shadcn/ui + Tailwind; accessibility attributes are applied where appropriate.
 
 ## Project Structure
 ```
 Trailer-Base/
-├── public/                    # Static assets (images, SVGs)
+├── public/
 ├── src/
-│   ├── api/                   # TMDB API logic
-│   ├── components/            # React components (BookmarkButton, Header, etc.)
+│   ├── api/                   # TMDB API helpers (some components may use direct fetch)
+│   ├── components/            # React components (MediaCard, TvDisplay, BecauseYouViewed, etc.)
 │   ├── config/                # Firebase config
-│   ├── context/               # Search context
-│   ├── data/                  # Static data (genres)
+│   ├── stores/                # small zustand stores (e.g., lastViewedStore)
 │   ├── routes/                # TanStack Router routes
-│   ├── Types/                 # TypeScript interfaces
-│   ├── main.tsx               # React entry
-│   └── styles.css             # Tailwind styles
-├── .env                       # Environment variables
-├── index.html                 # HTML entry
-├── package.json               # Dependencies
-├── tsconfig.json              # TypeScript config
-├── vercel.json                # Vercel config
-└── vite.config.js             # Vite config
+│   ├── main.tsx
+│   └── styles.css
+├── README.md
+├── package.json
+└── vite.config.js
 ```
 
-## API Integration
-- **TMDB API**: Fetches movies, TV shows, and people data (e.g., `/movie/{id}`, `/tv/{id}`). Handled in `src/api/` with TanStack Query and Axios.
-- **Firebase**: Magic Link/Google OAuth for login; Firestore for bookmarks.
-- **Rate Limits**: TMDB allows 40 requests/10 seconds; error handling in `src/api/`.
+## API Integration & Rate Limits
+- TMDB API: endpoints used include `/movie/{id}`, `/tv/{id}`, and `/tv/{id}/recommendations`.
+- Rate limits: TMDB allows ~40 requests per 10 seconds — keep prefetching and polling conservative.
+- Recommendations: components may fetch recommendations directly; ensure your API key is properly scoped.
 
 ## Contributing
 1. Fork the repo.
 2. Create a branch (`git checkout -b feature/your-feature`).
 3. Commit changes (`git commit -m "Add feature"`).
-4. Push (`git push origin feature/your-feature`).
-5. Open a Pull Request.
+4. Push (`git push origin feature/your-feature`) and open a PR.
 
-Ensure TypeScript/React best practices, Tailwind consistency, and no hardcoded keys.
-
+Please follow TypeScript/React best practices, Tailwind conventions, and avoid committing secrets or hardcoded keys.
 
 ## Contact
 - GitHub: [dumisa-sakhile](https://github.com/dumisa-sakhile)
@@ -114,4 +129,4 @@ Ensure TypeScript/React best practices, Tailwind consistency, and no hardcoded k
 - Live Site: [trailerbase.tech](https://trailerbase.tech)
 
 ## Acknowledgments
-- TMDB, Firebase, TanStack Router/Query, Tailwind CSS, Sonner, Vite, Vercel.
+- TMDB, Firebase, TanStack Router/Query, Zustand, Tailwind CSS, Sonner, Vite, and Vercel.
