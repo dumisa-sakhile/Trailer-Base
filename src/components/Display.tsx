@@ -577,7 +577,7 @@ const Display: React.FC<DisplayProps> = ({
                       <Button
                         variant="destructive"
                         size="icon"
-                        className="px-4 sm:px-4 py-2 sm:py-3 text-base sm:text-xl h-10 w-10"
+                        className="px-4 sm:px-4 py-2 sm:py-3 text-base sm:text-xl h-10 w-10 rounded-full mt-2"
                         onClick={() =>
                           removeBookmarkMutation.mutate(
                             featuredMovie?.id?.toString() || ""
@@ -593,7 +593,7 @@ const Display: React.FC<DisplayProps> = ({
                       <Button
                         variant="outline"
                         size="icon"
-                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 hover:scale-95 text-base sm:text-xl h-10 w-10 border-0"
+                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 hover:scale-95 text-base sm:text-xl h-10 w-10 border-0 rounded-full mt-2"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredMovie?.id || 0,

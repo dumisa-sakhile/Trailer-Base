@@ -200,13 +200,14 @@ const TVCard: React.FC<{
         </Button>
         {auth?.currentUser && (
           <div
-            className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity rounded-md"
-            style={{ borderRadius: "0.375rem" }}>
+            className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 will-change-opacity rounded-full"
+            style={{ borderRadius: "30px !important" }}>
             {bookmarks?.includes(tvShow.id.toString()) ? (
               <Button
                 variant="ghost"
                 size="icon"
-                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200 h-8 w-8"
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-red-500 hover:bg-red-500 hover:text-white focus:ring-2 focus:ring-red-500/50 transition-all duration-200 h-8 w-8  mt-2"
+                style={{borderRadius : "30px !important"}}
                 onClick={() =>
                   removeBookmarkMutation.mutate(tvShow.id.toString())
                 }
@@ -218,7 +219,8 @@ const TVCard: React.FC<{
               <Button
                 variant="ghost"
                 size="icon"
-                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 h-8 w-8"
+                className="p-1 bg-[rgba(255,255,255,0.1)] rounded-full text-white hover:bg-white hover:text-neutral-900 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 h-8 w-8  mt-2"
+                style={{borderRadius : "30px !important"}}
                 onClick={() =>
                   addBookmarkMutation.mutate({
                     id: tvShow.id,
@@ -603,7 +605,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                       <Button
                         variant="destructive"
                         size="icon"
-                        className="px-4 sm:px-4 py-2 sm:py-3 text-base sm:text-xl h-10 w-10"
+                        className="p-2 h-10 w-10 rounded-full flex items-center justify-center mt-2"
                         onClick={() =>
                           removeBookmarkMutation.mutate(
                             featuredTV?.id?.toString() || ""
@@ -613,13 +615,13 @@ const TvDisplay: React.FC<DisplayProps> = ({
                         aria-label={`Remove ${
                           featuredTV?.name || "Unknown"
                         } from bookmarks`}>
-                        <BookmarkMinus size={20} />
+                        <BookmarkMinus size={18} />
                       </Button>
                     ) : (
                       <Button
                         variant="outline"
                         size="icon"
-                        className="bg-[#333]/50 backdrop-blur-md text-neutral-100 hover:scale-95 text-base sm:text-xl h-10 w-10 border-0"
+                        className="p-2 h-10 w-10 rounded-full bg-[#333]/50 backdrop-blur-md text-neutral-100 hover:scale-95 border-0 flex items-center justify-center mt-2"
                         onClick={() =>
                           addBookmarkMutation.mutate({
                             id: featuredTV?.id || 0,
@@ -637,7 +639,7 @@ const TvDisplay: React.FC<DisplayProps> = ({
                         aria-label={`Add ${
                           featuredTV?.name || "Unknown"
                         } to bookmarks`}>
-                        <BookmarkPlus size={20} />
+                        <BookmarkPlus size={18} />
                       </Button>
                     ))}
                 </div>
