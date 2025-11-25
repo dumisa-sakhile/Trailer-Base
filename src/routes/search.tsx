@@ -279,6 +279,7 @@ function Search() {
   const searchTypeDropdownRef = useRef<HTMLDivElement>(null);
   const [isGenreDrawerOpen, setIsGenreDrawerOpen] = useState(false);
   const [inputValue, setInputValue] = useState(query);
+
   useEffect(() => {
     setInputValue(query);
   }, [query]);
@@ -410,6 +411,7 @@ function Search() {
       if (inputValue !== query) {
         navigate({
           to: "/search",
+          replace: true,
           search: { query: inputValue, type, page: 1 },
         });
       }

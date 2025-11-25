@@ -28,6 +28,7 @@ function App() {
       if (searchInput) {
         navigate({
           to: "/search",
+          replace: true,
           search: { query: searchInput, type: "tv", page: 1 },
         });
       }
