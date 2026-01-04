@@ -22,6 +22,7 @@ interface MediaListProps {
   data: { results: MediaProps[] } | undefined;
   isLoading: boolean;
   isError: boolean;
+  refetch: ()=> void
   error: { message?: string } | null;
   list: "upcoming" | "top_rated" | "popular";
 }
@@ -138,6 +139,7 @@ const MediaList: React.FC<MediaListProps> = ({
   isError,
   error,
   list,
+  refetch
 }) => {
   // Smooth animation variants
   const pageVariants = {
@@ -259,14 +261,16 @@ const MediaList: React.FC<MediaListProps> = ({
           >
             {/* Mobile Grid Layout */}
             {isMobile ? (
-              <div className="w-full">
+              <div className="w-full flex flex-col items-center justify-center space-y-4">
                 {isError ? (
                   <motion.div
-                    className="w-full text-center text-red-400 font-medium py-8"
+                    className="w-full text-center  py-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
-                    Error: {error?.message ?? "An error occurred while fetching data."}
+                      <p>Oh no, something just went wrong <span className="text-rose-400 font-medium mb-10">{error?.message ?? "An error occurred while fetching data."}</span></p>
+                      
+                      <Button onClick={()=>{refetch()}}>Try Again</Button>
                   </motion.div>
                 ) : data?.results && data.results.length > 0 ? (
                   <motion.div
@@ -350,11 +354,13 @@ const MediaList: React.FC<MediaListProps> = ({
                 {/* Error state */}
                 {isError ? (
                   <motion.div
-                    className="w-full text-center text-red-400 font-medium py-8"
+                    className="w-full flex flex-col items-center justify-center gap-10 font-medium py-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
-                    Error: {error?.message ?? "An error occurred while fetching data."}
+                    <p>Oh no, something just went wrong <span className="text-rose-400 font-medium">{error?.message ?? "An error occurred while fetching data."}</span></p>
+                      
+                      <Button onClick={()=>{refetch()}}>Try Again</Button>
                   </motion.div>
                 ) : (
                   // Actual data: horizontal scrollable row

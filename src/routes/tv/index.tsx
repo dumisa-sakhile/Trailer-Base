@@ -63,6 +63,7 @@ function App() {
     isLoading: isPopularTVLoading,
     isError: isPopularTVError,
     error: popularTVError,
+    refetch: popularRefetch
   } = useQuery({
     queryKey: ["popularTV", page],
     queryFn: () => getTVList(page, "popular"),
@@ -76,6 +77,7 @@ function App() {
     isLoading: isTopRatedTVLoading,
     isError: isTopRatedTVError,
     error: topRatedTVError,
+    refetch: topRatedRefetch
   } = useQuery({
     queryKey: ["topRatedTV", page],
     queryFn: () => getTVList(page, "top_rated"),
@@ -150,13 +152,11 @@ function App() {
       <title>TrailerBase - TV Shows</title>
       {/* Mobile-only search section */}
       <section className="md:hidden px-4 pt-6">
-        <h1 className="text-3xl text-white text-center font-extrabold tracking-tight mb-4">
-          Find Your Next TV Show
-        </h1>
+        
         <div className="relative">
           <input
             type="search"
-            placeholder="Search TV shows, e.g. The Chosen"
+            placeholder="Search shows/series..."
             value={searchInput}
             onChange={handleSearchChange}
             className="w-full h-12 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white placeholder:text-white pl-12 pr-4 leading-6 outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all font-normal shadow-lg"
@@ -215,6 +215,7 @@ function App() {
           isLoading={isPopularTVLoading}
           isError={isPopularTVError}
           error={popularTVError}
+          refetch={popularRefetch}
         />
       </motion.div>
 
@@ -231,6 +232,7 @@ function App() {
           isLoading={isTopRatedTVLoading}
           isError={isTopRatedTVError}
           error={topRatedTVError}
+          refetch={topRatedRefetch}
         />
       </motion.div>
 

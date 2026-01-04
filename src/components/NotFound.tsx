@@ -15,7 +15,7 @@ const NotFound = () => {
          Oh no! You got lost on the way to Trailer Base.
           
         </p>
-        <LinkTo url="/" variant="ghost" >Go Home</LinkTo>
+        <LinkTo url="/" replace={true} variant="ghost" >Go Home</LinkTo>
         
       </div>
     </>

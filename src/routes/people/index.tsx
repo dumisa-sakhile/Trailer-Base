@@ -10,6 +10,7 @@ import {
   Search as SearchIconLucide,
 } from "lucide-react"; // <-- Lucide icons
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 // Interfaces for route search parameters
 interface pageProps {
@@ -109,7 +110,7 @@ const PeopleSectionSkeleton: React.FC<PeopleSectionSkeletonProps> = ({
   const numberOfSkeletons = Math.max(cardsPerRow * (isCarousel ? 1 : 3), 6); // Min 6 skeletons
 
   return (
-    <section className="relative w-full py-2 animate-pulse">
+    <section className="relative w-full py-2 animate-pulse mb-32">
       {/* Header section for title and controls/pagination */}
       <div className="flex items-center justify-between mb-2 px-2 sm:px-4">
         {/* Title skeleton */}
@@ -125,7 +126,7 @@ const PeopleSectionSkeleton: React.FC<PeopleSectionSkeletonProps> = ({
 
       {/* Container for the people cards skeletons */}
       <div
-        className={`flex gap-4 pb-2 px-2 sm:px-4 ${isCarousel ? "overflow-x-hidden" : "flex-wrap justify-center md:justify-start"}`}
+        className={`flex gap-4 pb-2 px-2 sm:px-4 ${isCarousel ? "overflow-x-hidden" : "flex-wrap justify-center md:justify-center"}`}
         // Set a minHeight to prevent layout shifts during loading, especially for carousels
         style={{ minHeight: isCarousel ? "250px" : "auto" }}>
         {Array.from({ length: numberOfSkeletons }).map((_, index) => (
@@ -184,6 +185,7 @@ function People() {
     isLoading: trendingLoading,
     isError: trendingError,
     error: trendingErrorObj,
+    refetch: trendingRefetch
   } = useQuery({
     queryKey: ["trendingPeople", period, trendingPage],
     queryFn: () => getTrendingPeople(period, trendingPage),
@@ -197,6 +199,7 @@ function People() {
     isLoading: popularLoading,
     isError: popularError,
     error: popularErrorObj,
+    refetch: popularRefetch
   } = useQuery({
     queryKey: ["popularPeople", page],
     queryFn: () => getPopularPeople(page),
@@ -278,13 +281,11 @@ function People() {
 
       {/* Mobile-only search section: Only visible on smaller screens */}
       <section className="md:hidden px-4 pt-6">
-        <h1 className="text-3xl text-white text-center font-extrabold tracking-tight mb-4">
-          Find Your Favorite Star
-        </h1>
+        
         <div className="relative">
           <input
             type="search"
-            placeholder="Search people, e.g. Nomzamo Mbatha"
+            placeholder="Search people..."
             value={searchInput}
             onChange={handleSearchChange}
             className="w-full h-12 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white placeholder:text-white pl-12 pr-4 leading-6 outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all font-normal shadow-lg"
@@ -355,9 +356,13 @@ function People() {
           />
         ) : trendingError ? (
           // Show error message if trending data failed to load
-          <p className="text-center text-red-500 px-4">
-            Error loading trending people: {trendingErrorObj?.message}
-          </p>
+          <div className="flex flex-col gap justify-center items-center mb-20">
+              <p className="px-4 py-20">
+            Error loading Trending people <span className="text-red-500 ">{trendingErrorObj?.message}</span>
+              </p>
+              
+              <Button  onClick={()=>{trendingRefetch()}}>Try Again</Button>
+          </div>
         ) : (
           // Show actual trending content once loaded
           <>
@@ -434,9 +439,13 @@ function People() {
           />
         ) : popularError ? (
           // Show error message if popular data failed to load
-          <p className="text-red-500 px-4">
-            Error loading popular people: {popularErrorObj?.message}
-          </p>
+            <div className="flex flex-col gap justify-center items-center">
+              <p className=" px-4 py-20">
+            Error loading popular people <span className="text-red-500 ">{popularErrorObj?.message}</span>
+              </p>
+              
+              <Button onClick={()=>{popularRefetch()}}>Try Again</Button>
+          </div>
         ) : (
           // Show actual popular content once loaded
           <>

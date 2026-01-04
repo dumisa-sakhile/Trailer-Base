@@ -17,6 +17,7 @@ import tvGenres from "@/data/tvGenres";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
 import { Search as SearchIconLucide, ChevronDown, Frown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Route and Interfaces remain the same
 export const Route = createFileRoute("/search")({
@@ -402,7 +403,7 @@ function Search() {
       : type === "tv"
         ? tvQuery.isError || (query === "" && discoverTvQuery.isError)
         : personQuery.isError || (query === "" && trendingPeopleQuery.isError);
-  const errorMessage = isError ? "An error occurred while fetching data." : "";
+  const errorMessage = isError ? `An error occurred  while fetching ${type}  data.` : "";
   const label =
     type === "movies" ? "Movies" : type === "tv" ? "TV Shows" : "People";
   const currentGenreList = type === "movies" ? movieGenres() : tvGenres();
@@ -468,13 +469,32 @@ function Search() {
       )}
     </div>
   );
+  const handleRefetch = () => {
+   switch (type) {
+    case "movies":
+       movieQuery.refetch()
+       break;
+   
+     case "tv":
+       tvQuery.refetch()
+       break;
+     
+     case "people":
+       personQuery.refetch()
+       break;
+     
+     default:
+       movieQuery.refetch()
+       break;
+   }
+ }
+
+
   return (
     <section className="min-h-screen text-white flex flex-col poppins-light">
       <header className="py-6 md:p-8 flex flex-col gap-6 sm:gap-8 z-10">
         <title>TrailerBase - Search </title>
-        <h1 className="text-4xl lg:text-5xl text-white text-center font-extrabold tracking-tight">
-          Discover Your Next Favorite
-        </h1>
+        
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 w-full max-w-5xl mx-auto px-4">
           <div className="relative flex-grow">
             <input
@@ -647,7 +667,7 @@ function Search() {
         ))}
       <main className="-mt-10 md:mt-0 flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 py-8 poppins-light">
         <div className="max-w-7xl mx-auto">
-          <h3 className="text-lg text-white mb-6 font-semibold border-b border-neutral-800 pb-3">
+          <h3 className="text-base text-white mb-6 font-semibold pb-3">
             {query
               ? `Results for "${query}" in ${label}`
               : `Here are some popular ${label.toLowerCase()} you might enjoy!`}
@@ -663,9 +683,13 @@ function Search() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}>
-                <p className="text-red-400 font-light text-base sm:text-lg">
-                  Error: {errorMessage}
-                </p>
+                <p className="text-red-400 font-light text-base sm:text-lg pb-10">
+                     {errorMessage}
+                    
+                  </p>
+                  
+                  <Button onClick={()=>handleRefetch()}>Try Again</Button>
+
               </motion.div>
             ) : (
               <>

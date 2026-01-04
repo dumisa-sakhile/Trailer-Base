@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   variant?: "primary" | "secondary" | "danger" | "ghost";
   url: string;
+  replace? : true | false
   children: React.ReactNode;
   search?: { period: "day" | "week"; page: number };
 }
@@ -13,6 +14,7 @@ const LinkTo: React.FC<LinkProps> = ({
   url,
   search,
   children,
+  replace,
 }) => {
   const baseClasses = `
     w-32 h-12 max-sm:w-24 max-sm:h-10
@@ -33,6 +35,7 @@ const LinkTo: React.FC<LinkProps> = ({
   return (
     <Link
       to={url}
+      replace={replace}
       search={search}
       className={`${baseClasses} ${variantClasses[variant]}`}>
       {children}

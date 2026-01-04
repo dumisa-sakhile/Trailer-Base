@@ -5,6 +5,7 @@ import BackHomeBtn from "@/components/BackHomeBtn";
 import MediaCard from "@/components/MediaCard";
 import MediaGridSkeleton from "@/components/MediaGridSkeleton"; // Import the new skeleton component
 import PaginationFooter from "@/components/PaginationFooter";
+import { Button } from "@/components/ui/button";
 
 
 interface TVProps {
@@ -41,7 +42,7 @@ function List() {
   const { list } = Route.useLoaderData();
   const { page } = Route.useSearch();
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["tv", list, page],
     queryFn: () => getTVList(page, list as "top_rated" | "popular"),
     staleTime: 1000 * 60 * 60, // 1 hour
@@ -61,11 +62,17 @@ function List() {
       ) : (
         // Show actual content once loaded
         <div className="fixed top-0 left-0 w-full h-full pt-[35%] md:pt-[5%] md:p-4 md:pl-10 lg:pl-20 flex flex-col gap-8 pb-10 overflow-x-auto text-white">
-          <h1 className="-mt-10 text-2xl text-left font-bold capitalize">
-            {formattedTitle} TV Shows
-          </h1>
-          <section className="w-full min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
-            {isError && <div>Error: {error.message}</div>}
+          {!isError &&  <h1 className="-mt-10 text-2xl text-left font-bold capitalize">
+            {formattedTitle} Shows/Series
+          </h1>}
+          <section className=" min-h-1/2 md:p-4 flex flex-wrap items-start justify-center gap-2 lg:gap-10">
+            {isError && (
+              <div className="flex-1 flex items-center justify-center flex-col gap-10 pt-10">
+
+                  <p>Oh no, something went wrong with {formattedTitle} shows/series <span className="text-rose-400">{error.message}</span></p>
+
+
+                  <Button onClick={()=>{refetch()}}>Try again</Button> </div>)}
 
             {data?.results.map(
               ({

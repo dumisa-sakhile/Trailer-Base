@@ -61,6 +61,7 @@ function App() {
     isLoading: isPopularMovieLoading,
     isError: isPopularMovieError,
     error: popularMovieError,
+    refetch: popularRefetch
   } = useQuery({
     queryKey: ["popularMovies", page],
     queryFn: () => getList(page, "popular"),
@@ -74,6 +75,7 @@ function App() {
     isLoading: isTopRatedMovieLoading,
     isError: isTopRatedMovieError,
     error: topRatedMovieError,
+    refetch: topRatedRefetch
   } = useQuery({
     queryKey: ["topRatedMovies", page],
     queryFn: () => getList(page, "top_rated"),
@@ -87,6 +89,7 @@ function App() {
     isLoading: isUpcomingMovieLoading,
     isError: isUpcomingMovieError,
     error: upcomingMovieError,
+    refetch: upcomingRefetch
   } = useQuery({
     queryKey: ["upcomingMovies", page],
     queryFn: () => getList(page, "upcoming"),
@@ -130,13 +133,11 @@ function App() {
       <title>TrailerBase - Movies</title>
       {/* Mobile-only search section */}
       <section className="md:hidden px-4 pt-6">
-        <h1 className="text-3xl text-white text-center font-extrabold tracking-tight mb-4">
-          Find Your Next Movie
-        </h1>
+        
         <div className="relative">
           <input
             type="search"
-            placeholder="Search movies, e.g. Inception"
+            placeholder="Search movies..."
             value={searchInput}
             onChange={handleSearchChange}
             className="w-full h-12 px-5 py-3 rounded-full bg-[#242424] border border-[#141414] text-base text-white placeholder:text-white pl-12 pr-4 leading-6 outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all font-normal shadow-lg"
@@ -191,6 +192,7 @@ function App() {
           isLoading={isPopularMovieLoading}
           isError={isPopularMovieError}
           error={popularMovieError}
+          refetch={popularRefetch}
         />
       </motion.div>
       <motion.div
@@ -205,6 +207,7 @@ function App() {
           isLoading={isTopRatedMovieLoading}
           isError={isTopRatedMovieError}
           error={topRatedMovieError}
+          refetch={topRatedRefetch}
         />
       </motion.div>
       <motion.div
@@ -219,6 +222,7 @@ function App() {
           isLoading={isUpcomingMovieLoading}
           isError={isUpcomingMovieError}
           error={upcomingMovieError}
+          refetch={upcomingRefetch}
         />
       </motion.div>
 
